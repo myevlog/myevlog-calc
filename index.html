@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🛵 라이더 수익 장부</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #0C0E14;
+    color: #E8E8F0;
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+  }
+  /* Header */
+  .header {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(12,14,20,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1E2030;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { font-size: 24px; }
+  .brand-name { font-size: 15px; font-weight: 800; letter-spacing: -0.5px; }
+  .brand-sub { font-size: 9px; color: #4B5563; letter-spacing: 1px; }
+  .nav { display: flex; gap: 6px; }
+  .nav-btn {
+    background: transparent; border: 1px solid #1E2030;
+    border-radius: 8px; padding: 7px 11px; font-size: 17px;
+    cursor: pointer; color: #fff; transition: all 0.15s;
+  }
+  .nav-btn.active { background: rgba(255,107,44,0.15); border-color: #FF6B2C; }
+  /* Main */
+  .main { padding: 16px 14px; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+  /* Month nav */
+  .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .month-btn { background: transparent; border: none; color: #9CA3AF; font-size: 24px; cursor: pointer; padding: 0 8px; }
+  .month-label { font-size: 17px; font-weight: 700; }
+  /* Calendar */
+  .day-headers { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 4px; }
+  .day-header { text-align: center; font-size: 11px; font-weight: 600; padding: 4px 0; color: #6B7280; }
+  .day-header.sun { color: #FF6B2C; }
+  .day-header.sat { color: #60A5FA; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; margin-bottom: 16px; }
+  .day-cell {
+    aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    border: 2px solid transparent; background: transparent;
+    color: #E8E8F0; transition: all 0.15s; padding: 0;
+  }
+  .day-cell.selected { border-color: #FF6B2C !important; }
+  .day-cell.today { border-color: rgba(255,107,44,0.3); }
+  .day-cell.sun .day-num { color: #FF6B2C; }
+  .day-cell.sat .day-num { color: #60A5FA; }
+  .day-num { font-size: 13px; font-weight: 600; }
+  .day-income { font-size: 8px; color: #FF6B2C; font-weight: 700; }
+  /* Day detail */
+  .day-detail { background: #13151F; border-radius: 14px; padding: 14px; }
+  .day-detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .day-detail-title { font-size: 14px; font-weight: 700; color: #9CA3AF; }
+  .add-btn {
+    background: #FF6B2C; border: none; border-radius: 8px;
+    color: #fff; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .empty-day { text-align: center; color: #374151; padding: 24px 0; font-size: 13px; }
+  /* Session card */
+  .session-card {
+    background: #0C0E14; border-radius: 10px; padding: 12px;
+    margin-bottom: 10px; position: relative;
+  }
+  .session-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .session-platform { font-size: 13px; font-weight: 700; }
+  .session-net { font-size: 16px; font-weight: 800; color: #FF6B2C; }
+  .session-meta { display: flex; gap: 12px; font-size: 11px; color: #6B7280; margin-bottom: 4px; }
+  .session-breakdown { display: flex; gap: 10px; font-size: 11px; color: #4B5563; }
+  .session-memo { font-size: 11px; color: #6B7280; margin-top: 4px; }
+  .delete-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: transparent; border: none; color: #374151; font-size: 10px; cursor: pointer;
+  }
+  .day-summary { background: #1A1C2A; border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
+  .day-summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+  /* Report */
+  .period-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .period-btn {
+    background: #13151F; border: 1px solid #1E2030; border-radius: 20px;
+    color: #9CA3AF; padding: 6px 12px; font-size: 12px; cursor: pointer;
+  }
+  .period-btn.active { background: rgba(255,107,44,0.15); border-color: #FF6B2C; color: #FF6B2C; font-weight: 700; }
+  .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .report-card { background: #13151F; border-radius: 12px; padding: 14px 12px; }
+  .report-value { font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .report-label { font-size: 11px; color: #4B5563; }
+  .section-title { font-size: 13px; color: #6B7280; margin-bottom: 10px; font-weight: 600; }
+  .platform-row { background: #13151F; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .platform-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .platform-stats { display: flex; gap: 12px; font-size: 12px; color: #6B7280; }
+  /* Settings */
+  .settings-card { background: #13151F; border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  .settings-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #9CA3AF; }
+  .setting-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #1E2030;
+  }
+  .setting-label { font-size: 13px; font-weight: 600; }
+  .setting-hint { font-size: 10px; color: #4B5563; margin-top: 2px; }
+  .setting-input {
+    background: #0C0E14; border: 1px solid #2A2D3A; border-radius: 8px;
+    color: #E8E8F0; padding: 6px 10px; font-size: 14px; width: 90px; text-align: right;
+  }
+  .setting-calc { font-size: 12px; color: #6B7280; text-align: right; margin-top: 10px; }
+  /* Modal */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 50;
+    align-items: flex-end; backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: #13151F; border-radius: 20px 20px 0 0;
+    padding: 20px 16px 40px; width: 100%; max-width: 480px;
+    margin: 0 auto; max-height: 92vh; overflow-y: auto;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-title { font-size: 16px; font-weight: 800; }
+  .close-btn { background: transparent; border: none; color: #6B7280; font-size: 20px; cursor: pointer; }
+  .modal-section { margin-bottom: 14px; }
+  .field-label { font-size: 11px; color: #9CA3AF; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px; }
+  .platform-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .platform-btn {
+    background: #0C0E14; border: 1.5px solid #2A2D3A; border-radius: 8px;
+    color: #E8E8F0; padding: 7px 10px; font-size: 12px; cursor: pointer;
+  }
+  .platform-btn.active { background: rgba(255,107,44,0.15); border-color: #FF6B2C; }
+  .time-row { display: flex; align-items: center; gap: 8px; }
+  .time-input {
+    flex: 1; background: #0C0E14; border: 1px solid #2A2D3A; border-radius: 8px;
+    color: #E8E8F0; padding: 9px 10px; font-size: 14px;
+  }
+  .time-duration { font-size: 12px; color: #FF6B2C; font-weight: 700; white-space: nowrap; }
+  .modal-input {
+    width: 100%; background: #0C0E14; border: 1px solid #2A2D3A; border-radius: 8px;
+    color: #E8E8F0; padding: 10px 12px; font-size: 15px;
+  }
+  .preview {
+    background: #0C0E14; border: 1px solid #2A2D3A; border-radius: 10px;
+    padding: 14px; margin-bottom: 14px;
+  }
+  .preview-title { font-size: 12px; color: #6B7280; margin-bottom: 10px; font-weight: 600; }
+  .preview-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+  .preview-divider { border-top: 1px solid #2A2D3A; margin-top: 4px; padding-top: 8px; }
+  .save-btn {
+    width: 100%; background: #FF6B2C; border: none; border-radius: 12px;
+    color: #fff; padding: 14px; font-size: 16px; font-weight: 800;
+    cursor: pointer; transition: background 0.3s; margin-top: 4px;
+  }
+  .save-btn.saved { background: #10B981; }
+  .neg { color: #EF4444; }
+  .accent { color: #FF6B2C; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="brand">
+    <span class="brand-icon">🛵</span>
+    <div>
+      <div class="brand-name">라이더 수익 장부</div>
+      <div class="brand-sub">RIDER INCOME TRACKER</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showTab('calendar')" id="btn-calendar">📅</button>
+    <button class="nav-btn" onclick="showTab('report')" id="btn-report">📊</button>
+    <button class="nav-btn" onclick="showTab('settings')" id="btn-settings">⚙️</button>
+  </nav>
+</div>
+
+<div class="main">
+
+  <!-- ── CALENDAR TAB ── -->
+  <div class="tab active" id="tab-calendar">
+    <div class="month-nav">
+      <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+      <span class="month-label" id="month-label"></span>
+      <button class="month-btn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="day-headers">
+      <div class="day-header sun">일</div>
+      <div class="day-header">월</div>
+      <div class="day-header">화</div>
+      <div class="day-header">수</div>
+      <div class="day-header">목</div>
+      <div class="day-header">금</div>
+      <div class="day-header sat">토</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="day-detail">
+      <div class="day-detail-header">
+        <span class="day-detail-title" id="selected-date-label"></span>
+        <button class="add-btn" onclick="openModal()">+ 세션 추가</button>
+      </div>
+      <div id="day-sessions"></div>
+    </div>
+  </div>
+
+  <!-- ── REPORT TAB ── -->
+  <div class="tab" id="tab-report">
+    <div class="period-row">
+      <button class="period-btn active" onclick="setPeriod('7d',this)">직전 7일</button>
+      <button class="period-btn" onclick="setPeriod('30d',this)">최근 30일</button>
+      <button class="period-btn" onclick="setPeriod('month',this)">당월</button>
+      <button class="period-btn" onclick="setPeriod('prev_month',this)">전월</button>
+      <button class="period-btn" onclick="setPeriod('quarter',this)">분기</button>
+    </div>
+    <div class="report-grid" id="report-cards"></div>
+    <div class="section-title">플랫폼별 수익</div>
+    <div id="platform-breakdown"></div>
+  </div>
+
+  <!-- ── SETTINGS TAB ── -->
+  <div class="tab" id="tab-settings">
+    <div class="settings-card">
+      <div class="settings-title">⚡ 전기바이크 전비</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">kWh/km (전비)</div>
+          <div class="setting-hint">기본 0.05 = 20km/kWh</div>
+        </div>
+        <input class="setting-input" type="number" step="0.001" id="s-kwh" value="0.05" oninput="updateCalc()">
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">전기요금 (원/kWh)</div>
+          <div class="setting-hint">가정용 기본 180원</div>
+        </div>
+        <input class="setting-input" type="number" step="1" id="s-elec" value="180" oninput="updateCalc()">
+      </div>
+      <div class="setting-calc" id="charge-calc">km당 충전비: <strong style="color:#FF6B2C">9.0원/km</strong></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-title">💸 수수료율 설정</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">쿠팡이츠 공제율 (%)</div>
+          <div class="setting-hint">소득세 3.3% + 산재 1.5%</div>
+        </div>
+        <input class="setting-input" type="number" step="0.1" id="s-coupang" value="4.8">
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">해주세요 배달 (%)</div>
+          <div class="setting-hint">평균 15%</div>
+        </div>
+        <input class="setting-input" type="number" step="0.1" id="s-hj-delivery" value="15">
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">해주세요 기타 (%)</div>
+          <div class="setting-hint">평균 15%</div>
+        </div>
+        <input class="setting-input" type="number" step="0.1" id="s-hj-other" value="15">
+      </div>
+    </div>
+    <button class="save-btn" id="save-settings-btn" onclick="saveSettings()">설정 저장</button>
+  </div>
+
+</div>
+
+<!-- ── SESSION MODAL ── -->
+<div class="overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-date-label">세션 입력</span>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-section">
+      <div class="field-label">플랫폼</div>
+      <div class="platform-btns">
+        <button class="platform-btn active" data-platform="coupang" onclick="selectPlatform(this)">🟠 쿠팡이츠</button>
+        <button class="platform-btn" data-platform="haejuseyo_delivery" onclick="selectPlatform(this)">🔵 해주세요 배달</button>
+        <button class="platform-btn" data-platform="haejuseyo_other" onclick="selectPlatform(this)">🟣 해주세요 기타</button>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="field-label">시작 ~ 종료 시간</div>
+      <div class="time-row">
+        <input type="time" class="time-input" id="m-start" value="18:00" oninput="updatePreview()">
+        <span style="color:#6B7280">~</span>
+        <input type="time" class="time-input" id="m-end" value="22:00" oninput="updatePreview()">
+        <span class="time-duration" id="m-duration">4h 0m</span>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="field-label">주행거리 (km)</div>
+      <input type="number" class="modal-input" id="m-distance" step="0.1" placeholder="예: 20.5" oninput="updatePreview()">
+    </div>
+
+    <div class="modal-section">
+      <div class="field-label" id="m-gross-label">정산 금액 (수수료 제외 후)</div>
+      <input type="number" class="modal-input" id="m-gross" step="100" placeholder="예: 47574" oninput="updatePreview()">
+    </div>
+
+    <div class="modal-section">
+      <div class="field-label">메모 (선택)</div>
+      <input type="text" class="modal-input" id="m-memo" placeholder="예: 저녁 피크, 비 오는 날">
+    </div>
+
+    <div class="preview" id="preview-box" style="display:none">
+      <div class="preview-title">💰 순수익 계산</div>
+      <div id="preview-content"></div>
+    </div>
+
+    <button class="save-btn" id="modal-save-btn" onclick="saveSession()">저장하기</button>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+const RKEY = 'rider_v2_records';
+const SKEY = 'rider_v2_settings';
+
+let records = JSON.parse(localStorage.getItem(RKEY) || '[]');
+let settings = {
+  kwh_per_km: 0.05, elec_price: 180,
+  coupang_deduct: 4.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
+  ...JSON.parse(localStorage.getItem(SKEY) || '{}')
+};
+
+let calYear, calMonth, selectedDate, currentPeriod = '7d', selectedPlatform = 'coupang';
+
+const PLATFORMS = {
+  coupang: { label: '쿠팡이츠', emoji: '🟠', color: '#FF6B2C' },
+  haejuseyo_delivery: { label: '해주세요 배달', emoji: '🔵', color: '#3B82F6' },
+  haejuseyo_other: { label: '해주세요 기타', emoji: '🟣', color: '#8B5CF6' },
+};
+
+// ── Utils ──────────────────────────────────────────────────────
+const toDateStr = d => d.toISOString().split('T')[0];
+const todayStr = () => toDateStr(new Date());
+const fmtW = n => new Intl.NumberFormat('ko-KR').format(Math.round(n)) + '원';
+const fmtKm = n => parseFloat(n).toFixed(1) + 'km';
+
+function minsBetween(s, e) {
+  const [sh,sm] = s.split(':').map(Number);
+  const [eh,em] = e.split(':').map(Number);
+  let d = (eh*60+em)-(sh*60+sm);
+  if(d<0) d+=1440;
+  return d;
+}
+
+function calcCharge(km) { return km * settings.kwh_per_km * settings.elec_price; }
+
+function calcNet(platform, gross) {
+  const r = platform === 'coupang' ? settings.coupang_deduct
+    : platform === 'haejuseyo_delivery' ? settings.haejuseyo_delivery
+    : settings.haejuseyo_other;
+  return gross * (1 - r/100);
+}
+
+function heatColor(net) {
+  if(net<=0) return 'transparent';
+  if(net<10000) return 'rgba(255,107,44,0.2)';
+  if(net<30000) return 'rgba(255,107,44,0.45)';
+  if(net<60000) return 'rgba(255,107,44,0.7)';
+  return 'rgba(255,107,44,0.95)';
+}
+
+function dayNet(dateStr) {
+  return records.filter(r=>r.date===dateStr).reduce((s,r)=>{
+    return s + calcNet(r.platform, r.gross) - calcCharge(r.distance);
+  }, 0);
+}
+
+function saveRecords() { localStorage.setItem(RKEY, JSON.stringify(records)); }
+
+// ── Tab ────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('btn-'+name).classList.add('active');
+  if(name==='report') renderReport();
+}
+
+// ── Calendar ───────────────────────────────────────────────────
+function initCalendar() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  selectedDate = todayStr();
+  renderCalendar();
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if(calMonth<0){calMonth=11;calYear--;}
+  if(calMonth>11){calMonth=0;calYear++;}
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('month-label').textContent = `${calYear}년 ${calMonth+1}월`;
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const today = todayStr();
+  let html = '';
+  for(let i=0;i<firstDay;i++) html += '<div></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const net = dayNet(ds);
+    const col = (firstDay+d-1)%7;
+    const cls = [
+      'day-cell',
+      col===0?'sun':col===6?'sat':'',
+      ds===selectedDate?'selected':'',
+      ds===today?'today':''
+    ].join(' ');
+    html += `<button class="${cls}" style="background:${heatColor(net)}" onclick="selectDate('${ds}')">
+      <span class="day-num">${d}</span>
+      ${net>0?`<span class="day-income">${Math.round(net/1000)}k</span>`:''}
+    </button>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+  renderDayDetail();
+}
+
+function selectDate(ds) {
+  selectedDate = ds;
+  renderCalendar();
+}
+
+function renderDayDetail() {
+  document.getElementById('selected-date-label').textContent = selectedDate;
+  const dayRecs = records.filter(r=>r.date===selectedDate);
+  let html = '';
+  if(!dayRecs.length) {
+    html = '<div class="empty-day">이 날의 기록이 없어요</div>';
+  } else {
+    dayRecs.forEach(r=>{
+      const p = PLATFORMS[r.platform];
+      const net = calcNet(r.platform, r.gross);
+      const charge = calcCharge(r.distance);
+      const finalNet = net - charge;
+      const mins = minsBetween(r.startTime, r.endTime);
+      html += `<div class="session-card" style="border-left:3px solid ${p.color}">
+        <div class="session-top">
+          <span class="session-platform">${p.emoji} ${p.label}</span>
+          <span class="session-net">${fmtW(finalNet)}</span>
+        </div>
+        <div class="session-meta">
+          <span>⏱ ${r.startTime}~${r.endTime} (${Math.floor(mins/60)}h ${mins%60}m)</span>
+          <span>📍 ${fmtKm(r.distance)}</span>
+        </div>
+        <div class="session-breakdown">
+          <span>세전 ${fmtW(r.gross)}</span>
+          <span class="neg">수수료 -${fmtW(r.gross-net)}</span>
+          <span class="neg">충전비 -${fmtW(charge)}</span>
+        </div>
+        ${r.memo?`<div class="session-memo">📝 ${r.memo}</div>`:''}
+        <button class="delete-btn" onclick="deleteRecord(${r.id})">삭제</button>
+      </div>`;
+    });
+    const total = dayRecs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    const totalMins = dayRecs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
+    html += `<div class="day-summary">
+      <div class="day-summary-row"><span>일 순수익</span><span class="accent" style="font-weight:800">${fmtW(total)}</span></div>
+      <div class="day-summary-row"><span>시간당</span><span style="font-weight:700">${totalMins>0?fmtW(total/totalMins*60):'-'}</span></div>
+    </div>`;
+  }
+  document.getElementById('day-sessions').innerHTML = html;
+}
+
+function deleteRecord(id) {
+  if(!confirm('이 기록을 삭제할까요?')) return;
+  records = records.filter(r=>r.id!==id);
+  saveRecords();
+  renderCalendar();
+}
+
+// ── Modal ──────────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('modal-date-label').textContent = '세션 입력 — ' + selectedDate;
+  document.getElementById('m-distance').value = '';
+  document.getElementById('m-gross').value = '';
+  document.getElementById('m-memo').value = '';
+  document.getElementById('m-start').value = '18:00';
+  document.getElementById('m-end').value = '22:00';
+  selectedPlatform = 'coupang';
+  document.querySelectorAll('.platform-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.platform==='coupang');
+  });
+  updateGrossLabel();
+  updatePreview();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('modal-overlay')) closeModal(); }
+
+function selectPlatform(btn) {
+  document.querySelectorAll('.platform-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedPlatform = btn.dataset.platform;
+  updateGrossLabel();
+  updatePreview();
+}
+
+function updateGrossLabel() {
+  document.getElementById('m-gross-label').textContent =
+    selectedPlatform==='coupang' ? '정산 금액 (수수료 제외 후)' : '세전 수익 (수수료 전)';
+}
+
+function updatePreview() {
+  const s = document.getElementById('m-start').value;
+  const e = document.getElementById('m-end').value;
+  const mins = s&&e ? minsBetween(s,e) : 0;
+  document.getElementById('m-duration').textContent = `${Math.floor(mins/60)}h ${mins%60}m`;
+
+  const gross = parseFloat(document.getElementById('m-gross').value)||0;
+  const dist = parseFloat(document.getElementById('m-distance').value)||0;
+  if(!gross||!dist){ document.getElementById('preview-box').style.display='none'; return; }
+
+  const net = calcNet(selectedPlatform, gross);
+  const charge = calcCharge(dist);
+  const finalNet = net - charge;
+  const rate = selectedPlatform==='coupang'?settings.coupang_deduct
+    :selectedPlatform==='haejuseyo_delivery'?settings.haejuseyo_delivery:settings.haejuseyo_other;
+
+  let html = `<div class="preview-row"><span>${selectedPlatform==='coupang'?'정산금액':'세전'}</span><span>${fmtW(gross)}</span></div>`;
+  html += `<div class="preview-row"><span class="neg">${selectedPlatform==='coupang'?'소득세+산재':'수수료'} (${rate}%)</span><span class="neg">-${fmtW(gross-net)}</span></div>`;
+  html += `<div class="preview-row"><span class="neg">충전비 (${dist}km)</span><span class="neg">-${fmtW(charge)}</span></div>`;
+  html += `<div class="preview-row preview-divider"><span style="font-weight:700">순수익</span><span class="accent" style="font-weight:800;font-size:18px">${fmtW(finalNet)}</span></div>`;
+  if(mins>0) html += `<div class="preview-row"><span style="color:#9CA3AF">시간당</span><span style="color:#9CA3AF">${fmtW(finalNet/mins*60)}</span></div>`;
+
+  document.getElementById('preview-content').innerHTML = html;
+  document.getElementById('preview-box').style.display='block';
+}
+
+function saveSession() {
+  const gross = parseFloat(document.getElementById('m-gross').value);
+  const dist = parseFloat(document.getElementById('m-distance').value);
+  if(!gross||!dist){ alert('수익과 거리를 입력해주세요'); return; }
+  const rec = {
+    id: Date.now(),
+    date: selectedDate,
+    platform: selectedPlatform,
+    startTime: document.getElementById('m-start').value,
+    endTime: document.getElementById('m-end').value,
+    distance: dist, gross,
+    memo: document.getElementById('m-memo').value
+  };
+  records.unshift(rec);
+  records.sort((a,b)=>b.date.localeCompare(a.date));
+  saveRecords();
+  closeModal();
+  renderCalendar();
+  const btn = document.getElementById('modal-save-btn');
+  btn.textContent='✅ 저장 완료!'; btn.classList.add('saved');
+  setTimeout(()=>{ btn.textContent='저장하기'; btn.classList.remove('saved'); }, 1200);
+}
+
+// ── Report ─────────────────────────────────────────────────────
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReport();
+}
+
+function getPeriodRange(p) {
+  const now = new Date(); const y=now.getFullYear(),m=now.getMonth();
+  let s,e;
+  if(p==='7d'){e=new Date(now);s=new Date(now);s.setDate(s.getDate()-6);}
+  else if(p==='30d'){e=new Date(now);s=new Date(now);s.setDate(s.getDate()-29);}
+  else if(p==='month'){s=new Date(y,m,1);e=new Date(now);}
+  else if(p==='prev_month'){s=new Date(y,m-1,1);e=new Date(y,m,0);}
+  else{const q=Math.floor(m/3);s=new Date(y,q*3,1);e=new Date(now);}
+  return {start:toDateStr(s),end:toDateStr(e)};
+}
+
+function renderReport() {
+  const {start,end} = getPeriodRange(currentPeriod);
+  const recs = records.filter(r=>r.date>=start&&r.date<=end);
+  const st = recs.reduce((a,r)=>{
+    const net=calcNet(r.platform,r.gross), charge=calcCharge(r.distance), fin=net-charge;
+    const mins=minsBetween(r.startTime,r.endTime);
+    a.gross+=r.gross; a.deduct+=(r.gross-net); a.charge+=charge;
+    a.finalNet+=fin; a.mins+=mins; a.distance+=r.distance; a.sessions+=1;
+    if(!a.byP[r.platform]) a.byP[r.platform]={gross:0,net:0,sessions:0};
+    a.byP[r.platform].gross+=r.gross; a.byP[r.platform].net+=fin; a.byP[r.platform].sessions+=1;
+    return a;
+  },{gross:0,deduct:0,charge:0,finalNet:0,mins:0,distance:0,sessions:0,byP:{}});
+
+  const perHour = st.mins>0 ? st.finalNet/st.mins*60 : 0;
+  const cards = [
+    {label:'순수익',value:fmtW(st.finalNet),color:'#FF6B2C',big:true},
+    {label:'시간당 순수익',value:fmtW(perHour),color:'#F59E0B',big:true},
+    {label:'세전 수익',value:fmtW(st.gross),color:'#6B7280'},
+    {label:'총 수수료',value:fmtW(st.deduct),color:'#EF4444'},
+    {label:'총 충전비',value:fmtW(st.charge),color:'#EF4444'},
+    {label:'총 주행거리',value:fmtKm(st.distance),color:'#10B981'},
+    {label:'총 작업시간',value:`${Math.floor(st.mins/60)}h ${st.mins%60}m`,color:'#3B82F6'},
+    {label:'세션 수',value:st.sessions+'건',color:'#8B5CF6'},
+  ];
+  document.getElementById('report-cards').innerHTML = cards.map(c=>
+    `<div class="report-card" style="border-top:3px solid ${c.color}">
+      <div class="report-value" style="color:${c.color};font-size:${c.big?22:17}px">${c.value}</div>
+      <div class="report-label">${c.label}</div>
+    </div>`
+  ).join('');
+
+  const plHtml = Object.entries(PLATFORMS).map(([id,p])=>{
+    const d=st.byP[id]; if(!d) return '';
+    return `<div class="platform-row" style="border-left:3px solid ${p.color}">
+      <div class="platform-name">${p.emoji} ${p.label}</div>
+      <div class="platform-stats">
+        <span>${d.sessions}건</span>
+        <span>세전 ${fmtW(d.gross)}</span>
+        <span class="accent" style="font-weight:700">순 ${fmtW(d.net)}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('platform-breakdown').innerHTML = plHtml ||
+    '<div class="empty-day">해당 기간에 기록이 없어요</div>';
+}
+
+// ── Settings ───────────────────────────────────────────────────
+function updateCalc() {
+  const kwh = parseFloat(document.getElementById('s-kwh').value)||0.05;
+  const elec = parseFloat(document.getElementById('s-elec').value)||180;
+  document.getElementById('charge-calc').innerHTML =
+    `km당 충전비: <strong style="color:#FF6B2C">${(kwh*elec).toFixed(1)}원/km</strong>`;
+}
+
+function saveSettings() {
+  settings = {
+    kwh_per_km: parseFloat(document.getElementById('s-kwh').value)||0.05,
+    elec_price: parseFloat(document.getElementById('s-elec').value)||180,
+    coupang_deduct: parseFloat(document.getElementById('s-coupang').value)||4.8,
+    haejuseyo_delivery: parseFloat(document.getElementById('s-hj-delivery').value)||15,
+    haejuseyo_other: parseFloat(document.getElementById('s-hj-other').value)||15,
+  };
+  localStorage.setItem(SKEY, JSON.stringify(settings));
+  const btn = document.getElementById('save-settings-btn');
+  btn.textContent='✅ 저장 완료!'; btn.classList.add('saved');
+  setTimeout(()=>{ btn.textContent='설정 저장'; btn.classList.remove('saved'); }, 1500);
+}
+
+function loadSettings() {
+  document.getElementById('s-kwh').value = settings.kwh_per_km;
+  document.getElementById('s-elec').value = settings.elec_price;
+  document.getElementById('s-coupang').value = settings.coupang_deduct;
+  document.getElementById('s-hj-delivery').value = settings.haejuseyo_delivery;
+  document.getElementById('s-hj-other').value = settings.haejuseyo_other;
+  updateCalc();
+}
+
+// ── Init ───────────────────────────────────────────────────────
+loadSettings();
+initCalendar();
+</script>
+</body>
+</html>
