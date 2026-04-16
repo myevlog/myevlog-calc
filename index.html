@@ -7,16 +7,14 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:#0C0E14; color:#E8E8F0; min-height:100vh; max-width:480px; margin:0 auto; padding-bottom:80px; }
-/* Header */
 .header { position:sticky; top:0; z-index:20; background:rgba(12,14,20,0.95); backdrop-filter:blur(12px); border-bottom:1px solid #1E2030; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; }
 .brand { display:flex; align-items:center; gap:10px; }
 .brand-icon { font-size:24px; }
 .brand-name { font-size:15px; font-weight:800; letter-spacing:-0.5px; }
 .brand-sub { font-size:9px; color:#4B5563; letter-spacing:1px; }
-.nav { display:flex; gap:6px; }
-.nav-btn { background:transparent; border:1px solid #1E2030; border-radius:8px; padding:7px 11px; font-size:17px; cursor:pointer; color:#fff; transition:all 0.15s; }
+.nav { display:flex; gap:5px; }
+.nav-btn { background:transparent; border:1px solid #1E2030; border-radius:8px; padding:6px 10px; font-size:16px; cursor:pointer; color:#fff; transition:all 0.15s; }
 .nav-btn.active { background:rgba(255,107,44,0.15); border-color:#FF6B2C; }
-/* Main */
 .main { padding:16px 14px; }
 .tab { display:none; }
 .tab.active { display:block; }
@@ -36,29 +34,13 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 .day-cell.sat .day-num { color:#60A5FA; }
 .day-num { font-size:13px; font-weight:600; }
 .day-income { font-size:8px; color:#FF6B2C; font-weight:700; }
-/* Day detail */
 .day-detail { background:#13151F; border-radius:14px; padding:14px; }
 .day-detail-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .day-detail-title { font-size:14px; font-weight:700; color:#9CA3AF; }
 .add-btn { background:#FF6B2C; border:none; border-radius:8px; color:#fff; padding:7px 14px; font-size:13px; font-weight:700; cursor:pointer; }
 .empty-day { text-align:center; color:#374151; padding:24px 0; font-size:13px; }
-/* Day summary (맨 위) */
 .day-summary { background:#1A1C2A; border-radius:8px; padding:10px 12px; margin-bottom:12px; }
 .day-summary-row { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; }
-/* Chart tab */
-.chart-period-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
-.chart-period-btn { background:#13151F; border:1px solid #1E2030; border-radius:20px; color:#9CA3AF; padding:6px 12px; font-size:12px; cursor:pointer; white-space:nowrap; }
-.chart-period-btn.active { background:rgba(255,107,44,0.15); border-color:#FF6B2C; color:#FF6B2C; font-weight:700; }
-.chart-section { background:#13151F; border-radius:14px; padding:14px; margin-bottom:16px; }
-.chart-title { font-size:13px; color:#9CA3AF; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
-.chart-canvas-wrap { position:relative; width:100%; overflow-x:auto; }
-canvas { display:block; }
-.month-nav-chart { display:flex; align-items:center; gap:10px; }
-.month-nav-chart button { background:transparent; border:1px solid #2A2D3A; border-radius:6px; color:#9CA3AF; font-size:16px; cursor:pointer; padding:2px 8px; }
-.chart-legend { display:flex; gap:14px; margin-top:10px; }
-.legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:#6B7280; }
-.legend-dot { width:10px; height:10px; border-radius:2px; }
-/* Session card */
 .session-card { background:#0C0E14; border-radius:10px; padding:12px; margin-bottom:10px; position:relative; }
 .session-top { display:flex; justify-content:space-between; margin-bottom:6px; padding-right:80px; }
 .session-platform { font-size:13px; font-weight:700; }
@@ -78,7 +60,6 @@ canvas { display:block; }
 .report-value { font-weight:800; letter-spacing:-0.5px; margin-bottom:4px; }
 .report-label { font-size:11px; color:#4B5563; }
 .section-title { font-size:13px; color:#6B7280; margin-bottom:10px; font-weight:600; }
-/* Compare */
 .compare-card { background:#13151F; border-radius:12px; padding:14px; margin-bottom:10px; }
 .compare-title { font-size:12px; color:#6B7280; margin-bottom:10px; font-weight:600; }
 .compare-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid #1E2030; }
@@ -89,10 +70,22 @@ canvas { display:block; }
 .badge-up { background:rgba(16,185,129,0.15); color:#10B981; }
 .badge-down { background:rgba(239,68,68,0.15); color:#EF4444; }
 .badge-same { background:rgba(107,114,128,0.15); color:#6B7280; }
-/* Platform */
 .platform-row { background:#13151F; border-radius:10px; padding:12px 14px; margin-bottom:8px; }
 .platform-name { font-size:13px; font-weight:700; margin-bottom:6px; }
 .platform-stats { display:flex; gap:12px; font-size:12px; color:#6B7280; }
+/* Chart */
+.chart-section { background:#13151F; border-radius:14px; padding:14px; margin-bottom:16px; }
+.chart-title { font-size:13px; color:#9CA3AF; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+.chart-period-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.chart-period-btn { background:#0C0E14; border:1px solid #1E2030; border-radius:20px; color:#9CA3AF; padding:5px 11px; font-size:12px; cursor:pointer; }
+.chart-period-btn.active { background:rgba(255,107,44,0.15); border-color:#FF6B2C; color:#FF6B2C; font-weight:700; }
+.chart-canvas-wrap { width:100%; overflow-x:auto; }
+canvas { display:block; }
+.month-nav-chart { display:flex; align-items:center; gap:8px; }
+.month-nav-chart button { background:transparent; border:1px solid #2A2D3A; border-radius:6px; color:#9CA3AF; font-size:16px; cursor:pointer; padding:2px 8px; }
+.chart-legend { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:4px; font-size:10px; color:#6B7280; }
+.legend-dot { width:9px; height:9px; border-radius:2px; flex-shrink:0; }
 /* Settings */
 .settings-card { background:#13151F; border-radius:14px; padding:16px; margin-bottom:12px; }
 .settings-title { font-size:14px; font-weight:700; margin-bottom:14px; color:#9CA3AF; }
@@ -117,7 +110,6 @@ canvas { display:block; }
 .time-input { flex:1; background:#0C0E14; border:1px solid #2A2D3A; border-radius:8px; color:#E8E8F0; padding:9px 10px; font-size:14px; }
 .time-duration { font-size:12px; color:#FF6B2C; font-weight:700; white-space:nowrap; }
 .modal-input { width:100%; background:#0C0E14; border:1px solid #2A2D3A; border-radius:8px; color:#E8E8F0; padding:10px 12px; font-size:15px; }
-/* Input mode */
 .input-mode-tabs { display:flex; margin-bottom:8px; border-radius:8px; overflow:hidden; border:1px solid #2A2D3A; }
 .input-mode-tab { flex:1; padding:7px; font-size:11px; text-align:center; cursor:pointer; background:#0C0E14; color:#6B7280; border:none; }
 .input-mode-tab.active { background:rgba(255,107,44,0.15); color:#FF6B2C; font-weight:700; }
@@ -126,14 +118,13 @@ canvas { display:block; }
 .multi-textarea { width:100%; background:#0C0E14; border:1px solid #2A2D3A; border-radius:8px; color:#E8E8F0; padding:10px 12px; font-size:14px; resize:none; height:110px; line-height:1.8; font-family:inherit; }
 .multi-hint { font-size:10px; color:#4B5563; margin-top:4px; }
 .multi-sum { background:#1A1C2A; border-radius:8px; padding:8px 12px; margin-top:8px; display:flex; justify-content:space-between; font-size:13px; }
-/* Preview */
 .preview { background:#0C0E14; border:1px solid #2A2D3A; border-radius:10px; padding:14px; margin-bottom:14px; }
 .preview-title { font-size:12px; color:#6B7280; margin-bottom:10px; font-weight:600; }
 .preview-row { display:flex; justify-content:space-between; font-size:13px; padding:4px 0; }
 .preview-divider { border-top:1px solid #2A2D3A; margin-top:4px; padding-top:8px; }
-/* Buttons */
 .save-btn { width:100%; background:#FF6B2C; border:none; border-radius:12px; color:#fff; padding:14px; font-size:16px; font-weight:800; cursor:pointer; transition:background 0.3s; margin-top:4px; }
 .save-btn.saved { background:#10B981; }
+.upload-zone { background:#0C0E14; border:1.5px dashed #2A2D3A; border-radius:10px; padding:14px; text-align:center; cursor:pointer; margin-top:6px; }
 .neg { color:#EF4444; }
 .accent { color:#FF6B2C; }
 </style>
@@ -174,8 +165,8 @@ canvas { display:block; }
     <div class="day-detail">
       <div class="day-detail-header">
         <span class="day-detail-title" id="selected-date-label"></span>
-        <div style="display:flex;gap:6px;">
-          <button class="add-btn" style="background:#6B7280;font-size:12px;" onclick="openExtraModal()">+ 잡수익</button>
+        <div style="display:flex;gap:6px">
+          <button class="add-btn" style="background:#6B7280;font-size:12px" onclick="openExtraModal()">+ 잡수익</button>
           <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
         </div>
       </div>
@@ -204,11 +195,8 @@ canvas { display:block; }
 
   <!-- CHART -->
   <div class="tab" id="tab-chart">
-    <!-- 일별 그래프 -->
     <div class="chart-section">
-      <div class="chart-title">
-        <span>📊 일별 수익 추이</span>
-      </div>
+      <div class="chart-title"><span>📊 일별 수익 추이</span></div>
       <div class="chart-period-row">
         <button class="chart-period-btn active" onclick="setChartDays(30,this)">30일</button>
         <button class="chart-period-btn" onclick="setChartDays(60,this)">60일</button>
@@ -216,27 +204,25 @@ canvas { display:block; }
         <button class="chart-period-btn" onclick="setChartDays(120,this)">120일</button>
         <button class="chart-period-btn" onclick="setChartDays(180,this)">180일</button>
       </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="daily-chart"></canvas>
-      </div>
+      <div class="chart-canvas-wrap"><canvas id="daily-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>일별 순수익</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#60A5FA;border-radius:50%"></div>7일 평균</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>쿠팡이츠</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div>해주세요 배달</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>해주세요 기타</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>잡수익</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FCD34D;border-radius:50%"></div>7일 평균</div>
       </div>
     </div>
-    <!-- 월별 그래프 -->
     <div class="chart-section">
       <div class="chart-title">
         <span>📅 월별 수익 추이</span>
         <div class="month-nav-chart">
           <button onclick="moveMonthChart(-1)">‹</button>
-          <span id="month-chart-label" style="font-size:12px;color:#E8E8F0;min-width:70px;text-align:center"></span>
+          <span id="month-chart-label" style="font-size:11px;color:#E8E8F0;min-width:120px;text-align:center"></span>
           <button onclick="moveMonthChart(1)">›</button>
         </div>
       </div>
-      <div class="chart-canvas-wrap">
-        <canvas id="monthly-chart"></canvas>
-      </div>
+      <div class="chart-canvas-wrap"><canvas id="monthly-chart"></canvas></div>
       <div class="chart-legend">
         <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>월별 순수익</div>
       </div>
@@ -248,14 +234,14 @@ canvas { display:block; }
     <div class="settings-card">
       <div class="settings-title">⚡ 전기바이크 전비</div>
       <div class="setting-row">
-        <div><div class="setting-label">kWh/km (전비)</div><div class="setting-hint">기본 0.05 = 20km/kWh</div></div>
-        <input class="setting-input" type="number" step="0.001" id="s-kwh" value="0.05" oninput="updateCalc()">
+        <div><div class="setting-label">kWh/km (전비)</div><div class="setting-hint">기본 0.04 = 25km/kWh</div></div>
+        <input class="setting-input" type="number" step="0.001" id="s-kwh" value="0.04" oninput="updateCalc()">
       </div>
       <div class="setting-row">
         <div><div class="setting-label">전기요금 (원/kWh)</div><div class="setting-hint">가정용 기본 180원</div></div>
         <input class="setting-input" type="number" step="1" id="s-elec" value="180" oninput="updateCalc()">
       </div>
-      <div class="setting-calc" id="charge-calc">km당 충전비: <strong style="color:#FF6B2C">9.0원/km</strong></div>
+      <div class="setting-calc" id="charge-calc">km당 충전비: <strong style="color:#FF6B2C">7.2원/km</strong></div>
     </div>
     <div class="settings-card">
       <div class="settings-title">💸 수수료율 설정</div>
@@ -273,19 +259,29 @@ canvas { display:block; }
       </div>
     </div>
     <button class="save-btn" id="save-settings-btn" onclick="saveSettings()">설정 저장</button>
-    <button class="save-btn" onclick="exportCSV()" style="background:#10B981;margin-top:10px;">📥 전체 데이터 엑셀 다운로드</button>
+    <button class="save-btn" onclick="exportCSV()" style="background:#10B981;margin-top:10px">📥 전체 데이터 CSV 다운로드</button>
+    <button class="save-btn" onclick="downloadTemplate()" style="background:#3B82F6;margin-top:10px">📋 업로드 양식 다운로드</button>
+    <div style="margin-top:12px">
+      <div style="font-size:12px;color:#9CA3AF;margin-bottom:6px;font-weight:600">📂 CSV로 과거 데이터 업로드</div>
+      <div class="upload-zone" onclick="document.getElementById('csv-upload').click()">
+        <div style="font-size:20px;margin-bottom:4px">⬆️</div>
+        <div style="font-size:13px;color:#6B7280">CSV 파일을 선택하세요</div>
+        <div style="font-size:10px;color:#374151;margin-top:4px">다운로드한 양식에 맞는 CSV만 가능</div>
+      </div>
+      <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="importCSV(event)">
+      <div id="import-result" style="margin-top:8px;font-size:12px;text-align:center;color:#9CA3AF"></div>
+    </div>
   </div>
 
 </div>
 
-<!-- MODAL -->
-<div class="overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+<!-- 세션 모달 -->
+<div class="overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="modal-title">세션 입력</span>
       <button class="close-btn" onclick="closeModal()">✕</button>
     </div>
-
     <div class="modal-section">
       <div class="field-label">플랫폼</div>
       <div class="platform-btns">
@@ -294,7 +290,6 @@ canvas { display:block; }
         <button class="platform-btn" data-platform="haejuseyo_other" onclick="selectPlatform(this)">🟣 해주세요 기타</button>
       </div>
     </div>
-
     <div class="modal-section">
       <div class="field-label">시작 ~ 종료 시간</div>
       <div class="time-row">
@@ -304,7 +299,6 @@ canvas { display:block; }
         <span class="time-duration" id="m-duration">4h 0m</span>
       </div>
     </div>
-
     <div class="modal-section">
       <div class="field-label">주행거리 (km)</div>
       <div class="input-mode-tabs">
@@ -323,7 +317,6 @@ canvas { display:block; }
         </div>
       </div>
     </div>
-
     <div class="modal-section">
       <div class="field-label" id="m-gross-label">정산 금액 (수수료 제외 후)</div>
       <div class="input-mode-tabs">
@@ -342,734 +335,17 @@ canvas { display:block; }
         </div>
       </div>
     </div>
-
     <div class="modal-section">
       <div class="field-label">메모 (선택)</div>
       <input type="text" class="modal-input" id="m-memo" placeholder="예: 저녁 피크, 비 오는 날">
     </div>
-
     <div class="preview" id="preview-box" style="display:none">
       <div class="preview-title">💰 순수익 계산</div>
       <div id="preview-content"></div>
     </div>
-
     <button class="save-btn" id="modal-save-btn" onclick="saveSession()">저장하기</button>
   </div>
 </div>
-
-<script>
-// ── 데이터 ─────────────────────────────────────────────────────
-const RKEY = 'rider_v2_records';
-const SKEY = 'rider_v2_settings';
-let records = JSON.parse(localStorage.getItem(RKEY) || '[]');
-let settings = {
-  kwh_per_km: 0.05, elec_price: 180,
-  coupang_deduct: 4.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
-  ...JSON.parse(localStorage.getItem(SKEY) || '{}')
-};
-
-// ── 상태 ───────────────────────────────────────────────────────
-let calYear, calMonth, selectedDate, currentPeriod = 'today';
-let selectedPlatform = 'coupang';
-let distMode = 'single', grossMode = 'single';
-let editingId = null;
-
-const PLATFORMS = {
-  coupang: { label:'쿠팡이츠', emoji:'🟠', color:'#FF6B2C' },
-  haejuseyo_delivery: { label:'해주세요 배달', emoji:'🔵', color:'#3B82F6' },
-  haejuseyo_other: { label:'해주세요 기타', emoji:'🟣', color:'#8B5CF6' },
-};
-
-// ── 유틸 ───────────────────────────────────────────────────────
-const toDateStr = d => d.toISOString().split('T')[0];
-const todayStr = () => toDateStr(new Date());
-const fmtW = n => new Intl.NumberFormat('ko-KR').format(Math.round(n)) + '원';
-const fmtKm = n => parseFloat(n).toFixed(1) + 'km';
-
-function minsBetween(s, e) {
-  const [sh,sm] = s.split(':').map(Number);
-  const [eh,em] = e.split(':').map(Number);
-  let d = (eh*60+em) - (sh*60+sm);
-  if (d < 0) d += 1440;
-  return d;
-}
-function calcCharge(km) { return km * settings.kwh_per_km * settings.elec_price; }
-function calcNet(platform, gross) {
-  const r = platform === 'coupang' ? settings.coupang_deduct
-    : platform === 'haejuseyo_delivery' ? settings.haejuseyo_delivery
-    : settings.haejuseyo_other;
-  return gross * (1 - r / 100);
-}
-function heatColor(net) {
-  if (net <= 0) return 'transparent';
-  if (net < 10000) return 'rgba(255,107,44,0.2)';
-  if (net < 30000) return 'rgba(255,107,44,0.45)';
-  if (net < 60000) return 'rgba(255,107,44,0.7)';
-  return 'rgba(255,107,44,0.95)';
-}
-function dayNet(ds) {
-  const sessionNet = records.filter(r => r.date === ds)
-    .reduce((s, r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance), 0);
-  const extraNet = extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0);
-  return sessionNet + extraNet;
-}
-function dayStats(ds) {
-  const recs = records.filter(r => r.date === ds);
-  return {
-    net: recs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0),
-    distance: recs.reduce((s,r) => s + r.distance, 0),
-    mins: recs.reduce((s,r) => s + minsBetween(r.startTime, r.endTime), 0),
-  };
-}
-function saveRecords() { localStorage.setItem(RKEY, JSON.stringify(records)); }
-
-// ── 탭 ─────────────────────────────────────────────────────────
-function showTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('btn-' + name).classList.add('active');
-  if (name === 'report') renderReport();
-  if (name === 'chart') setTimeout(renderCharts, 50);
-}
-
-// ── 캘린더 ─────────────────────────────────────────────────────
-function initCalendar() {
-  const now = new Date();
-  calYear = now.getFullYear(); calMonth = now.getMonth();
-  selectedDate = todayStr();
-  renderCalendar();
-}
-function changeMonth(dir) {
-  calMonth += dir;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCalendar();
-}
-function renderCalendar() {
-  document.getElementById('month-label').textContent = `${calYear}년 ${calMonth+1}월`;
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  const today = todayStr();
-  let html = '';
-  for (let i = 0; i < firstDay; i++) html += '<div></div>';
-  for (let d = 1; d <= daysInMonth; d++) {
-    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const net = dayNet(ds);
-    const col = (firstDay + d - 1) % 7;
-    const cls = ['day-cell', col===0?'sun':col===6?'sat':'', ds===selectedDate?'selected':'', ds===today?'today':''].join(' ');
-    html += `<button class="${cls}" style="background:${heatColor(net)}" onclick="selectDate('${ds}')">
-      <span class="day-num">${d}</span>
-      ${net > 0 ? `<span class="day-income">${Math.round(net/1000)}k</span>` : ''}
-    </button>`;
-  }
-  document.getElementById('cal-grid').innerHTML = html;
-  renderDayDetail();
-}
-function selectDate(ds) { selectedDate = ds; renderCalendar(); }
-
-function renderDayDetail() {
-  document.getElementById('selected-date-label').textContent = selectedDate;
-  const dayRecs = records.filter(r => r.date === selectedDate);
-  let html = '';
-  if (!dayRecs.length) {
-    html = '<div class="empty-day">이 날의 기록이 없어요</div>';
-  } else {
-    // ① 집계 먼저 (맨 위)
-    const total = dayRecs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0);
-    const totalMins = dayRecs.reduce((s,r) => s + minsBetween(r.startTime,r.endTime), 0);
-    const totalDist = dayRecs.reduce((s,r) => s + r.distance, 0);
-    const dayExtras = extras.filter(e => e.date === selectedDate);
-    const extraTotal = dayExtras.reduce((s,e) => s + e.amount, 0);
-    const grandTotal = total + extraTotal;
-    html += `<div class="day-summary">
-      <div class="day-summary-row"><span>세션 수</span><span>${dayRecs.length}건</span></div>
-      <div class="day-summary-row"><span>총 주행</span><span>${fmtKm(totalDist)}</span></div>
-      <div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">${fmtW(total)}</span></div>
-      ${extraTotal > 0 ? `<div class="day-summary-row"><span>잡수익</span><span style="color:#10B981;font-weight:700">+${fmtW(extraTotal)}</span></div>` : ''}
-      <div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#FF6B2C;font-weight:800;font-size:15px">${fmtW(grandTotal)}</span></div>
-      <div class="day-summary-row"><span>시간당</span><span style="font-weight:700">${totalMins > 0 ? fmtW(total/totalMins*60) : '-'}</span></div>
-    </div>`;
-    // ② 세션 목록
-    dayRecs.forEach((r, i) => {
-      const p = PLATFORMS[r.platform];
-      const net = calcNet(r.platform, r.gross);
-      const charge = calcCharge(r.distance);
-      const finalNet = net - charge;
-      const mins = minsBetween(r.startTime, r.endTime);
-      html += `<div class="session-card" style="border-left:3px solid ${p.color}">
-        <div class="session-actions">
-          <button class="edit-btn" onclick="openModal(${r.id})">✏️ 수정</button>
-          <button class="delete-btn" onclick="deleteRecord(${r.id})">🗑 삭제</button>
-        </div>
-        <div class="session-top">
-          <span class="session-platform">${p.emoji} ${p.label} <span style="color:#4B5563;font-weight:400">#${i+1}</span></span>
-          <span class="session-net">${fmtW(finalNet)}</span>
-        </div>
-        <div class="session-meta">
-          <span>⏱ ${r.startTime}~${r.endTime} (${Math.floor(mins/60)}h ${mins%60}m)</span>
-          <span>📍 ${fmtKm(r.distance)}</span>
-        </div>
-        <div class="session-breakdown">
-          <span>세전 ${fmtW(r.gross)}</span>
-          <span class="neg">수수료 -${fmtW(r.gross-net)}</span>
-          <span class="neg">충전비 -${fmtW(charge)}</span>
-        </div>
-        ${r.memo ? `<div class="session-memo">📝 ${r.memo}</div>` : ''}
-      </div>`;
-    });
-  }
-  // 잡수익 목록
-  const dayExtras2 = extras.filter(e => e.date === selectedDate);
-  if (dayExtras2.length > 0) {
-    html += `<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">💰 잡수익</div>`;
-    dayExtras2.forEach(e => {
-      html += `<div class="session-card" style="border-left:3px solid #10B981">
-        <div class="session-actions"><button class="delete-btn" onclick="deleteExtra(${e.id})">🗑 삭제</button></div>
-        <div class="session-top"><span class="session-platform">💰 잡수익</span><span class="session-net" style="color:#10B981">${fmtW(e.amount)}</span></div>
-        ${e.memo ? `<div class="session-memo">📝 ${e.memo}</div>` : ''}
-      </div>`;
-    });
-  }
-  document.getElementById('day-sessions').innerHTML = html;
-}
-
-function deleteRecord(id) {
-  if (!confirm('이 기록을 삭제할까요?')) return;
-  records = records.filter(r => r.id !== id);
-  saveRecords(); renderCalendar();
-}
-
-// ── 입력 모드 전환 ──────────────────────────────────────────────
-function switchMode(field, mode, btn) {
-  if (field === 'dist') distMode = mode;
-  else grossMode = mode;
-  btn.closest('.input-mode-tabs').querySelectorAll('.input-mode-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(`${field}-single`).classList.toggle('active', mode === 'single');
-  document.getElementById(`${field}-multi`).classList.toggle('active', mode === 'multi');
-  updatePreview();
-}
-function calcSum(field) {
-  const taId = field === 'dist' ? 'm-dist-multi' : 'm-gross-multi';
-  const lines = document.getElementById(taId).value.split('\n').map(l => l.trim()).filter(l => l !== '');
-  const nums = lines.map(l => parseFloat(l)).filter(n => !isNaN(n)).slice(0, 50);
-  const sum = nums.reduce((a,b) => a+b, 0);
-  const el = document.getElementById(`${field}-sum`);
-  if (nums.length > 0) {
-    el.style.display = 'flex';
-    document.getElementById(`${field}-sum-val`).textContent =
-      field === 'dist' ? `${sum.toFixed(1)}km (${nums.length}건)` : `${fmtW(sum)} (${nums.length}건)`;
-  } else { el.style.display = 'none'; }
-  updatePreview();
-}
-function getDistVal() {
-  if (distMode === 'single') return parseFloat(document.getElementById('m-distance').value) || 0;
-  return document.getElementById('m-dist-multi').value.split('\n').map(l => parseFloat(l.trim())).filter(n => !isNaN(n)).slice(0,50).reduce((a,b) => a+b, 0);
-}
-function getGrossVal() {
-  if (grossMode === 'single') return parseFloat(document.getElementById('m-gross').value) || 0;
-  return document.getElementById('m-gross-multi').value.split('\n').map(l => parseFloat(l.trim())).filter(n => !isNaN(n)).slice(0,50).reduce((a,b) => a+b, 0);
-}
-
-// ── 모달 ───────────────────────────────────────────────────────
-function openModal(id) {
-  editingId = id;
-  const isEdit = id !== null;
-  const r = isEdit ? records.find(rec => rec.id === id) : null;
-
-  document.getElementById('modal-title').textContent = isEdit ? `세션 수정 — ${r.date}` : `세션 입력 — ${selectedDate}`;
-  document.getElementById('modal-save-btn').textContent = isEdit ? '수정 저장' : '저장하기';
-
-  // 플랫폼
-  const plat = isEdit ? r.platform : 'coupang';
-  selectedPlatform = plat;
-  document.querySelectorAll('.platform-btn').forEach(b => b.classList.toggle('active', b.dataset.platform === plat));
-
-  // 시간
-  document.getElementById('m-start').value = isEdit ? r.startTime : '18:00';
-  document.getElementById('m-end').value = isEdit ? r.endTime : '22:00';
-
-  // 거리 (수정 시 single 모드로)
-  distMode = 'single';
-  document.getElementById('dist-single').classList.add('active');
-  document.getElementById('dist-multi').classList.remove('active');
-  document.querySelectorAll('#dist-single').forEach(() => {});
-  document.getElementById('m-distance').value = isEdit ? r.distance : '';
-  document.getElementById('m-dist-multi').value = '';
-  document.getElementById('dist-sum').style.display = 'none';
-
-  // 수익
-  grossMode = 'single';
-  document.getElementById('gross-single').classList.add('active');
-  document.getElementById('gross-multi').classList.remove('active');
-  document.getElementById('m-gross').value = isEdit ? r.gross : '';
-  document.getElementById('m-gross-multi').value = '';
-  document.getElementById('gross-sum').style.display = 'none';
-
-  // 메모
-  document.getElementById('m-memo').value = isEdit ? (r.memo || '') : '';
-
-  // 탭 버튼 초기화
-  document.querySelectorAll('.input-mode-tab').forEach((t, i) => {
-    t.classList.toggle('active', i % 2 === 0);
-  });
-
-  updateGrossLabel(); updatePreview();
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  editingId = null;
-}
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-}
-function selectPlatform(btn) {
-  document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedPlatform = btn.dataset.platform;
-  updateGrossLabel(); updatePreview();
-}
-function updateGrossLabel() {
-  document.getElementById('m-gross-label').textContent =
-    selectedPlatform === 'coupang' ? '정산 금액 (수수료 제외 후)' : '세전 수익 (수수료 전)';
-}
-function updatePreview() {
-  const s = document.getElementById('m-start').value;
-  const e = document.getElementById('m-end').value;
-  const mins = s && e ? minsBetween(s, e) : 0;
-  document.getElementById('m-duration').textContent = `${Math.floor(mins/60)}h ${mins%60}m`;
-  const gross = getGrossVal(), dist = getDistVal();
-  if (!gross || !dist) { document.getElementById('preview-box').style.display = 'none'; return; }
-  const net = calcNet(selectedPlatform, gross);
-  const charge = calcCharge(dist);
-  const finalNet = net - charge;
-  const rate = selectedPlatform === 'coupang' ? settings.coupang_deduct
-    : selectedPlatform === 'haejuseyo_delivery' ? settings.haejuseyo_delivery : settings.haejuseyo_other;
-  let html = `<div class="preview-row"><span>${selectedPlatform==='coupang'?'정산금액':'세전'}</span><span>${fmtW(gross)}</span></div>`;
-  html += `<div class="preview-row"><span class="neg">${selectedPlatform==='coupang'?'소득세+산재':'수수료'} (${rate}%)</span><span class="neg">-${fmtW(gross-net)}</span></div>`;
-  html += `<div class="preview-row"><span class="neg">충전비 (${dist.toFixed(1)}km)</span><span class="neg">-${fmtW(charge)}</span></div>`;
-  html += `<div class="preview-row preview-divider"><span style="font-weight:700">순수익</span><span class="accent" style="font-weight:800;font-size:18px">${fmtW(finalNet)}</span></div>`;
-  if (mins > 0) html += `<div class="preview-row"><span style="color:#9CA3AF">시간당</span><span style="color:#9CA3AF">${fmtW(finalNet/mins*60)}</span></div>`;
-  document.getElementById('preview-content').innerHTML = html;
-  document.getElementById('preview-box').style.display = 'block';
-}
-
-function saveSession() {
-  const gross = getGrossVal(), dist = getDistVal();
-  if (!gross || !dist) { alert('수익과 거리를 입력해주세요'); return; }
-  const isEdit = editingId !== null;
-  const existingDate = isEdit ? records.find(r => r.id === editingId).date : selectedDate;
-  const rec = {
-    id: isEdit ? editingId : Date.now(),
-    date: existingDate,
-    platform: selectedPlatform,
-    startTime: document.getElementById('m-start').value,
-    endTime: document.getElementById('m-end').value,
-    distance: dist, gross,
-    memo: document.getElementById('m-memo').value
-  };
-  if (isEdit) {
-    records = records.map(r => r.id === editingId ? rec : r);
-  } else {
-    records.unshift(rec);
-  }
-  records.sort((a,b) => b.date.localeCompare(a.date) || a.startTime.localeCompare(b.startTime));
-  saveRecords(); renderCalendar();
-  const btn = document.getElementById('modal-save-btn');
-  if (isEdit) {
-    btn.textContent = '✅ 수정 완료!'; btn.classList.add('saved');
-    setTimeout(() => { closeModal(); }, 1000);
-  } else {
-    btn.textContent = '✅ 저장! 계속 입력 가능'; btn.classList.add('saved');
-    setTimeout(() => {
-      btn.textContent = '저장하기'; btn.classList.remove('saved');
-      document.getElementById('m-distance').value = '';
-      document.getElementById('m-gross').value = '';
-      document.getElementById('m-dist-multi').value = '';
-      document.getElementById('m-gross-multi').value = '';
-      document.getElementById('m-memo').value = '';
-      document.getElementById('dist-sum').style.display = 'none';
-      document.getElementById('gross-sum').style.display = 'none';
-      document.getElementById('preview-box').style.display = 'none';
-    }, 1200);
-  }
-}
-
-// ── 리포트 ─────────────────────────────────────────────────────
-function setPeriod(p, btn) {
-  currentPeriod = p;
-  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderReport();
-}
-function getPeriodRange(p) {
-  const now = new Date(), y = now.getFullYear(), m = now.getMonth();
-  if (p === 'today') return { start: todayStr(), end: todayStr() };
-  if (p === 'yesterday') { const d = new Date(now); d.setDate(d.getDate()-1); const s = toDateStr(d); return {start:s,end:s}; }
-  if (p === 'same_dow') { const d = new Date(now); d.setDate(d.getDate()-7); const s = toDateStr(d); return {start:s,end:s}; }
-  if (p === '7d') { const e = new Date(now), s = new Date(now); s.setDate(s.getDate()-6); return {start:toDateStr(s),end:toDateStr(e)}; }
-  if (p === '30d') { const e = new Date(now), s = new Date(now); s.setDate(s.getDate()-29); return {start:toDateStr(s),end:toDateStr(e)}; }
-  if (p === 'month') return { start: toDateStr(new Date(y,m,1)), end: todayStr() };
-  if (p === 'prev_month') return { start: toDateStr(new Date(y,m-1,1)), end: toDateStr(new Date(y,m,0)) };
-  const q = Math.floor(m/3); return { start: toDateStr(new Date(y,q*3,1)), end: todayStr() };
-}
-function calcPeriodStats(start, end) {
-  return records.filter(r => r.date >= start && r.date <= end).reduce((a,r) => {
-    const net = calcNet(r.platform,r.gross), charge = calcCharge(r.distance), fin = net - charge;
-    const mins = minsBetween(r.startTime, r.endTime);
-    a.gross += r.gross; a.deduct += (r.gross-net); a.charge += charge;
-    a.finalNet += fin; a.mins += mins; a.distance += r.distance; a.sessions += 1;
-    if (!a.byP[r.platform]) a.byP[r.platform] = {gross:0,net:0,sessions:0};
-    a.byP[r.platform].gross += r.gross; a.byP[r.platform].net += fin; a.byP[r.platform].sessions += 1;
-    return a;
-  }, {gross:0,deduct:0,charge:0,finalNet:0,mins:0,distance:0,sessions:0,byP:{}});
-}
-function diffBadge(curr, prev) {
-  if (prev === 0) return '<span class="badge badge-same">-</span>';
-  const pct = Math.round((curr-prev)/prev*100);
-  if (pct > 0) return `<span class="badge badge-up">▲ ${pct}%</span>`;
-  if (pct < 0) return `<span class="badge badge-down">▼ ${Math.abs(pct)}%</span>`;
-  return '<span class="badge badge-same">= 동일</span>';
-}
-function renderReport() {
-  const {start, end} = getPeriodRange(currentPeriod);
-  const st = calcPeriodStats(start, end);
-  const perHour = st.mins > 0 ? st.finalNet/st.mins*60 : 0;
-  // 해당 기간 잡수익 합산
-  const {start:rs, end:re} = getPeriodRange(currentPeriod);
-  const periodExtraNet = extras.filter(e => e.date >= rs && e.date <= re).reduce((s,e) => s+e.amount, 0);
-  const grandTotalNet = st.finalNet + periodExtraNet;
-
-  document.getElementById('report-cards').innerHTML = [
-    {label:'배달+잡수익 합계', value:fmtW(grandTotalNet), color:'#FF6B2C', big:true},
-    {label:'시간당 순수익', value:fmtW(perHour), color:'#F59E0B', big:true},
-    {label:'세전 수익', value:fmtW(st.gross), color:'#6B7280'},
-    {label:'총 수수료', value:fmtW(st.deduct), color:'#EF4444'},
-    {label:'총 충전비', value:fmtW(st.charge), color:'#EF4444'},
-    {label:'총 주행거리', value:fmtKm(st.distance), color:'#10B981'},
-    {label:'총 작업시간', value:`${Math.floor(st.mins/60)}h ${st.mins%60}m`, color:'#3B82F6'},
-    {label:'배달 순수익', value:fmtW(st.finalNet), color:'#6B7280'},
-    {label:'잡수익', value:fmtW(periodExtraNet), color:'#10B981'},
-    {label:'세션 수', value:st.sessions+'건', color:'#8B5CF6'},
-  ].map(c => `<div class="report-card" style="border-top:3px solid ${c.color}">
-    <div class="report-value" style="color:${c.color};font-size:${c.big?22:17}px">${c.value}</div>
-    <div class="report-label">${c.label}</div>
-  </div>`).join('');
-
-  // 비교 통계
-  const now = new Date();
-  const yd = new Date(now); yd.setDate(yd.getDate()-1);
-  const lw = new Date(now); lw.setDate(lw.getDate()-7);
-  const tSt = dayStats(todayStr()), ySt = dayStats(toDateStr(yd)), lSt = dayStats(toDateStr(lw));
-  const dow = ['일','월','화','수','목','금','토'][now.getDay()];
-  document.getElementById('compare-section').innerHTML = `
-    <div class="compare-card">
-      <div class="compare-title">📅 전일 대비 (어제 ${toDateStr(yd)})</div>
-      <div class="compare-row"><span class="compare-label">순수익</span><div class="compare-vals"><span style="color:#6B7280">${fmtW(ySt.net)}</span><span>→</span><span style="font-weight:700">${fmtW(tSt.net)}</span>${diffBadge(tSt.net,ySt.net)}</div></div>
-      <div class="compare-row"><span class="compare-label">주행거리</span><div class="compare-vals"><span style="color:#6B7280">${fmtKm(ySt.distance)}</span><span>→</span><span style="font-weight:700">${fmtKm(tSt.distance)}</span>${diffBadge(tSt.distance,ySt.distance)}</div></div>
-      <div class="compare-row"><span class="compare-label">작업시간</span><div class="compare-vals"><span style="color:#6B7280">${Math.floor(ySt.mins/60)}h ${ySt.mins%60}m</span><span>→</span><span style="font-weight:700">${Math.floor(tSt.mins/60)}h ${tSt.mins%60}m</span>${diffBadge(tSt.mins,ySt.mins)}</div></div>
-    </div>
-    <div class="compare-card">
-      <div class="compare-title">📆 지난주 ${dow}요일 대비 (${toDateStr(lw)})</div>
-      <div class="compare-row"><span class="compare-label">순수익</span><div class="compare-vals"><span style="color:#6B7280">${fmtW(lSt.net)}</span><span>→</span><span style="font-weight:700">${fmtW(tSt.net)}</span>${diffBadge(tSt.net,lSt.net)}</div></div>
-      <div class="compare-row"><span class="compare-label">주행거리</span><div class="compare-vals"><span style="color:#6B7280">${fmtKm(lSt.distance)}</span><span>→</span><span style="font-weight:700">${fmtKm(tSt.distance)}</span>${diffBadge(tSt.distance,lSt.distance)}</div></div>
-      <div class="compare-row"><span class="compare-label">작업시간</span><div class="compare-vals"><span style="color:#6B7280">${Math.floor(lSt.mins/60)}h ${lSt.mins%60}m</span><span>→</span><span style="font-weight:700">${Math.floor(tSt.mins/60)}h ${tSt.mins%60}m</span>${diffBadge(tSt.mins,lSt.mins)}</div></div>
-    </div>`;
-
-  document.getElementById('platform-breakdown').innerHTML =
-    Object.entries(PLATFORMS).map(([id,p]) => {
-      const d = st.byP[id]; if (!d) return '';
-      return `<div class="platform-row" style="border-left:3px solid ${p.color}">
-        <div class="platform-name">${p.emoji} ${p.label}</div>
-        <div class="platform-stats"><span>${d.sessions}건</span><span>세전 ${fmtW(d.gross)}</span><span class="accent" style="font-weight:700">순 ${fmtW(d.net)}</span></div>
-      </div>`;
-    }).join('') || '<div class="empty-day">해당 기간에 기록이 없어요</div>';
-}
-
-// ── 엑셀 다운로드 ───────────────────────────────────────────────
-function exportCSV() {
-  if (!records.length && !extras.length) { alert('저장된 기록이 없어요'); return; }
-  const headers = ['날짜','플랫폼','시작시간','종료시간','작업시간(분)','주행거리(km)','세전수익(원)','수수료(원)','충전비(원)','순수익(원)','시간당순수익(원)','메모'];
-  const pName = {coupang:'쿠팡이츠', haejuseyo_delivery:'해주세요 배달', haejuseyo_other:'해주세요 기타'};
-  const rows = [...records].sort((a,b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
-    .map(r => {
-      const net = calcNet(r.platform,r.gross), charge = calcCharge(r.distance), fin = net-charge;
-      const mins = minsBetween(r.startTime, r.endTime);
-      return [r.date, pName[r.platform]||r.platform, r.startTime, r.endTime, mins,
-        r.distance, Math.round(r.gross), Math.round(r.gross-net), Math.round(charge),
-        Math.round(fin), mins>0?Math.round(fin/mins*60):0, r.memo||''];
-    });
-  const csv = '\uFEFF' + [headers,...rows].map(row =>
-    row.map(v => typeof v==='string'&&v.includes(',') ? `"${v}"` : v).join(',')
-  ).join('\n');
-  // 잡수익 시트 별도 추가
-  let csv2 = '';
-  if (extras.length > 0) {
-    const eHeaders = ['날짜','금액(원)','메모'];
-    const eRows = [...extras].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,Math.round(e.amount),e.memo||'']);
-    csv2 = '\n\n[잡수익 기록]\n' + [eHeaders,...eRows].map(r=>r.join(',')).join('\n');
-  }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv+csv2], {type:'text/csv;charset=utf-8;'}));
-  a.download = `라이더수익_${todayStr()}.csv`;
-  a.click();
-}
-
-// ── 설정 ───────────────────────────────────────────────────────
-function updateCalc() {
-  const kwh = parseFloat(document.getElementById('s-kwh').value)||0.05;
-  const elec = parseFloat(document.getElementById('s-elec').value)||180;
-  document.getElementById('charge-calc').innerHTML = `km당 충전비: <strong style="color:#FF6B2C">${(kwh*elec).toFixed(1)}원/km</strong>`;
-}
-function saveSettings() {
-  settings = {
-    kwh_per_km: parseFloat(document.getElementById('s-kwh').value)||0.05,
-    elec_price: parseFloat(document.getElementById('s-elec').value)||180,
-    coupang_deduct: parseFloat(document.getElementById('s-coupang').value)||4.8,
-    haejuseyo_delivery: parseFloat(document.getElementById('s-hj-delivery').value)||15,
-    haejuseyo_other: parseFloat(document.getElementById('s-hj-other').value)||15,
-  };
-  localStorage.setItem(SKEY, JSON.stringify(settings));
-  const btn = document.getElementById('save-settings-btn');
-  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
-  setTimeout(() => { btn.textContent = '설정 저장'; btn.classList.remove('saved'); }, 1500);
-}
-function loadSettings() {
-  document.getElementById('s-kwh').value = settings.kwh_per_km;
-  document.getElementById('s-elec').value = settings.elec_price;
-  document.getElementById('s-coupang').value = settings.coupang_deduct;
-  document.getElementById('s-hj-delivery').value = settings.haejuseyo_delivery;
-  document.getElementById('s-hj-other').value = settings.haejuseyo_other;
-  updateCalc();
-}
-
-// ── 초기화 ─────────────────────────────────────────────────────
-
-// ── 잡수익 ─────────────────────────────────────────────────────
-const EKEY = 'rider_v2_extras';
-let extras = JSON.parse(localStorage.getItem(EKEY) || '[]');
-function saveExtras() { localStorage.setItem(EKEY, JSON.stringify(extras)); }
-
-function openExtraModal() {
-  document.getElementById('extra-date-label').textContent = selectedDate;
-  document.getElementById('extra-amount').value = '';
-  document.getElementById('extra-memo').value = '';
-  const btn = document.getElementById('extra-save-btn');
-  btn.textContent = '저장하기'; btn.classList.remove('saved');
-  document.getElementById('extra-overlay').classList.add('open');
-}
-function closeExtraModal() { document.getElementById('extra-overlay').classList.remove('open'); }
-
-function saveExtra() {
-  const amount = parseFloat(document.getElementById('extra-amount').value);
-  if (!amount) { alert('금액을 입력해주세요'); return; }
-  extras.unshift({ id: Date.now(), date: selectedDate, amount, memo: document.getElementById('extra-memo').value });
-  extras.sort((a,b) => b.date.localeCompare(a.date));
-  saveExtras(); renderCalendar();
-  const btn = document.getElementById('extra-save-btn');
-  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
-  setTimeout(() => {
-    btn.textContent = '저장하기'; btn.classList.remove('saved');
-    document.getElementById('extra-amount').value = '';
-    document.getElementById('extra-memo').value = '';
-  }, 1000);
-}
-
-function deleteExtra(id) {
-  if (!confirm('잡수익 기록을 삭제할까요?')) return;
-  extras = extras.filter(e => e.id !== id);
-  saveExtras(); renderCalendar();
-}
-
-
-// ── 차트 ───────────────────────────────────────────────────────
-let chartDays = 30;
-let monthChartOffset = 0; // 0=현재월, -1=이전월 등
-
-function setChartDays(days, btn) {
-  chartDays = days;
-  document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderDailyChart();
-}
-
-function moveMonthChart(dir) {
-  monthChartOffset += dir;
-  renderMonthlyChart();
-}
-
-function getDayNetFull(ds) {
-  const sessionNet = records.filter(r => r.date === ds)
-    .reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0);
-  const extraNet = extras.filter(e => e.date === ds).reduce((s,e) => s+e.amount, 0);
-  return sessionNet + extraNet;
-}
-
-function renderDailyChart() {
-  const canvas = document.getElementById('daily-chart');
-  if (!canvas) return;
-  const now = new Date();
-  const labels = [], values = [], avgs = [];
-  for (let i = chartDays - 1; i >= 0; i--) {
-    const d = new Date(now); d.setDate(d.getDate() - i);
-    const ds = toDateStr(d);
-    labels.push(ds.slice(5)); // MM-DD
-    values.push(getDayNetFull(ds));
-  }
-  // 7일 이동평균
-  for (let i = 0; i < values.length; i++) {
-    const slice = values.slice(Math.max(0, i-6), i+1);
-    avgs.push(Math.round(slice.reduce((a,b)=>a+b,0) / slice.length));
-  }
-
-  const W = canvas.parentElement.clientWidth || 340;
-  const barW = Math.max(6, Math.min(20, Math.floor((W - 40) / labels.length) - 2));
-  const H = 200;
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, W, H);
-
-  const maxVal = Math.max(...values, 1);
-  const padL = 44, padR = 8, padT = 10, padB = 30;
-  const chartW = W - padL - padR;
-  const chartH = H - padT - padB;
-
-  // 격자선
-  ctx.strokeStyle = '#1E2030'; ctx.lineWidth = 1;
-  [0.25, 0.5, 0.75, 1].forEach(r => {
-    const y = padT + chartH * (1 - r);
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
-    ctx.fillText(Math.round(maxVal * r / 1000) + 'k', padL - 3, y + 3);
-  });
-
-  // 막대
-  const step = chartW / labels.length;
-  values.forEach((v, i) => {
-    const x = padL + i * step + step/2 - barW/2;
-    const barH = v > 0 ? Math.max(2, (v / maxVal) * chartH) : 0;
-    const y = padT + chartH - barH;
-    ctx.fillStyle = '#FF6B2C';
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [3,3,0,0]) : ctx.rect(x, y, barW, barH);
-    ctx.fill();
-  });
-
-  // 꺾은선 (7일 평균)
-  ctx.beginPath(); ctx.strokeStyle = '#60A5FA'; ctx.lineWidth = 2;
-  avgs.forEach((v, i) => {
-    const x = padL + i * step + step/2;
-    const y = padT + chartH - (v / maxVal) * chartH;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  // 꺾은선 점
-  avgs.forEach((v, i) => {
-    const x = padL + i * step + step/2;
-    const y = padT + chartH - (v / maxVal) * chartH;
-    ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI*2);
-    ctx.fillStyle = '#60A5FA'; ctx.fill();
-  });
-
-  // x축 레이블 (일부만)
-  ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
-  const labelStep = Math.ceil(labels.length / 8);
-  labels.forEach((l, i) => {
-    if (i % labelStep === 0 || i === labels.length - 1) {
-      ctx.fillText(l, padL + i * step + step/2, H - 6);
-    }
-  });
-}
-
-function renderMonthlyChart() {
-  const canvas = document.getElementById('monthly-chart');
-  if (!canvas) return;
-  const now = new Date();
-  const baseYear = now.getFullYear(), baseMonth = now.getMonth();
-  // monthChartOffset: 최근 N개월 표시 (기준월 포함 12개월)
-  const totalMonths = 12;
-  const endMonth = baseMonth + monthChartOffset;
-  const labels = [], values = [];
-  for (let i = totalMonths - 1; i >= 0; i--) {
-    const d = new Date(baseYear, endMonth - i, 1);
-    const y = d.getFullYear(), m = d.getMonth();
-    const start = `${y}-${String(m+1).padStart(2,'0')}-01`;
-    const end = toDateStr(new Date(y, m+1, 0));
-    const net = records.filter(r => r.date >= start && r.date <= end)
-      .reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0)
-      + extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+e.amount, 0);
-    labels.push(`${y}.${String(m+1).padStart(2,'0')}`);
-    values.push(net);
-  }
-
-  // 레이블 업데이트
-  const endD = new Date(baseYear, endMonth, 1);
-  const startD = new Date(baseYear, endMonth - totalMonths + 1, 1);
-  document.getElementById('month-chart-label').textContent =
-    `${startD.getFullYear()}.${String(startD.getMonth()+1).padStart(2,'0')} ~ ${endD.getFullYear()}.${String(endD.getMonth()+1).padStart(2,'0')}`;
-
-  const W = canvas.parentElement.clientWidth || 340;
-  const barW = Math.max(12, Math.floor((W - 52) / labels.length) - 4);
-  const H = 200;
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, W, H);
-
-  const maxVal = Math.max(...values, 1);
-  const padL = 52, padR = 8, padT = 10, padB = 36;
-  const chartW = W - padL - padR;
-  const chartH = H - padT - padB;
-
-  // 격자
-  ctx.strokeStyle = '#1E2030'; ctx.lineWidth = 1;
-  [0.25, 0.5, 0.75, 1].forEach(r => {
-    const y = padT + chartH * (1 - r);
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
-    const v = maxVal * r;
-    ctx.fillText(v >= 100000 ? Math.round(v/10000)+'만' : Math.round(v/1000)+'k', padL-3, y+3);
-  });
-
-  // 막대
-  const step = chartW / labels.length;
-  values.forEach((v, i) => {
-    const x = padL + i * step + step/2 - barW/2;
-    const barH = v > 0 ? Math.max(2, (v / maxVal) * chartH) : 0;
-    const y = padT + chartH - barH;
-    ctx.fillStyle = i === totalMonths - 1 - monthChartOffset * (-1) ? '#8B5CF6' : '#6D28D9';
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [3,3,0,0]) : ctx.rect(x, y, barW, barH);
-    ctx.fill();
-    // 금액 표시 (막대 위)
-    if (v > 0) {
-      ctx.fillStyle = '#9CA3AF'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center';
-      const label = v >= 100000 ? Math.round(v/10000)+'만' : Math.round(v/1000)+'k';
-      ctx.fillText(label, x + barW/2, y - 3);
-    }
-  });
-
-  // x축 레이블
-  ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
-  labels.forEach((l, i) => {
-    ctx.fillText(l.slice(5), padL + i * step + step/2, H - 18);
-    ctx.fillStyle = '#374151';
-    ctx.fillText(l.slice(0,4), padL + i * step + step/2, H - 6);
-    ctx.fillStyle = '#4B5563';
-  });
-}
-
-function renderCharts() {
-  renderDailyChart();
-  renderMonthlyChart();
-}
-
-loadSettings();
-initCalendar();
-</script>
 
 <!-- 잡수익 모달 -->
 <div class="overlay" id="extra-overlay" onclick="if(event.target===this)closeExtraModal()">
@@ -1094,5 +370,696 @@ initCalendar();
   </div>
 </div>
 
+<script>
+// ── 스토리지 키 ────────────────────────────────────────────────
+const RKEY = 'rider_v2_records';
+const SKEY = 'rider_v2_settings';
+const EKEY = 'rider_v2_extras';
+
+// ── 데이터 로드 ────────────────────────────────────────────────
+let records = JSON.parse(localStorage.getItem(RKEY) || '[]');
+let extras  = JSON.parse(localStorage.getItem(EKEY) || '[]');
+let settings = {
+  kwh_per_km: 0.04, elec_price: 180,
+  coupang_deduct: 4.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
+  ...JSON.parse(localStorage.getItem(SKEY) || '{}')
+};
+
+// ── 상태 ───────────────────────────────────────────────────────
+let calYear, calMonth, selectedDate, currentPeriod = 'today';
+let selectedPlatform = 'coupang';
+let distMode = 'single', grossMode = 'single';
+let editingId = null;
+let chartDays = 30, monthChartOffset = 0;
+
+// ── 플랫폼 정의 ────────────────────────────────────────────────
+const PLATFORMS = {
+  coupang:             { label:'쿠팡이츠',      emoji:'🟠', color:'#FF6B2C' },
+  haejuseyo_delivery:  { label:'해주세요 배달', emoji:'🔵', color:'#3B82F6' },
+  haejuseyo_other:     { label:'해주세요 기타', emoji:'🟣', color:'#8B5CF6' },
+};
+const CHART_COLORS = {
+  coupang: '#FF6B2C', haejuseyo_delivery: '#3B82F6',
+  haejuseyo_other: '#8B5CF6', extra: '#10B981'
+};
+
+// ── 유틸 ───────────────────────────────────────────────────────
+const toDateStr = d => d.toISOString().split('T')[0];
+const todayStr  = () => toDateStr(new Date());
+const fmtW  = n => new Intl.NumberFormat('ko-KR').format(Math.round(n)) + '원';
+const fmtKm = n => parseFloat(n).toFixed(1) + 'km';
+
+function minsBetween(s, e) {
+  const [sh,sm] = s.split(':').map(Number);
+  const [eh,em] = e.split(':').map(Number);
+  let d = (eh*60+em) - (sh*60+sm);
+  if (d < 0) d += 1440;
+  return d;
+}
+function calcCharge(km) { return km * settings.kwh_per_km * settings.elec_price; }
+function calcNet(platform, gross) {
+  const r = platform === 'coupang' ? settings.coupang_deduct
+    : platform === 'haejuseyo_delivery' ? settings.haejuseyo_delivery
+    : settings.haejuseyo_other;
+  return gross * (1 - r / 100);
+}
+function heatColor(net) {
+  if (net <= 0) return 'transparent';
+  if (net < 10000) return 'rgba(255,107,44,0.2)';
+  if (net < 30000) return 'rgba(255,107,44,0.45)';
+  if (net < 60000) return 'rgba(255,107,44,0.7)';
+  return 'rgba(255,107,44,0.95)';
+}
+function dayNet(ds) {
+  const sNet = records.filter(r => r.date === ds)
+    .reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance), 0);
+  const eNet = extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0);
+  return sNet + eNet;
+}
+function dayStats(ds) {
+  const recs = records.filter(r => r.date === ds);
+  return {
+    net: recs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0)
+       + extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0),
+    distance: recs.reduce((s,r) => s + r.distance, 0),
+    mins: recs.reduce((s,r) => s + minsBetween(r.startTime, r.endTime), 0),
+  };
+}
+function saveRecords() { localStorage.setItem(RKEY, JSON.stringify(records)); }
+function saveExtras()  { localStorage.setItem(EKEY, JSON.stringify(extras)); }
+
+// ── 탭 ─────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('btn-' + name).classList.add('active');
+  if (name === 'report') renderReport();
+  if (name === 'chart')  setTimeout(renderCharts, 60);
+}
+
+// ── 캘린더 ─────────────────────────────────────────────────────
+function initCalendar() {
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  selectedDate = todayStr();
+  renderCalendar();
+}
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0;  calYear++; }
+  renderCalendar();
+}
+function renderCalendar() {
+  document.getElementById('month-label').textContent = calYear + '년 ' + (calMonth+1) + '월';
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const today = todayStr();
+  let html = '';
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const net = dayNet(ds);
+    const col = (firstDay + d - 1) % 7;
+    const cls = ['day-cell', col===0?'sun':col===6?'sat':'', ds===selectedDate?'selected':'', ds===today?'today':''].join(' ');
+    html += '<button class="' + cls + '" style="background:' + heatColor(net) + '" onclick="selectDate(\'' + ds + '\')">'
+          + '<span class="day-num">' + d + '</span>'
+          + (net > 0 ? '<span class="day-income">' + Math.round(net/1000) + 'k</span>' : '')
+          + '</button>';
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+  renderDayDetail();
+}
+function selectDate(ds) { selectedDate = ds; renderCalendar(); }
+
+function renderDayDetail() {
+  document.getElementById('selected-date-label').textContent = selectedDate;
+  const dayRecs = records.filter(r => r.date === selectedDate);
+  const dayEx   = extras.filter(e => e.date === selectedDate);
+  let html = '';
+
+  if (!dayRecs.length && !dayEx.length) {
+    html = '<div class="empty-day">이 날의 기록이 없어요</div>';
+  } else {
+    const total     = dayRecs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0);
+    const exTotal   = dayEx.reduce((s,e) => s + e.amount, 0);
+    const grandTotal = total + exTotal;
+    const totalMins  = dayRecs.reduce((s,r) => s + minsBetween(r.startTime,r.endTime), 0);
+    const totalDist  = dayRecs.reduce((s,r) => s + r.distance, 0);
+
+    html += '<div class="day-summary">'
+          + '<div class="day-summary-row"><span>세션 수</span><span>' + dayRecs.length + '건</span></div>'
+          + '<div class="day-summary-row"><span>총 주행</span><span>' + fmtKm(totalDist) + '</span></div>'
+          + '<div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">' + fmtW(total) + '</span></div>'
+          + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#10B981;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
+          + '<div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#FF6B2C;font-weight:800;font-size:15px">' + fmtW(grandTotal) + '</span></div>'
+          + '<div class="day-summary-row"><span>시간당</span><span style="font-weight:700">' + (totalMins > 0 ? fmtW(total/totalMins*60) : '-') + '</span></div>'
+          + '</div>';
+
+    dayRecs.forEach((r, i) => {
+      const p = PLATFORMS[r.platform];
+      const net = calcNet(r.platform, r.gross);
+      const charge = calcCharge(r.distance);
+      const finalNet = net - charge;
+      const mins = minsBetween(r.startTime, r.endTime);
+      html += '<div class="session-card" style="border-left:3px solid ' + p.color + '">'
+            + '<div class="session-actions">'
+            + '<button class="edit-btn" onclick="openModal(' + r.id + ')">✏️ 수정</button>'
+            + '<button class="delete-btn" onclick="deleteRecord(' + r.id + ')">🗑 삭제</button>'
+            + '</div>'
+            + '<div class="session-top"><span class="session-platform">' + p.emoji + ' ' + p.label + ' <span style="color:#4B5563;font-weight:400">#' + (i+1) + '</span></span>'
+            + '<span class="session-net">' + fmtW(finalNet) + '</span></div>'
+            + '<div class="session-meta"><span>⏱ ' + r.startTime + '~' + r.endTime + ' (' + Math.floor(mins/60) + 'h ' + (mins%60) + 'm)</span><span>📍 ' + fmtKm(r.distance) + '</span></div>'
+            + '<div class="session-breakdown"><span>세전 ' + fmtW(r.gross) + '</span><span class="neg">수수료 -' + fmtW(r.gross-net) + '</span><span class="neg">충전비 -' + fmtW(charge) + '</span></div>'
+            + (r.memo ? '<div class="session-memo">📝 ' + r.memo + '</div>' : '')
+            + '</div>';
+    });
+
+    if (dayEx.length > 0) {
+      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">💰 잡수익</div>';
+      dayEx.forEach(e => {
+        html += '<div class="session-card" style="border-left:3px solid #10B981">'
+              + '<div class="session-actions"><button class="delete-btn" onclick="deleteExtra(' + e.id + ')">🗑 삭제</button></div>'
+              + '<div class="session-top"><span class="session-platform">💰 잡수익</span><span class="session-net" style="color:#10B981">' + fmtW(e.amount) + '</span></div>'
+              + (e.memo ? '<div class="session-memo">📝 ' + e.memo + '</div>' : '')
+              + '</div>';
+      });
+    }
+  }
+  document.getElementById('day-sessions').innerHTML = html;
+}
+
+function deleteRecord(id) {
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  records = records.filter(r => r.id !== id);
+  saveRecords(); renderCalendar();
+}
+function deleteExtra(id) {
+  if (!confirm('잡수익 기록을 삭제할까요?')) return;
+  extras = extras.filter(e => e.id !== id);
+  saveExtras(); renderCalendar();
+}
+
+// ── 입력 모드 ───────────────────────────────────────────────────
+function switchMode(field, mode, btn) {
+  if (field === 'dist') distMode = mode; else grossMode = mode;
+  btn.closest('.input-mode-tabs').querySelectorAll('.input-mode-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(field + '-single').classList.toggle('active', mode === 'single');
+  document.getElementById(field + '-multi').classList.toggle('active', mode === 'multi');
+  updatePreview();
+}
+function calcSum(field) {
+  const id = field === 'dist' ? 'm-dist-multi' : 'm-gross-multi';
+  const nums = document.getElementById(id).value.split('\n').map(l => parseFloat(l.trim())).filter(n => !isNaN(n)).slice(0,50);
+  const sum = nums.reduce((a,b) => a+b, 0);
+  const el = document.getElementById(field + '-sum');
+  if (nums.length > 0) {
+    el.style.display = 'flex';
+    document.getElementById(field + '-sum-val').textContent =
+      field === 'dist' ? sum.toFixed(1) + 'km (' + nums.length + '건)' : fmtW(sum) + ' (' + nums.length + '건)';
+  } else { el.style.display = 'none'; }
+  updatePreview();
+}
+function getDistVal() {
+  if (distMode === 'single') return parseFloat(document.getElementById('m-distance').value) || 0;
+  return document.getElementById('m-dist-multi').value.split('\n').map(l => parseFloat(l.trim())).filter(n => !isNaN(n)).slice(0,50).reduce((a,b)=>a+b,0);
+}
+function getGrossVal() {
+  if (grossMode === 'single') return parseFloat(document.getElementById('m-gross').value) || 0;
+  return document.getElementById('m-gross-multi').value.split('\n').map(l => parseFloat(l.trim())).filter(n => !isNaN(n)).slice(0,50).reduce((a,b)=>a+b,0);
+}
+
+// ── 세션 모달 ───────────────────────────────────────────────────
+function openModal(id) {
+  editingId = id;
+  const isEdit = id !== null;
+  const r = isEdit ? records.find(rec => rec.id === id) : null;
+  document.getElementById('modal-title').textContent = isEdit ? '세션 수정 — ' + r.date : '세션 입력 — ' + selectedDate;
+  document.getElementById('modal-save-btn').textContent = isEdit ? '수정 저장' : '저장하기';
+  const plat = isEdit ? r.platform : 'coupang';
+  selectedPlatform = plat;
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.toggle('active', b.dataset.platform === plat));
+  document.getElementById('m-start').value = isEdit ? r.startTime : '18:00';
+  document.getElementById('m-end').value   = isEdit ? r.endTime   : '22:00';
+  distMode = 'single'; grossMode = 'single';
+  document.getElementById('dist-single').classList.add('active');
+  document.getElementById('dist-multi').classList.remove('active');
+  document.getElementById('gross-single').classList.add('active');
+  document.getElementById('gross-multi').classList.remove('active');
+  document.querySelectorAll('.input-mode-tab').forEach((t,i) => t.classList.toggle('active', i%2===0));
+  document.getElementById('m-distance').value = isEdit ? r.distance : '';
+  document.getElementById('m-gross').value    = isEdit ? r.gross    : '';
+  document.getElementById('m-dist-multi').value  = '';
+  document.getElementById('m-gross-multi').value = '';
+  document.getElementById('m-memo').value = isEdit ? (r.memo||'') : '';
+  document.getElementById('dist-sum').style.display  = 'none';
+  document.getElementById('gross-sum').style.display = 'none';
+  updateGrossLabel(); updatePreview();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+function selectPlatform(btn) {
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedPlatform = btn.dataset.platform;
+  updateGrossLabel(); updatePreview();
+}
+function updateGrossLabel() {
+  document.getElementById('m-gross-label').textContent =
+    selectedPlatform === 'coupang' ? '정산 금액 (수수료 제외 후)' : '세전 수익 (수수료 전)';
+}
+function updatePreview() {
+  const s = document.getElementById('m-start').value;
+  const e = document.getElementById('m-end').value;
+  const mins = s && e ? minsBetween(s, e) : 0;
+  document.getElementById('m-duration').textContent = Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
+  const gross = getGrossVal(), dist = getDistVal();
+  if (!gross || !dist) { document.getElementById('preview-box').style.display = 'none'; return; }
+  const net = calcNet(selectedPlatform, gross);
+  const charge = calcCharge(dist);
+  const finalNet = net - charge;
+  const rate = selectedPlatform==='coupang' ? settings.coupang_deduct
+    : selectedPlatform==='haejuseyo_delivery' ? settings.haejuseyo_delivery : settings.haejuseyo_other;
+  let html = '<div class="preview-row"><span>' + (selectedPlatform==='coupang'?'정산금액':'세전') + '</span><span>' + fmtW(gross) + '</span></div>'
+           + '<div class="preview-row"><span class="neg">' + (selectedPlatform==='coupang'?'소득세+산재':'수수료') + ' (' + rate + '%)</span><span class="neg">-' + fmtW(gross-net) + '</span></div>'
+           + '<div class="preview-row"><span class="neg">충전비 (' + dist.toFixed(1) + 'km)</span><span class="neg">-' + fmtW(charge) + '</span></div>'
+           + '<div class="preview-row preview-divider"><span style="font-weight:700">순수익</span><span class="accent" style="font-weight:800;font-size:18px">' + fmtW(finalNet) + '</span></div>'
+           + (mins > 0 ? '<div class="preview-row"><span style="color:#9CA3AF">시간당</span><span style="color:#9CA3AF">' + fmtW(finalNet/mins*60) + '</span></div>' : '');
+  document.getElementById('preview-content').innerHTML = html;
+  document.getElementById('preview-box').style.display = 'block';
+}
+function saveSession() {
+  const gross = getGrossVal(), dist = getDistVal();
+  if (!gross || !dist) { alert('수익과 거리를 입력해주세요'); return; }
+  const isEdit = editingId !== null;
+  const existDate = isEdit ? records.find(r => r.id === editingId).date : selectedDate;
+  const rec = { id: isEdit ? editingId : Date.now(), date: existDate, platform: selectedPlatform,
+    startTime: document.getElementById('m-start').value, endTime: document.getElementById('m-end').value,
+    distance: dist, gross, memo: document.getElementById('m-memo').value };
+  if (isEdit) { records = records.map(r => r.id === editingId ? rec : r); }
+  else { records.unshift(rec); }
+  records.sort((a,b) => b.date.localeCompare(a.date) || a.startTime.localeCompare(b.startTime));
+  saveRecords(); renderCalendar();
+  const btn = document.getElementById('modal-save-btn');
+  if (isEdit) {
+    btn.textContent = '✅ 수정 완료!'; btn.classList.add('saved');
+    setTimeout(() => closeModal(), 1000);
+  } else {
+    btn.textContent = '✅ 저장! 계속 입력 가능'; btn.classList.add('saved');
+    setTimeout(() => {
+      btn.textContent = '저장하기'; btn.classList.remove('saved');
+      ['m-distance','m-gross','m-memo'].forEach(id => document.getElementById(id).value = '');
+      ['m-dist-multi','m-gross-multi'].forEach(id => document.getElementById(id).value = '');
+      ['dist-sum','gross-sum'].forEach(id => document.getElementById(id).style.display = 'none');
+      document.getElementById('preview-box').style.display = 'none';
+    }, 1200);
+  }
+}
+
+// ── 잡수익 모달 ─────────────────────────────────────────────────
+function openExtraModal() {
+  document.getElementById('extra-date-label').textContent = selectedDate;
+  document.getElementById('extra-amount').value = '';
+  document.getElementById('extra-memo').value = '';
+  document.getElementById('extra-save-btn').textContent = '저장하기';
+  document.getElementById('extra-save-btn').classList.remove('saved');
+  document.getElementById('extra-overlay').classList.add('open');
+}
+function closeExtraModal() { document.getElementById('extra-overlay').classList.remove('open'); }
+function saveExtra() {
+  const amount = parseFloat(document.getElementById('extra-amount').value);
+  if (!amount) { alert('금액을 입력해주세요'); return; }
+  extras.unshift({ id: Date.now(), date: selectedDate, amount, memo: document.getElementById('extra-memo').value });
+  extras.sort((a,b) => b.date.localeCompare(a.date));
+  saveExtras(); renderCalendar();
+  const btn = document.getElementById('extra-save-btn');
+  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = '저장하기'; btn.classList.remove('saved');
+    document.getElementById('extra-amount').value = '';
+    document.getElementById('extra-memo').value = '';
+  }, 1000);
+}
+
+// ── 리포트 ─────────────────────────────────────────────────────
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReport();
+}
+function getPeriodRange(p) {
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth();
+  if (p === 'today') return { start: todayStr(), end: todayStr() };
+  if (p === 'yesterday') { const d = new Date(now); d.setDate(d.getDate()-1); const s = toDateStr(d); return {start:s,end:s}; }
+  if (p === 'same_dow')  { const d = new Date(now); d.setDate(d.getDate()-7); const s = toDateStr(d); return {start:s,end:s}; }
+  if (p === '7d')  { const e=new Date(now),s=new Date(now); s.setDate(s.getDate()-6);  return {start:toDateStr(s),end:toDateStr(e)}; }
+  if (p === '30d') { const e=new Date(now),s=new Date(now); s.setDate(s.getDate()-29); return {start:toDateStr(s),end:toDateStr(e)}; }
+  if (p === 'month')      return { start: toDateStr(new Date(y,m,1)), end: todayStr() };
+  if (p === 'prev_month') return { start: toDateStr(new Date(y,m-1,1)), end: toDateStr(new Date(y,m,0)) };
+  const q = Math.floor(m/3); return { start: toDateStr(new Date(y,q*3,1)), end: todayStr() };
+}
+function calcPeriodStats(start, end) {
+  return records.filter(r => r.date >= start && r.date <= end).reduce((a,r) => {
+    const net=calcNet(r.platform,r.gross), charge=calcCharge(r.distance), fin=net-charge, mins=minsBetween(r.startTime,r.endTime);
+    a.gross+=r.gross; a.deduct+=(r.gross-net); a.charge+=charge; a.finalNet+=fin; a.mins+=mins; a.distance+=r.distance; a.sessions+=1;
+    if (!a.byP[r.platform]) a.byP[r.platform]={gross:0,net:0,sessions:0};
+    a.byP[r.platform].gross+=r.gross; a.byP[r.platform].net+=fin; a.byP[r.platform].sessions+=1;
+    return a;
+  }, {gross:0,deduct:0,charge:0,finalNet:0,mins:0,distance:0,sessions:0,byP:{}});
+}
+function diffBadge(curr, prev) {
+  if (prev === 0) return '<span class="badge badge-same">-</span>';
+  const pct = Math.round((curr-prev)/prev*100);
+  if (pct > 0) return '<span class="badge badge-up">▲ ' + pct + '%</span>';
+  if (pct < 0) return '<span class="badge badge-down">▼ ' + Math.abs(pct) + '%</span>';
+  return '<span class="badge badge-same">= 동일</span>';
+}
+function renderReport() {
+  const {start,end} = getPeriodRange(currentPeriod);
+  const st = calcPeriodStats(start, end);
+  const perHour = st.mins > 0 ? st.finalNet/st.mins*60 : 0;
+  const periodExtraNet = extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+e.amount, 0);
+  const grandTotal = st.finalNet + periodExtraNet;
+
+  document.getElementById('report-cards').innerHTML = [
+    {label:'배달+잡수익 합계', value:fmtW(grandTotal),      color:'#FF6B2C', big:true},
+    {label:'시간당 순수익',    value:fmtW(perHour),          color:'#F59E0B', big:true},
+    {label:'배달 순수익',      value:fmtW(st.finalNet),      color:'#6B7280'},
+    {label:'잡수익',           value:fmtW(periodExtraNet),   color:'#10B981'},
+    {label:'총 수수료',        value:fmtW(st.deduct),        color:'#EF4444'},
+    {label:'총 충전비',        value:fmtW(st.charge),        color:'#EF4444'},
+    {label:'총 주행거리',      value:fmtKm(st.distance),     color:'#3B82F6'},
+    {label:'세션 수',          value:st.sessions + '건',     color:'#8B5CF6'},
+  ].map(c => '<div class="report-card" style="border-top:3px solid ' + c.color + '">'
+    + '<div class="report-value" style="color:' + c.color + ';font-size:' + (c.big?22:17) + 'px">' + c.value + '</div>'
+    + '<div class="report-label">' + c.label + '</div></div>').join('');
+
+  const now = new Date();
+  const yd = new Date(now); yd.setDate(yd.getDate()-1);
+  const lw = new Date(now); lw.setDate(lw.getDate()-7);
+  const tSt = dayStats(todayStr()), ySt = dayStats(toDateStr(yd)), lSt = dayStats(toDateStr(lw));
+  const dow = ['일','월','화','수','목','금','토'][now.getDay()];
+
+  document.getElementById('compare-section').innerHTML =
+    '<div class="compare-card"><div class="compare-title">📅 전일 대비 (어제 ' + toDateStr(yd) + ')</div>'
+    + '<div class="compare-row"><span class="compare-label">순수익</span><div class="compare-vals"><span style="color:#6B7280">' + fmtW(ySt.net) + '</span><span>→</span><span style="font-weight:700">' + fmtW(tSt.net) + '</span>' + diffBadge(tSt.net,ySt.net) + '</div></div>'
+    + '<div class="compare-row"><span class="compare-label">주행거리</span><div class="compare-vals"><span style="color:#6B7280">' + fmtKm(ySt.distance) + '</span><span>→</span><span style="font-weight:700">' + fmtKm(tSt.distance) + '</span>' + diffBadge(tSt.distance,ySt.distance) + '</div></div>'
+    + '<div class="compare-row"><span class="compare-label">작업시간</span><div class="compare-vals"><span style="color:#6B7280">' + Math.floor(ySt.mins/60) + 'h ' + (ySt.mins%60) + 'm</span><span>→</span><span style="font-weight:700">' + Math.floor(tSt.mins/60) + 'h ' + (tSt.mins%60) + 'm</span>' + diffBadge(tSt.mins,ySt.mins) + '</div></div></div>'
+    + '<div class="compare-card"><div class="compare-title">📆 지난주 ' + dow + '요일 대비 (' + toDateStr(lw) + ')</div>'
+    + '<div class="compare-row"><span class="compare-label">순수익</span><div class="compare-vals"><span style="color:#6B7280">' + fmtW(lSt.net) + '</span><span>→</span><span style="font-weight:700">' + fmtW(tSt.net) + '</span>' + diffBadge(tSt.net,lSt.net) + '</div></div>'
+    + '<div class="compare-row"><span class="compare-label">주행거리</span><div class="compare-vals"><span style="color:#6B7280">' + fmtKm(lSt.distance) + '</span><span>→</span><span style="font-weight:700">' + fmtKm(tSt.distance) + '</span>' + diffBadge(tSt.distance,lSt.distance) + '</div></div>'
+    + '<div class="compare-row"><span class="compare-label">작업시간</span><div class="compare-vals"><span style="color:#6B7280">' + Math.floor(lSt.mins/60) + 'h ' + (lSt.mins%60) + 'm</span><span>→</span><span style="font-weight:700">' + Math.floor(tSt.mins/60) + 'h ' + (tSt.mins%60) + 'm</span>' + diffBadge(tSt.mins,lSt.mins) + '</div></div></div>';
+
+  document.getElementById('platform-breakdown').innerHTML =
+    Object.entries(PLATFORMS).map(([id,p]) => {
+      const d = st.byP[id]; if (!d) return '';
+      return '<div class="platform-row" style="border-left:3px solid ' + p.color + '">'
+           + '<div class="platform-name">' + p.emoji + ' ' + p.label + '</div>'
+           + '<div class="platform-stats"><span>' + d.sessions + '건</span><span>세전 ' + fmtW(d.gross) + '</span><span class="accent" style="font-weight:700">순 ' + fmtW(d.net) + '</span></div></div>';
+    }).join('') || '<div class="empty-day">해당 기간에 기록이 없어요</div>';
+}
+
+// ── 차트 ───────────────────────────────────────────────────────
+function setChartDays(days, btn) {
+  chartDays = days;
+  document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDailyChart();
+}
+function moveMonthChart(dir) { monthChartOffset += dir; renderMonthlyChart(); }
+
+function renderDailyChart() {
+  const canvas = document.getElementById('daily-chart');
+  if (!canvas) return;
+  const now = new Date();
+  const labels = [], stackData = [], totals = [];
+
+  for (let i = chartDays - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const ds = toDateStr(d);
+    labels.push(ds.slice(5));
+    const dayRecs = records.filter(r => r.date === ds);
+    const cp = dayRecs.filter(r=>r.platform==='coupang').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    const hd = dayRecs.filter(r=>r.platform==='haejuseyo_delivery').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    const ho = dayRecs.filter(r=>r.platform==='haejuseyo_other').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    const ex = extras.filter(e=>e.date===ds).reduce((s,e)=>s+e.amount,0);
+    const total = cp+hd+ho+ex;
+    stackData.push({coupang:cp, haejuseyo_delivery:hd, haejuseyo_other:ho, extra:ex, total});
+    totals.push(total);
+  }
+
+  const avgs = totals.map((_,i) => {
+    const sl = totals.slice(Math.max(0,i-6), i+1);
+    return Math.round(sl.reduce((a,b)=>a+b,0)/sl.length);
+  });
+
+  const W = canvas.parentElement.clientWidth || 340;
+  const barW = Math.max(5, Math.min(18, Math.floor((W-44)/labels.length)-2));
+  const H = 230;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const maxVal = Math.max(...totals, 1);
+  const padL=44, padR=10, padT=22, padB=28;
+  const chartW=W-padL-padR, chartH=H-padT-padB;
+  const step=chartW/labels.length;
+
+  // 단위 표기
+  ctx.fillStyle='#6B7280'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right';
+  ctx.fillText('단위: 만원', W-padR, padT-8);
+
+  // 격자
+  ctx.strokeStyle='#1E2030'; ctx.lineWidth=1;
+  [0.25,0.5,0.75,1].forEach(r => {
+    const y=padT+chartH*(1-r);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='#4B5563'; ctx.font='9px sans-serif'; ctx.textAlign='right';
+    ctx.fillText((maxVal*r/10000).toFixed(1), padL-3, y+3);
+  });
+
+  // 누적 막대
+  const layers = ['coupang','haejuseyo_delivery','haejuseyo_other','extra'];
+  stackData.forEach((d,i) => {
+    if (d.total <= 0) return;
+    const x = padL + i*step + step/2 - barW/2;
+    let yBase = padT+chartH;
+    layers.forEach((key,ki) => {
+      const v = d[key];
+      if (v <= 0) return;
+      const segH = (v/maxVal)*chartH;
+      const y = yBase - segH;
+      ctx.fillStyle = CHART_COLORS[key];
+      ctx.beginPath();
+      // 맨 위 세그먼트만 상단 둥글게
+      const isTop = layers.slice(ki+1).every(k => d[k] <= 0);
+      if (isTop && ctx.roundRect) { ctx.roundRect(x,y,barW,segH,[3,3,0,0]); }
+      else { ctx.rect(x,y,barW,segH); }
+      ctx.fill();
+      yBase -= segH;
+    });
+    // 막대 상단 금액 표시
+    if (barW >= 6) {
+      const topY = padT+chartH-(d.total/maxVal)*chartH;
+      const manwon = (d.total/10000).toFixed(1);
+      ctx.fillStyle='#E8E8F0'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(manwon, x+barW/2, topY-3);
+    }
+  });
+
+  // 꺾은선 (7일 평균)
+  ctx.beginPath(); ctx.strokeStyle='#FCD34D'; ctx.lineWidth=2;
+  avgs.forEach((v,i) => {
+    const x=padL+i*step+step/2;
+    const y=padT+chartH-(Math.max(v,0)/maxVal)*chartH;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  avgs.forEach((v,i) => {
+    if (v<=0) return;
+    const x=padL+i*step+step/2, y=padT+chartH-(v/maxVal)*chartH;
+    ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
+    ctx.fillStyle='#FCD34D'; ctx.fill();
+  });
+
+  // x축 레이블
+  ctx.fillStyle='#4B5563'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  const lStep=Math.ceil(labels.length/8);
+  labels.forEach((l,i) => {
+    if (i%lStep===0 || i===labels.length-1) ctx.fillText(l, padL+i*step+step/2, H-4);
+  });
+}
+
+function renderMonthlyChart() {
+  const canvas = document.getElementById('monthly-chart');
+  if (!canvas) return;
+  const now = new Date(), baseY=now.getFullYear(), baseM=now.getMonth();
+  const total=12, endM=baseM+monthChartOffset;
+  const labels=[], values=[];
+  for (let i=total-1; i>=0; i--) {
+    const d=new Date(baseY, endM-i, 1);
+    const y=d.getFullYear(), m=d.getMonth();
+    const start=y+'-'+String(m+1).padStart(2,'0')+'-01';
+    const end=toDateStr(new Date(y,m+1,0));
+    const net=records.filter(r=>r.date>=start&&r.date<=end).reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0)
+             +extras.filter(e=>e.date>=start&&e.date<=end).reduce((s,e)=>s+e.amount,0);
+    labels.push(String(m+1)+'월');
+    values.push(net);
+  }
+  const endD=new Date(baseY,endM,1), startD=new Date(baseY,endM-total+1,1);
+  document.getElementById('month-chart-label').textContent =
+    startD.getFullYear()+'.'+String(startD.getMonth()+1).padStart(2,'0')+' ~ '+endD.getFullYear()+'.'+String(endD.getMonth()+1).padStart(2,'0');
+
+  const W=canvas.parentElement.clientWidth||340;
+  const barW=Math.max(10, Math.floor((W-60)/total)-4);
+  const H=200;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const maxVal=Math.max(...values,1);
+  const padL=50,padR=8,padT=10,padB=36;
+  const chartW=W-padL-padR, chartH=H-padT-padB, step=chartW/total;
+
+  ctx.strokeStyle='#1E2030'; ctx.lineWidth=1;
+  [0.25,0.5,0.75,1].forEach(r=>{
+    const y=padT+chartH*(1-r);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='#4B5563'; ctx.font='9px sans-serif'; ctx.textAlign='right';
+    const v=maxVal*r;
+    ctx.fillText(v>=100000?Math.round(v/10000)+'만':Math.round(v/1000)+'k', padL-3, y+3);
+  });
+
+  values.forEach((v,i)=>{
+    const x=padL+i*step+step/2-barW/2;
+    const barH=v>0?Math.max(2,(v/maxVal)*chartH):0;
+    const y=padT+chartH-barH;
+    ctx.fillStyle=i===total-1-Math.max(0,-monthChartOffset)?'#A78BFA':'#7C3AED';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x,y,barW,barH,[3,3,0,0]); else ctx.rect(x,y,barW,barH);
+    ctx.fill();
+    if (v>0){
+      ctx.fillStyle='#9CA3AF'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(v>=100000?Math.round(v/10000)+'만':Math.round(v/1000)+'k', x+barW/2, y-3);
+    }
+  });
+
+  ctx.fillStyle='#4B5563'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  labels.forEach((l,i)=>{ ctx.fillText(l, padL+i*step+step/2, H-4); });
+}
+
+function renderCharts() { renderDailyChart(); renderMonthlyChart(); }
+
+// ── CSV 내보내기/가져오기 ───────────────────────────────────────
+function exportCSV() {
+  if (!records.length && !extras.length) { alert('저장된 기록이 없어요'); return; }
+  const headers=['날짜','플랫폼','시작시간','종료시간','작업시간(분)','주행거리(km)','세전수익(원)','수수료(원)','충전비(원)','순수익(원)','시간당순수익(원)','메모'];
+  const pName={coupang:'쿠팡이츠',haejuseyo_delivery:'해주세요 배달',haejuseyo_other:'해주세요 기타'};
+  const rows=[...records].sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime)).map(r=>{
+    const net=calcNet(r.platform,r.gross),charge=calcCharge(r.distance),fin=net-charge,mins=minsBetween(r.startTime,r.endTime);
+    return [r.date,pName[r.platform]||r.platform,r.startTime,r.endTime,mins,r.distance,
+      Math.round(r.gross),Math.round(r.gross-net),Math.round(charge),Math.round(fin),
+      mins>0?Math.round(fin/mins*60):0,r.memo||''];
+  });
+  let csv='\uFEFF'+[headers,...rows].map(r=>r.map(v=>typeof v==='string'&&v.includes(',')?'"'+v+'"':v).join(',')).join('\n');
+  if (extras.length>0) {
+    const eH=['날짜','금액(원)','메모'];
+    const eR=[...extras].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,Math.round(e.amount),e.memo||'']);
+    csv+='\n\n[잡수익 기록]\n'+[eH,...eR].map(r=>r.join(',')).join('\n');
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='라이더수익_'+todayStr()+'.csv'; a.click();
+}
+
+function downloadTemplate() {
+  const headers=['날짜','플랫폼','시작시간','종료시간','주행거리(km)','세전수익(원)','메모'];
+  const samples=[
+    ['2026-04-01','쿠팡이츠','18:00','22:00','20.5','47574','저녁 피크'],
+    ['2026-04-01','해주세요 배달','14:00','17:00','12.0','25000',''],
+    ['2026-04-02','해주세요 기타','10:00','12:00','0','15000','컴퓨터 수리'],
+  ];
+  const note=['※ 플랫폼: 쿠팡이츠 / 해주세요 배달 / 해주세요 기타 중 하나만 정확히 입력','','','','','',''];
+  const csv='\uFEFF'+[headers,...samples,[],note].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='라이더수익_업로드양식.csv'; a.click();
+}
+
+function importCSV(event) {
+  const file=event.target.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    try {
+      const text=e.target.result.replace(/^\uFEFF/,'');
+      const lines=text.split(/\r?\n/).filter(l=>l.trim()&&!l.startsWith('※')&&!l.startsWith('['));
+      if (lines.length<2){ showImportResult('❌ 데이터가 없어요','#EF4444'); return; }
+      const pMap={'쿠팡이츠':'coupang','해주세요 배달':'haejuseyo_delivery','해주세요 기타':'haejuseyo_other'};
+      let added=0, skipped=0;
+      const newRecs=[];
+      for (let i=1;i<lines.length;i++){
+        const cols=lines[i].split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+        if (cols.length<6){ skipped++; continue; }
+        const date=cols[0],platform=pMap[cols[1]],startTime=cols[2]||'00:00',endTime=cols[3]||'00:00';
+        const distance=parseFloat(cols[4])||0,gross=parseFloat(cols[5])||0,memo=cols[6]||'';
+        if (!date||!platform||!gross){ skipped++; continue; }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)){ skipped++; continue; }
+        const isDup=records.some(r=>r.date===date&&r.platform===platform&&r.startTime===startTime&&r.gross===gross);
+        if (isDup){ skipped++; continue; }
+        newRecs.push({id:Date.now()+i+Math.random(),date,platform,startTime,endTime,distance,gross,memo});
+        added++;
+      }
+      if (added>0){
+        records=[...records,...newRecs];
+        records.sort((a,b)=>b.date.localeCompare(a.date)||a.startTime.localeCompare(b.startTime));
+        saveRecords(); renderCalendar();
+        showImportResult('✅ '+added+'건 추가 완료'+(skipped>0?' ('+skipped+'건 스킵)':''),'#10B981');
+      } else {
+        showImportResult('⚠️ 추가된 데이터 없음 ('+skipped+'건 중복/오류)','#F59E0B');
+      }
+    } catch(err){ showImportResult('❌ 오류: '+err.message,'#EF4444'); }
+    event.target.value='';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+function showImportResult(msg,color){ const el=document.getElementById('import-result'); if(el){el.textContent=msg;el.style.color=color;} }
+
+// ── 설정 ───────────────────────────────────────────────────────
+function updateCalc() {
+  const kwh=parseFloat(document.getElementById('s-kwh').value)||0.04;
+  const elec=parseFloat(document.getElementById('s-elec').value)||180;
+  document.getElementById('charge-calc').innerHTML='km당 충전비: <strong style="color:#FF6B2C">'+(kwh*elec).toFixed(1)+'원/km</strong>';
+}
+function saveSettings() {
+  settings={
+    kwh_per_km:parseFloat(document.getElementById('s-kwh').value)||0.04,
+    elec_price:parseFloat(document.getElementById('s-elec').value)||180,
+    coupang_deduct:parseFloat(document.getElementById('s-coupang').value)||4.8,
+    haejuseyo_delivery:parseFloat(document.getElementById('s-hj-delivery').value)||15,
+    haejuseyo_other:parseFloat(document.getElementById('s-hj-other').value)||15,
+  };
+  localStorage.setItem(SKEY,JSON.stringify(settings));
+  const btn=document.getElementById('save-settings-btn');
+  btn.textContent='✅ 저장 완료!'; btn.classList.add('saved');
+  setTimeout(()=>{ btn.textContent='설정 저장'; btn.classList.remove('saved'); },1500);
+}
+function loadSettings() {
+  document.getElementById('s-kwh').value=settings.kwh_per_km;
+  document.getElementById('s-elec').value=settings.elec_price;
+  document.getElementById('s-coupang').value=settings.coupang_deduct;
+  document.getElementById('s-hj-delivery').value=settings.haejuseyo_delivery;
+  document.getElementById('s-hj-other').value=settings.haejuseyo_other;
+  updateCalc();
+}
+
+// ── 초기화 ─────────────────────────────────────────────────────
+loadSettings();
+initCalendar();
+</script>
 </body>
 </html>
