@@ -45,8 +45,10 @@
   .session-meta { display: flex; gap: 12px; font-size: 11px; color: #6B7280; margin-bottom: 4px; flex-wrap: wrap; }
   .session-breakdown { display: flex; gap: 10px; font-size: 11px; color: #4B5563; flex-wrap: wrap; }
   .session-memo { font-size: 11px; color: #6B7280; margin-top: 4px; }
-  .delete-btn { position: absolute; top: 8px; right: 8px; background: transparent; border: none; color: #374151; font-size: 10px; cursor: pointer; }
-  .day-summary { background: #1A1C2A; border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
+  .session-actions { display: flex; gap: 4px; position: absolute; top: 8px; right: 8px; }
+  .delete-btn { background: transparent; border: none; color: #374151; font-size: 10px; cursor: pointer; padding: 2px 4px; }
+  .edit-btn { background: rgba(59,130,246,0.15); border: none; border-radius: 4px; color: #60A5FA; font-size: 10px; cursor: pointer; padding: 2px 6px; }
+  .day-summary { background: #1A1C2A; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
   .day-summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
   .period-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
   .period-btn { background: #13151F; border: 1px solid #1E2030; border-radius: 20px; color: #9CA3AF; padding: 6px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
@@ -297,7 +299,7 @@ const SKEY = 'rider_v2_settings';
 let records = JSON.parse(localStorage.getItem(RKEY) || '[]');
 let settings = { kwh_per_km:0.05, elec_price:180, coupang_deduct:4.8, haejuseyo_delivery:15, haejuseyo_other:15, ...JSON.parse(localStorage.getItem(SKEY)||'{}') };
 let calYear, calMonth, selectedDate, currentPeriod='today', selectedPlatform='coupang';
-let distMode='single', grossMode='single';
+let distMode='single', grossMode='single', editingId=null;
 
 const PLATFORMS = {
   coupang:{label:'쿠팡이츠',emoji:'🟠',color:'#FF6B2C'},
@@ -367,18 +369,10 @@ function renderDayDetail(){
   document.getElementById('selected-date-label').textContent=selectedDate;
   const dayRecs=records.filter(r=>r.date===selectedDate);
   let html='';
-  if(!dayRecs.length){html='<div class="empty-day">이 날의 기록이 없어요</div>';}
-  else{
-    dayRecs.forEach((r,i)=>{
-      const p=PLATFORMS[r.platform],net=calcNet(r.platform,r.gross),charge=calcCharge(r.distance),finalNet=net-charge,mins=minsBetween(r.startTime,r.endTime);
-      html+=`<div class="session-card" style="border-left:3px solid ${p.color}">
-        <div class="session-top"><span class="session-platform">${p.emoji} ${p.label} <span style="color:#4B5563;font-weight:400">#${i+1}</span></span><span class="session-net">${fmtW(finalNet)}</span></div>
-        <div class="session-meta"><span>⏱ ${r.startTime}~${r.endTime} (${Math.floor(mins/60)}h ${mins%60}m)</span><span>📍 ${fmtKm(r.distance)}</span></div>
-        <div class="session-breakdown"><span>세전 ${fmtW(r.gross)}</span><span class="neg">수수료 -${fmtW(r.gross-net)}</span><span class="neg">충전비 -${fmtW(charge)}</span></div>
-        ${r.memo?`<div class="session-memo">📝 ${r.memo}</div>`:''}
-        <button class="delete-btn" onclick="deleteRecord(${r.id})">삭제</button>
-      </div>`;
-    });
+  if(!dayRecs.length){
+    html='<div class="empty-day">이 날의 기록이 없어요</div>';
+  } else {
+    // 집계 먼저 (맨 위)
     const total=dayRecs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
     const totalMins=dayRecs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
     const totalDist=dayRecs.reduce((s,r)=>s+r.distance,0);
@@ -388,10 +382,62 @@ function renderDayDetail(){
       <div class="day-summary-row"><span>일 순수익</span><span class="accent" style="font-weight:800">${fmtW(total)}</span></div>
       <div class="day-summary-row"><span>시간당</span><span style="font-weight:700">${totalMins>0?fmtW(total/totalMins*60):'-'}</span></div>
     </div>`;
+    // 세션 목록
+    dayRecs.forEach((r,i)=>{
+      const p=PLATFORMS[r.platform],net=calcNet(r.platform,r.gross),charge=calcCharge(r.distance),finalNet=net-charge,mins=minsBetween(r.startTime,r.endTime);
+      html+=`<div class="session-card" style="border-left:3px solid ${p.color}">
+        <div class="session-top"><span class="session-platform">${p.emoji} ${p.label} <span style="color:#4B5563;font-weight:400">#${i+1}</span></span><span class="session-net">${fmtW(finalNet)}</span></div>
+        <div class="session-meta"><span>⏱ ${r.startTime}~${r.endTime} (${Math.floor(mins/60)}h ${mins%60}m)</span><span>📍 ${fmtKm(r.distance)}</span></div>
+        <div class="session-breakdown"><span>세전 ${fmtW(r.gross)}</span><span class="neg">수수료 -${fmtW(r.gross-net)}</span><span class="neg">충전비 -${fmtW(charge)}</span></div>
+        ${r.memo?`<div class="session-memo">📝 ${r.memo}</div>`:''}
+        <div class="session-actions">
+          <button class="edit-btn" onclick="openEditModal(${r.id})">✏️ 수정</button>
+          <button class="delete-btn" onclick="deleteRecord(${r.id})">🗑 삭제</button>
+        </div>
+      </div>`;
+    });
   }
   document.getElementById('day-sessions').innerHTML=html;
 }
 function deleteRecord(id){if(!confirm('이 기록을 삭제할까요?'))return;records=records.filter(r=>r.id!==id);saveRecords();renderCalendar();}
+
+// ── 수정 모달 ───────────────────────────────────────────────────
+let editingId = null;
+function openEditModal(id){
+  const r=records.find(rec=>rec.id===id); if(!r)return;
+  editingId=id;
+  document.getElementById('modal-date-label').textContent='세션 수정 — '+r.date;
+  // 플랫폼
+  selectedPlatform=r.platform;
+  document.querySelectorAll('.platform-btn').forEach(b=>b.classList.toggle('active',b.dataset.platform===r.platform));
+  // 시간
+  document.getElementById('m-start').value=r.startTime;
+  document.getElementById('m-end').value=r.endTime;
+  // 거리 (single 모드로)
+  switchModeById('dist','single');
+  document.getElementById('m-distance').value=r.distance;
+  document.getElementById('m-distance-multi').value='';
+  // 수익
+  switchModeById('gross','single');
+  document.getElementById('m-gross').value=r.gross;
+  document.getElementById('m-gross-multi').value='';
+  // 메모
+  document.getElementById('m-memo').value=r.memo||'';
+  ['dist-sum','gross-sum'].forEach(id=>document.getElementById(id).style.display='none');
+  // 저장 버튼 텍스트 변경
+  document.getElementById('modal-save-btn').textContent='수정 저장';
+  updateGrossLabel(); updatePreview();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function switchModeById(field, mode){
+  distMode = field==='dist' ? mode : distMode;
+  grossMode = field==='gross' ? mode : grossMode;
+  document.getElementById(`${field}-single`).classList.toggle('active', mode==='single');
+  document.getElementById(`${field}-multi`).classList.toggle('active', mode==='multi');
+  // 탭 버튼 active
+  const tabs = document.querySelectorAll(`#${field}-single`)[0].closest('.modal-section').querySelectorAll('.input-mode-tab');
+  tabs.forEach((t,i)=>t.classList.toggle('active', (mode==='single'&&i===0)||(mode==='multi'&&i===1)));
+}
 
 // ── 입력 모드 전환 ──────────────────────────────────────────────
 function switchMode(field,mode,btn){
@@ -424,6 +470,7 @@ function getGrossValue(){
 
 // ── Modal ───────────────────────────────────────────────────────
 function openModal(){
+  editingId=null;
   document.getElementById('modal-date-label').textContent='세션 입력 — '+selectedDate;
   ['m-distance','m-gross','m-memo'].forEach(id=>document.getElementById(id).value='');
   ['m-distance-multi','m-gross-multi'].forEach(id=>document.getElementById(id).value='');
@@ -431,6 +478,7 @@ function openModal(){
   ['dist-sum','gross-sum'].forEach(id=>document.getElementById(id).style.display='none');
   selectedPlatform='coupang';
   document.querySelectorAll('.platform-btn').forEach(b=>b.classList.toggle('active',b.dataset.platform==='coupang'));
+  document.getElementById('modal-save-btn').textContent='저장하기';
   updateGrossLabel(); updatePreview();
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -462,18 +510,36 @@ function updatePreview(){
 function saveSession(){
   const gross=getGrossValue(),dist=getDistValue();
   if(!gross||!dist){alert('수익과 거리를 입력해주세요');return;}
-  records.unshift({id:Date.now(),date:selectedDate,platform:selectedPlatform,startTime:document.getElementById('m-start').value,endTime:document.getElementById('m-end').value,distance:dist,gross,memo:document.getElementById('m-memo').value});
+  const isEdit = editingId !== null;
+  const rec={
+    id: isEdit ? editingId : Date.now(),
+    date: isEdit ? records.find(r=>r.id===editingId).date : selectedDate,
+    platform:selectedPlatform,
+    startTime:document.getElementById('m-start').value,
+    endTime:document.getElementById('m-end').value,
+    distance:dist, gross, memo:document.getElementById('m-memo').value
+  };
+  if(isEdit){
+    records=records.map(r=>r.id===editingId?rec:r);
+  } else {
+    records.unshift(rec);
+  }
   records.sort((a,b)=>b.date.localeCompare(a.date)||a.startTime.localeCompare(b.startTime));
   saveRecords(); renderCalendar();
   const btn=document.getElementById('modal-save-btn');
-  btn.textContent='✅ 저장! 계속 입력 가능'; btn.classList.add('saved');
-  setTimeout(()=>{
-    btn.textContent='저장하기'; btn.classList.remove('saved');
-    ['m-distance','m-gross','m-memo'].forEach(id=>document.getElementById(id).value='');
-    ['m-distance-multi','m-gross-multi'].forEach(id=>document.getElementById(id).value='');
-    ['dist-sum','gross-sum'].forEach(id=>document.getElementById(id).style.display='none');
-    document.getElementById('preview-box').style.display='none';
-  },1200);
+  if(isEdit){
+    btn.textContent='✅ 수정 완료!'; btn.classList.add('saved');
+    setTimeout(()=>{ btn.textContent='수정 저장'; btn.classList.remove('saved'); closeModal(); editingId=null; },1000);
+  } else {
+    btn.textContent='✅ 저장! 계속 입력 가능'; btn.classList.add('saved');
+    setTimeout(()=>{
+      btn.textContent='저장하기'; btn.classList.remove('saved');
+      ['m-distance','m-gross','m-memo'].forEach(id=>document.getElementById(id).value='');
+      ['m-distance-multi','m-gross-multi'].forEach(id=>document.getElementById(id).value='');
+      ['dist-sum','gross-sum'].forEach(id=>document.getElementById(id).style.display='none');
+      document.getElementById('preview-box').style.display='none';
+    },1200);
+  }
 }
 
 // ── Report ──────────────────────────────────────────────────────
