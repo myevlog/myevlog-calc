@@ -160,7 +160,10 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
     <div class="day-detail">
       <div class="day-detail-header">
         <span class="day-detail-title" id="selected-date-label"></span>
-        <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
+        <div style="display:flex;gap:6px;">
+          <button class="add-btn" style="background:#6B7280;font-size:12px;" onclick="openExtraModal()">+ 잡수익</button>
+          <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
+        </div>
       </div>
       <div id="day-sessions"></div>
     </div>
@@ -350,8 +353,10 @@ function heatColor(net) {
   return 'rgba(255,107,44,0.95)';
 }
 function dayNet(ds) {
-  return records.filter(r => r.date === ds)
+  const sessionNet = records.filter(r => r.date === ds)
     .reduce((s, r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance), 0);
+  const extraNet = extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0);
+  return sessionNet + extraNet;
 }
 function dayStats(ds) {
   const recs = records.filter(r => r.date === ds);
@@ -418,10 +423,15 @@ function renderDayDetail() {
     const total = dayRecs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0);
     const totalMins = dayRecs.reduce((s,r) => s + minsBetween(r.startTime,r.endTime), 0);
     const totalDist = dayRecs.reduce((s,r) => s + r.distance, 0);
+    const dayExtras = extras.filter(e => e.date === selectedDate);
+    const extraTotal = dayExtras.reduce((s,e) => s + e.amount, 0);
+    const grandTotal = total + extraTotal;
     html += `<div class="day-summary">
       <div class="day-summary-row"><span>세션 수</span><span>${dayRecs.length}건</span></div>
       <div class="day-summary-row"><span>총 주행</span><span>${fmtKm(totalDist)}</span></div>
-      <div class="day-summary-row"><span>일 순수익</span><span class="accent" style="font-weight:800">${fmtW(total)}</span></div>
+      <div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">${fmtW(total)}</span></div>
+      ${extraTotal > 0 ? `<div class="day-summary-row"><span>잡수익</span><span style="color:#10B981;font-weight:700">+${fmtW(extraTotal)}</span></div>` : ''}
+      <div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#FF6B2C;font-weight:800;font-size:15px">${fmtW(grandTotal)}</span></div>
       <div class="day-summary-row"><span>시간당</span><span style="font-weight:700">${totalMins > 0 ? fmtW(total/totalMins*60) : '-'}</span></div>
     </div>`;
     // ② 세션 목록
@@ -450,6 +460,18 @@ function renderDayDetail() {
           <span class="neg">충전비 -${fmtW(charge)}</span>
         </div>
         ${r.memo ? `<div class="session-memo">📝 ${r.memo}</div>` : ''}
+      </div>`;
+    });
+  }
+  // 잡수익 목록
+  const dayExtras2 = extras.filter(e => e.date === selectedDate);
+  if (dayExtras2.length > 0) {
+    html += `<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">💰 잡수익</div>`;
+    dayExtras2.forEach(e => {
+      html += `<div class="session-card" style="border-left:3px solid #10B981">
+        <div class="session-actions"><button class="delete-btn" onclick="deleteExtra(${e.id})">🗑 삭제</button></div>
+        <div class="session-top"><span class="session-platform">💰 잡수익</span><span class="session-net" style="color:#10B981">${fmtW(e.amount)}</span></div>
+        ${e.memo ? `<div class="session-memo">📝 ${e.memo}</div>` : ''}
       </div>`;
     });
   }
@@ -660,14 +682,21 @@ function renderReport() {
   const {start, end} = getPeriodRange(currentPeriod);
   const st = calcPeriodStats(start, end);
   const perHour = st.mins > 0 ? st.finalNet/st.mins*60 : 0;
+  // 해당 기간 잡수익 합산
+  const {start:rs, end:re} = getPeriodRange(currentPeriod);
+  const periodExtraNet = extras.filter(e => e.date >= rs && e.date <= re).reduce((s,e) => s+e.amount, 0);
+  const grandTotalNet = st.finalNet + periodExtraNet;
+
   document.getElementById('report-cards').innerHTML = [
-    {label:'순수익', value:fmtW(st.finalNet), color:'#FF6B2C', big:true},
+    {label:'배달+잡수익 합계', value:fmtW(grandTotalNet), color:'#FF6B2C', big:true},
     {label:'시간당 순수익', value:fmtW(perHour), color:'#F59E0B', big:true},
     {label:'세전 수익', value:fmtW(st.gross), color:'#6B7280'},
     {label:'총 수수료', value:fmtW(st.deduct), color:'#EF4444'},
     {label:'총 충전비', value:fmtW(st.charge), color:'#EF4444'},
     {label:'총 주행거리', value:fmtKm(st.distance), color:'#10B981'},
     {label:'총 작업시간', value:`${Math.floor(st.mins/60)}h ${st.mins%60}m`, color:'#3B82F6'},
+    {label:'배달 순수익', value:fmtW(st.finalNet), color:'#6B7280'},
+    {label:'잡수익', value:fmtW(periodExtraNet), color:'#10B981'},
     {label:'세션 수', value:st.sessions+'건', color:'#8B5CF6'},
   ].map(c => `<div class="report-card" style="border-top:3px solid ${c.color}">
     <div class="report-value" style="color:${c.color};font-size:${c.big?22:17}px">${c.value}</div>
@@ -706,7 +735,7 @@ function renderReport() {
 
 // ── 엑셀 다운로드 ───────────────────────────────────────────────
 function exportCSV() {
-  if (!records.length) { alert('저장된 기록이 없어요'); return; }
+  if (!records.length && !extras.length) { alert('저장된 기록이 없어요'); return; }
   const headers = ['날짜','플랫폼','시작시간','종료시간','작업시간(분)','주행거리(km)','세전수익(원)','수수료(원)','충전비(원)','순수익(원)','시간당순수익(원)','메모'];
   const pName = {coupang:'쿠팡이츠', haejuseyo_delivery:'해주세요 배달', haejuseyo_other:'해주세요 기타'};
   const rows = [...records].sort((a,b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
@@ -720,8 +749,15 @@ function exportCSV() {
   const csv = '\uFEFF' + [headers,...rows].map(row =>
     row.map(v => typeof v==='string'&&v.includes(',') ? `"${v}"` : v).join(',')
   ).join('\n');
+  // 잡수익 시트 별도 추가
+  let csv2 = '';
+  if (extras.length > 0) {
+    const eHeaders = ['날짜','금액(원)','메모'];
+    const eRows = [...extras].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,Math.round(e.amount),e.memo||'']);
+    csv2 = '\n\n[잡수익 기록]\n' + [eHeaders,...eRows].map(r=>r.join(',')).join('\n');
+  }
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+  a.href = URL.createObjectURL(new Blob([csv+csv2], {type:'text/csv;charset=utf-8;'}));
   a.download = `라이더수익_${todayStr()}.csv`;
   a.click();
 }
@@ -755,8 +791,69 @@ function loadSettings() {
 }
 
 // ── 초기화 ─────────────────────────────────────────────────────
+
+// ── 잡수익 ─────────────────────────────────────────────────────
+const EKEY = 'rider_v2_extras';
+let extras = JSON.parse(localStorage.getItem(EKEY) || '[]');
+function saveExtras() { localStorage.setItem(EKEY, JSON.stringify(extras)); }
+
+function openExtraModal() {
+  document.getElementById('extra-date-label').textContent = selectedDate;
+  document.getElementById('extra-amount').value = '';
+  document.getElementById('extra-memo').value = '';
+  const btn = document.getElementById('extra-save-btn');
+  btn.textContent = '저장하기'; btn.classList.remove('saved');
+  document.getElementById('extra-overlay').classList.add('open');
+}
+function closeExtraModal() { document.getElementById('extra-overlay').classList.remove('open'); }
+
+function saveExtra() {
+  const amount = parseFloat(document.getElementById('extra-amount').value);
+  if (!amount) { alert('금액을 입력해주세요'); return; }
+  extras.unshift({ id: Date.now(), date: selectedDate, amount, memo: document.getElementById('extra-memo').value });
+  extras.sort((a,b) => b.date.localeCompare(a.date));
+  saveExtras(); renderCalendar();
+  const btn = document.getElementById('extra-save-btn');
+  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = '저장하기'; btn.classList.remove('saved');
+    document.getElementById('extra-amount').value = '';
+    document.getElementById('extra-memo').value = '';
+  }, 1000);
+}
+
+function deleteExtra(id) {
+  if (!confirm('잡수익 기록을 삭제할까요?')) return;
+  extras = extras.filter(e => e.id !== id);
+  saveExtras(); renderCalendar();
+}
+
 loadSettings();
 initCalendar();
 </script>
+
+<!-- 잡수익 모달 -->
+<div class="overlay" id="extra-overlay" onclick="if(event.target===this)closeExtraModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">💰 잡수익 입력</span>
+      <button class="close-btn" onclick="closeExtraModal()">✕</button>
+    </div>
+    <div class="modal-section">
+      <div class="field-label">날짜</div>
+      <div style="color:#9CA3AF;font-size:14px;padding:4px 0" id="extra-date-label"></div>
+    </div>
+    <div class="modal-section">
+      <div class="field-label">금액 (순수익으로 입력)</div>
+      <input type="number" class="modal-input" id="extra-amount" step="100" placeholder="예: 15000">
+    </div>
+    <div class="modal-section">
+      <div class="field-label">메모 (선택)</div>
+      <input type="text" class="modal-input" id="extra-memo" placeholder="예: 쿠팡 광고 수익, 중고 판매 등">
+    </div>
+    <button class="save-btn" id="extra-save-btn" onclick="saveExtra()">저장하기</button>
+  </div>
+</div>
+
 </body>
 </html>
