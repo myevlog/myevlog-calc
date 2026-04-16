@@ -45,6 +45,19 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 /* Day summary (맨 위) */
 .day-summary { background:#1A1C2A; border-radius:8px; padding:10px 12px; margin-bottom:12px; }
 .day-summary-row { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; }
+/* Chart tab */
+.chart-period-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.chart-period-btn { background:#13151F; border:1px solid #1E2030; border-radius:20px; color:#9CA3AF; padding:6px 12px; font-size:12px; cursor:pointer; white-space:nowrap; }
+.chart-period-btn.active { background:rgba(255,107,44,0.15); border-color:#FF6B2C; color:#FF6B2C; font-weight:700; }
+.chart-section { background:#13151F; border-radius:14px; padding:14px; margin-bottom:16px; }
+.chart-title { font-size:13px; color:#9CA3AF; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+.chart-canvas-wrap { position:relative; width:100%; overflow-x:auto; }
+canvas { display:block; }
+.month-nav-chart { display:flex; align-items:center; gap:10px; }
+.month-nav-chart button { background:transparent; border:1px solid #2A2D3A; border-radius:6px; color:#9CA3AF; font-size:16px; cursor:pointer; padding:2px 8px; }
+.chart-legend { display:flex; gap:14px; margin-top:10px; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:#6B7280; }
+.legend-dot { width:10px; height:10px; border-radius:2px; }
 /* Session card */
 .session-card { background:#0C0E14; border-radius:10px; padding:12px; margin-bottom:10px; position:relative; }
 .session-top { display:flex; justify-content:space-between; margin-bottom:6px; padding-right:80px; }
@@ -138,6 +151,7 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
   <nav class="nav">
     <button class="nav-btn active" onclick="showTab('calendar')" id="btn-calendar">📅</button>
     <button class="nav-btn" onclick="showTab('report')" id="btn-report">📊</button>
+    <button class="nav-btn" onclick="showTab('chart')" id="btn-chart">📈</button>
     <button class="nav-btn" onclick="showTab('settings')" id="btn-settings">⚙️</button>
   </nav>
 </div>
@@ -186,6 +200,47 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
     <div id="compare-section"></div>
     <div class="section-title" style="margin-top:16px">플랫폼별 수익</div>
     <div id="platform-breakdown"></div>
+  </div>
+
+  <!-- CHART -->
+  <div class="tab" id="tab-chart">
+    <!-- 일별 그래프 -->
+    <div class="chart-section">
+      <div class="chart-title">
+        <span>📊 일별 수익 추이</span>
+      </div>
+      <div class="chart-period-row">
+        <button class="chart-period-btn active" onclick="setChartDays(30,this)">30일</button>
+        <button class="chart-period-btn" onclick="setChartDays(60,this)">60일</button>
+        <button class="chart-period-btn" onclick="setChartDays(90,this)">90일</button>
+        <button class="chart-period-btn" onclick="setChartDays(120,this)">120일</button>
+        <button class="chart-period-btn" onclick="setChartDays(180,this)">180일</button>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="daily-chart"></canvas>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>일별 순수익</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#60A5FA;border-radius:50%"></div>7일 평균</div>
+      </div>
+    </div>
+    <!-- 월별 그래프 -->
+    <div class="chart-section">
+      <div class="chart-title">
+        <span>📅 월별 수익 추이</span>
+        <div class="month-nav-chart">
+          <button onclick="moveMonthChart(-1)">‹</button>
+          <span id="month-chart-label" style="font-size:12px;color:#E8E8F0;min-width:70px;text-align:center"></span>
+          <button onclick="moveMonthChart(1)">›</button>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="monthly-chart"></canvas>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>월별 순수익</div>
+      </div>
+    </div>
   </div>
 
   <!-- SETTINGS -->
@@ -375,6 +430,7 @@ function showTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('btn-' + name).classList.add('active');
   if (name === 'report') renderReport();
+  if (name === 'chart') setTimeout(renderCharts, 50);
 }
 
 // ── 캘린더 ─────────────────────────────────────────────────────
@@ -826,6 +882,189 @@ function deleteExtra(id) {
   if (!confirm('잡수익 기록을 삭제할까요?')) return;
   extras = extras.filter(e => e.id !== id);
   saveExtras(); renderCalendar();
+}
+
+
+// ── 차트 ───────────────────────────────────────────────────────
+let chartDays = 30;
+let monthChartOffset = 0; // 0=현재월, -1=이전월 등
+
+function setChartDays(days, btn) {
+  chartDays = days;
+  document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDailyChart();
+}
+
+function moveMonthChart(dir) {
+  monthChartOffset += dir;
+  renderMonthlyChart();
+}
+
+function getDayNetFull(ds) {
+  const sessionNet = records.filter(r => r.date === ds)
+    .reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0);
+  const extraNet = extras.filter(e => e.date === ds).reduce((s,e) => s+e.amount, 0);
+  return sessionNet + extraNet;
+}
+
+function renderDailyChart() {
+  const canvas = document.getElementById('daily-chart');
+  if (!canvas) return;
+  const now = new Date();
+  const labels = [], values = [], avgs = [];
+  for (let i = chartDays - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const ds = toDateStr(d);
+    labels.push(ds.slice(5)); // MM-DD
+    values.push(getDayNetFull(ds));
+  }
+  // 7일 이동평균
+  for (let i = 0; i < values.length; i++) {
+    const slice = values.slice(Math.max(0, i-6), i+1);
+    avgs.push(Math.round(slice.reduce((a,b)=>a+b,0) / slice.length));
+  }
+
+  const W = canvas.parentElement.clientWidth || 340;
+  const barW = Math.max(6, Math.min(20, Math.floor((W - 40) / labels.length) - 2));
+  const H = 200;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const maxVal = Math.max(...values, 1);
+  const padL = 44, padR = 8, padT = 10, padB = 30;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  // 격자선
+  ctx.strokeStyle = '#1E2030'; ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(r => {
+    const y = padT + chartH * (1 - r);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(maxVal * r / 1000) + 'k', padL - 3, y + 3);
+  });
+
+  // 막대
+  const step = chartW / labels.length;
+  values.forEach((v, i) => {
+    const x = padL + i * step + step/2 - barW/2;
+    const barH = v > 0 ? Math.max(2, (v / maxVal) * chartH) : 0;
+    const y = padT + chartH - barH;
+    ctx.fillStyle = '#FF6B2C';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [3,3,0,0]) : ctx.rect(x, y, barW, barH);
+    ctx.fill();
+  });
+
+  // 꺾은선 (7일 평균)
+  ctx.beginPath(); ctx.strokeStyle = '#60A5FA'; ctx.lineWidth = 2;
+  avgs.forEach((v, i) => {
+    const x = padL + i * step + step/2;
+    const y = padT + chartH - (v / maxVal) * chartH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // 꺾은선 점
+  avgs.forEach((v, i) => {
+    const x = padL + i * step + step/2;
+    const y = padT + chartH - (v / maxVal) * chartH;
+    ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI*2);
+    ctx.fillStyle = '#60A5FA'; ctx.fill();
+  });
+
+  // x축 레이블 (일부만)
+  ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+  const labelStep = Math.ceil(labels.length / 8);
+  labels.forEach((l, i) => {
+    if (i % labelStep === 0 || i === labels.length - 1) {
+      ctx.fillText(l, padL + i * step + step/2, H - 6);
+    }
+  });
+}
+
+function renderMonthlyChart() {
+  const canvas = document.getElementById('monthly-chart');
+  if (!canvas) return;
+  const now = new Date();
+  const baseYear = now.getFullYear(), baseMonth = now.getMonth();
+  // monthChartOffset: 최근 N개월 표시 (기준월 포함 12개월)
+  const totalMonths = 12;
+  const endMonth = baseMonth + monthChartOffset;
+  const labels = [], values = [];
+  for (let i = totalMonths - 1; i >= 0; i--) {
+    const d = new Date(baseYear, endMonth - i, 1);
+    const y = d.getFullYear(), m = d.getMonth();
+    const start = `${y}-${String(m+1).padStart(2,'0')}-01`;
+    const end = toDateStr(new Date(y, m+1, 0));
+    const net = records.filter(r => r.date >= start && r.date <= end)
+      .reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0)
+      + extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+e.amount, 0);
+    labels.push(`${y}.${String(m+1).padStart(2,'0')}`);
+    values.push(net);
+  }
+
+  // 레이블 업데이트
+  const endD = new Date(baseYear, endMonth, 1);
+  const startD = new Date(baseYear, endMonth - totalMonths + 1, 1);
+  document.getElementById('month-chart-label').textContent =
+    `${startD.getFullYear()}.${String(startD.getMonth()+1).padStart(2,'0')} ~ ${endD.getFullYear()}.${String(endD.getMonth()+1).padStart(2,'0')}`;
+
+  const W = canvas.parentElement.clientWidth || 340;
+  const barW = Math.max(12, Math.floor((W - 52) / labels.length) - 4);
+  const H = 200;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const maxVal = Math.max(...values, 1);
+  const padL = 52, padR = 8, padT = 10, padB = 36;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  // 격자
+  ctx.strokeStyle = '#1E2030'; ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(r => {
+    const y = padT + chartH * (1 - r);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
+    const v = maxVal * r;
+    ctx.fillText(v >= 100000 ? Math.round(v/10000)+'만' : Math.round(v/1000)+'k', padL-3, y+3);
+  });
+
+  // 막대
+  const step = chartW / labels.length;
+  values.forEach((v, i) => {
+    const x = padL + i * step + step/2 - barW/2;
+    const barH = v > 0 ? Math.max(2, (v / maxVal) * chartH) : 0;
+    const y = padT + chartH - barH;
+    ctx.fillStyle = i === totalMonths - 1 - monthChartOffset * (-1) ? '#8B5CF6' : '#6D28D9';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [3,3,0,0]) : ctx.rect(x, y, barW, barH);
+    ctx.fill();
+    // 금액 표시 (막대 위)
+    if (v > 0) {
+      ctx.fillStyle = '#9CA3AF'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center';
+      const label = v >= 100000 ? Math.round(v/10000)+'만' : Math.round(v/1000)+'k';
+      ctx.fillText(label, x + barW/2, y - 3);
+    }
+  });
+
+  // x축 레이블
+  ctx.fillStyle = '#4B5563'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+  labels.forEach((l, i) => {
+    ctx.fillText(l.slice(5), padL + i * step + step/2, H - 18);
+    ctx.fillStyle = '#374151';
+    ctx.fillText(l.slice(0,4), padL + i * step + step/2, H - 6);
+    ctx.fillStyle = '#4B5563';
+  });
+}
+
+function renderCharts() {
+  renderDailyChart();
+  renderMonthlyChart();
 }
 
 loadSettings();
