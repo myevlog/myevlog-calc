@@ -238,6 +238,22 @@ canvas { display:block; }
   <!-- SETTINGS -->
   <div class="tab" id="tab-settings">
     <div class="settings-card">
+      <div class="settings-title">☁️ Gist 동기화 설정</div>
+      <div class="setting-row">
+        <div><div class="setting-label">GitHub Token</div><div class="setting-hint">ghp_ 로 시작하는 토큰</div></div>
+        <input class="setting-input" type="password" id="s-gist-token" style="width:140px;font-size:11px" placeholder="ghp_...">
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Gist ID</div><div class="setting-hint">첫 저장 시 자동 생성</div></div>
+        <input class="setting-input" type="text" id="s-gist-id" style="width:140px;font-size:11px" placeholder="자동 생성">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button onclick="gistSave()" style="flex:1;background:#24292e;border:none;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-weight:700;cursor:pointer">☁️ 클라우드에 저장</button>
+        <button onclick="gistLoad()" style="flex:1;background:#0969da;border:none;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-weight:700;cursor:pointer">⬇️ 불러오기</button>
+      </div>
+      <div id="gist-status" style="font-size:12px;color:#6B7280;margin-top:8px;text-align:center"></div>
+    </div>
+    <div class="settings-card">
       <div class="settings-title">⚡ 전기바이크 전비</div>
       <div class="setting-row">
         <div><div class="setting-label">kWh/km (전비)</div><div class="setting-hint">기본 0.04 = 25km/kWh</div></div>
@@ -462,6 +478,7 @@ function showTab(name) {
   document.getElementById('btn-' + name).classList.add('active');
   if (name === 'report') renderReport();
   if (name === 'chart')  setTimeout(renderCharts, 60);
+  if (name === 'settings') { loadSettings(); loadGistSettings(); }
 }
 
 // ── 캘린더 ─────────────────────────────────────────────────────
@@ -887,7 +904,7 @@ function renderDailyChart() {
     if (barW >= 6) {
       const topY = padT+chartH-(d.total/maxVal)*chartH;
       const manwon = (d.total/10000).toFixed(1);
-      ctx.fillStyle='#E8E8F0'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+      ctx.fillStyle='#EF4444'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
       ctx.fillText(manwon, x+barW/2, topY-3);
     }
   });
@@ -1048,6 +1065,90 @@ function importCSV(event) {
 }
 function showImportResult(msg,color){ const el=document.getElementById('import-result'); if(el){el.textContent=msg;el.style.color=color;} }
 
+// ── Gist 동기화 ────────────────────────────────────────────────
+const GIST_TOKEN_KEY = 'rider_gist_token';
+const GIST_ID_KEY    = 'rider_gist_id';
+
+function gistSetStatus(msg, color) {
+  const el = document.getElementById('gist-status');
+  if (el) { el.textContent = msg; el.style.color = color || '#6B7280'; }
+}
+
+function loadGistSettings() {
+  const token = localStorage.getItem(GIST_TOKEN_KEY) || '';
+  const id    = localStorage.getItem(GIST_ID_KEY) || '';
+  const ti = document.getElementById('s-gist-token');
+  const gi = document.getElementById('s-gist-id');
+  if (ti) ti.value = token;
+  if (gi) gi.value = id;
+}
+
+function saveGistSettings() {
+  const token = document.getElementById('s-gist-token').value.trim();
+  const id    = document.getElementById('s-gist-id').value.trim();
+  if (token) localStorage.setItem(GIST_TOKEN_KEY, token);
+  if (id)    localStorage.setItem(GIST_ID_KEY, id);
+  return { token, id };
+}
+
+async function gistSave() {
+  const { token, id } = saveGistSettings();
+  if (!token) { gistSetStatus('❌ GitHub Token을 입력해주세요', '#EF4444'); return; }
+  gistSetStatus('⏳ 저장 중...', '#6B7280');
+  const payload = {
+    records: JSON.parse(localStorage.getItem(RKEY) || '[]'),
+    extras:  JSON.parse(localStorage.getItem(EKEY) || '[]'),
+    settings: JSON.parse(localStorage.getItem(SKEY) || '{}'),
+    savedAt: new Date().toISOString()
+  };
+  const body = {
+    description: '라이더 수익 장부 데이터',
+    public: false,
+    files: { 'rider_data.json': { content: JSON.stringify(payload, null, 2) } }
+  };
+  try {
+    let url = 'https://api.github.com/gists';
+    let method = 'POST';
+    if (id) { url += '/' + id; method = 'PATCH'; }
+    const res = await fetch(url, {
+      method,
+      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    localStorage.setItem(GIST_ID_KEY, data.id);
+    document.getElementById('s-gist-id').value = data.id;
+    gistSetStatus('✅ 저장 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#10B981');
+  } catch(e) {
+    gistSetStatus('❌ 저장 실패: ' + e.message, '#EF4444');
+  }
+}
+
+async function gistLoad() {
+  const { token, id } = saveGistSettings();
+  if (!token) { gistSetStatus('❌ GitHub Token을 입력해주세요', '#EF4444'); return; }
+  if (!id)    { gistSetStatus('❌ Gist ID가 없어요. 먼저 저장해주세요', '#EF4444'); return; }
+  gistSetStatus('⏳ 불러오는 중...', '#6B7280');
+  try {
+    const res = await fetch('https://api.github.com/gists/' + id, {
+      headers: { 'Authorization': 'token ' + token }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const content = data.files['rider_data.json']?.content;
+    if (!content) throw new Error('데이터 파일을 찾을 수 없어요');
+    const payload = JSON.parse(content);
+    if (payload.records) { records = payload.records; localStorage.setItem(RKEY, JSON.stringify(records)); }
+    if (payload.extras)  { extras  = payload.extras;  localStorage.setItem(EKEY, JSON.stringify(extras)); }
+    if (payload.settings){ settings = { ...settings, ...payload.settings }; localStorage.setItem(SKEY, JSON.stringify(settings)); loadSettings(); }
+    renderCalendar();
+    gistSetStatus('✅ 불러오기 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#10B981');
+  } catch(e) {
+    gistSetStatus('❌ 불러오기 실패: ' + e.message, '#EF4444');
+  }
+}
+
 // ── 설정 ───────────────────────────────────────────────────────
 function updateCalc() {
   const kwh=parseFloat(document.getElementById('s-kwh').value)||0.04;
@@ -1078,6 +1179,7 @@ function loadSettings() {
 
 // ── 초기화 ─────────────────────────────────────────────────────
 loadSettings();
+loadGistSettings();
 initCalendar();
 </script>
 </body>
