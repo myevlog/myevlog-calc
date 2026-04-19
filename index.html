@@ -805,8 +805,10 @@ function renderReport() {
   const {start,end} = getPeriodRange(currentPeriod);
   const st = calcPeriodStats(start, end);
   const perHour = st.mins > 0 ? st.finalNet/st.mins*60 : 0;
-  const periodExtraNet = extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+e.amount, 0);
+  const periodExtraNet   = extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+e.amount, 0);
+  const periodExtraGross = extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+(e.gross||e.amount), 0);
   const grandTotal = st.finalNet + periodExtraNet;
+  const grandGross = st.gross + periodExtraGross;
 
   // 플랫폼별 순수익 계산
   const cpNet = records.filter(r=>r.date>=start&&r.date<=end&&r.platform==='coupang')
@@ -814,9 +816,9 @@ function renderReport() {
   const hjNet = records.filter(r=>r.date>=start&&r.date<=end&&(r.platform==='haejuseyo_delivery'||r.platform==='haejuseyo_other'))
     .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
 
-  const deductPct = st.gross > 0 ? (st.deduct / st.gross * 100).toFixed(1) : '0.0';
+  const deductPct = grandGross > 0 ? ((grandGross - grandTotal) / grandGross * 100).toFixed(1) : '0.0';
   document.getElementById('report-cards').innerHTML = [
-    {label:'전체 합계 (세전)',  value:fmtW(st.gross),          color:'#9CA3AF', big:true},
+    {label:'전체 합계 (세전)',  value:fmtW(grandGross),        color:'#9CA3AF', big:true},
     {label:'순수익 (세후)',     value:fmtW(grandTotal),        color:'#FF6B2C', big:true},
     {label:'시간당 순수익',     value:fmtW(perHour),           color:'#F59E0B', big:true},
     {label:'🟠 쿠팡이츠',      value:fmtW(cpNet),             color:'#FF6B2C'},
