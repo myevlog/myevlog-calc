@@ -217,6 +217,7 @@ canvas { display:block; }
         <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>해주세요 기타</div>
         <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>잡수익</div>
         <div class="legend-item"><div class="legend-dot" style="background:#FCD34D;border-radius:50%"></div>7일 평균</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#34D399;border-radius:50%"></div>시간당 수익 (우측축)</div>
       </div>
     </div>
     <div class="chart-section">
@@ -381,12 +382,24 @@ canvas { display:block; }
       <div style="color:#9CA3AF;font-size:14px;padding:4px 0" id="extra-date-label"></div>
     </div>
     <div class="modal-section">
-      <div class="field-label">금액 (순수익으로 입력)</div>
-      <input type="number" class="modal-input" id="extra-amount" step="100" placeholder="예: 15000">
+      <div class="field-label">세전 금액 (수익)</div>
+      <input type="number" class="modal-input" id="extra-amount" step="100" placeholder="예: 15000" oninput="updateExtraPreview()">
+    </div>
+    <div class="modal-section">
+      <div class="field-label">투자비용 (유류비, 재료비 등)</div>
+      <input type="number" class="modal-input" id="extra-cost" step="100" placeholder="예: 3000 (없으면 0)" oninput="updateExtraPreview()">
+    </div>
+    <div class="modal-section">
+      <div class="field-label">업무 공수 시간 (분)</div>
+      <input type="number" class="modal-input" id="extra-mins" step="5" placeholder="예: 60 (1시간)" oninput="updateExtraPreview()">
     </div>
     <div class="modal-section">
       <div class="field-label">메모 (선택)</div>
       <input type="text" class="modal-input" id="extra-memo" placeholder="예: 쿠팡 광고 수익, 중고 판매 등">
+    </div>
+    <div class="preview" id="extra-preview-box" style="display:none">
+      <div class="preview-title">💰 잡수익 계산</div>
+      <div id="extra-preview-content"></div>
     </div>
     <button class="save-btn" id="extra-save-btn" onclick="saveExtra()">저장하기</button>
   </div>
@@ -562,9 +575,11 @@ function renderDayDetail() {
     if (dayEx.length > 0) {
       html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">💰 잡수익</div>';
       dayEx.forEach(e => {
+        const ph = e.mins > 0 ? e.amount / e.mins * 60 : 0;
         html += '<div class="session-card" style="border-left:3px solid #10B981">'
               + '<div class="session-actions"><button class="delete-btn" onclick="deleteExtra(' + e.id + ')">🗑 삭제</button></div>'
               + '<div class="session-top"><span class="session-platform">💰 잡수익</span><span class="session-net" style="color:#10B981">' + fmtW(e.amount) + '</span></div>'
+              + (e.gross ? '<div class="session-breakdown"><span>세전 ' + fmtW(e.gross) + '</span>' + (e.cost > 0 ? '<span class="neg">투자비용 -' + fmtW(e.cost) + '</span>' : '') + (e.mins > 0 ? '<span style="color:#9CA3AF">시간당 ' + fmtW(ph) + '</span>' : '') + '</div>' : '')
               + (e.memo ? '<div class="session-memo">📝 ' + e.memo + '</div>' : '')
               + '</div>';
       });
@@ -708,16 +723,36 @@ function saveSession() {
 function openExtraModal() {
   document.getElementById('extra-date-label').textContent = selectedDate;
   document.getElementById('extra-amount').value = '';
+  document.getElementById('extra-cost').value = '';
+  document.getElementById('extra-mins').value = '';
   document.getElementById('extra-memo').value = '';
+  document.getElementById('extra-preview-box').style.display = 'none';
   document.getElementById('extra-save-btn').textContent = '저장하기';
   document.getElementById('extra-save-btn').classList.remove('saved');
   document.getElementById('extra-overlay').classList.add('open');
 }
 function closeExtraModal() { document.getElementById('extra-overlay').classList.remove('open'); }
+function updateExtraPreview() {
+  const amount = parseFloat(document.getElementById('extra-amount').value) || 0;
+  const cost   = parseFloat(document.getElementById('extra-cost').value) || 0;
+  const mins   = parseFloat(document.getElementById('extra-mins').value) || 0;
+  if (!amount) { document.getElementById('extra-preview-box').style.display = 'none'; return; }
+  const net = amount - cost;
+  const ph  = mins > 0 ? net / mins * 60 : 0;
+  let html = '<div class="preview-row"><span>세전 수익</span><span>' + fmtW(amount) + '</span></div>'
+           + (cost > 0 ? '<div class="preview-row"><span class="neg">투자비용</span><span class="neg">-' + fmtW(cost) + '</span></div>' : '')
+           + '<div class="preview-row preview-divider"><span style="font-weight:700">순수익</span><span class="accent" style="font-weight:800;font-size:18px">' + fmtW(net) + '</span></div>'
+           + (mins > 0 ? '<div class="preview-row"><span style="color:#9CA3AF">시간당</span><span style="color:#9CA3AF">' + fmtW(ph) + '</span></div>' : '');
+  document.getElementById('extra-preview-content').innerHTML = html;
+  document.getElementById('extra-preview-box').style.display = 'block';
+}
 function saveExtra() {
   const amount = parseFloat(document.getElementById('extra-amount').value);
   if (!amount) { alert('금액을 입력해주세요'); return; }
-  extras.unshift({ id: Date.now(), date: selectedDate, amount, memo: document.getElementById('extra-memo').value });
+  const cost = parseFloat(document.getElementById('extra-cost').value) || 0;
+  const mins = parseFloat(document.getElementById('extra-mins').value) || 0;
+  const net  = amount - cost;
+  extras.unshift({ id: Date.now(), date: selectedDate, amount: net, gross: amount, cost, mins, memo: document.getElementById('extra-memo').value });
   extras.sort((a,b) => b.date.localeCompare(a.date));
   saveExtras(); renderCalendar();
   const btn = document.getElementById('extra-save-btn');
@@ -725,7 +760,10 @@ function saveExtra() {
   setTimeout(() => {
     btn.textContent = '저장하기'; btn.classList.remove('saved');
     document.getElementById('extra-amount').value = '';
+    document.getElementById('extra-cost').value = '';
+    document.getElementById('extra-mins').value = '';
     document.getElementById('extra-memo').value = '';
+    document.getElementById('extra-preview-box').style.display = 'none';
   }, 1000);
 }
 
@@ -776,16 +814,18 @@ function renderReport() {
   const hjNet = records.filter(r=>r.date>=start&&r.date<=end&&(r.platform==='haejuseyo_delivery'||r.platform==='haejuseyo_other'))
     .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
 
+  const deductPct = st.gross > 0 ? (st.deduct / st.gross * 100).toFixed(1) : '0.0';
   document.getElementById('report-cards').innerHTML = [
-    {label:'전체 합계',      value:fmtW(grandTotal),        color:'#FF6B2C', big:true},
-    {label:'시간당 순수익',  value:fmtW(perHour),            color:'#F59E0B', big:true},
-    {label:'🟠 쿠팡이츠',   value:fmtW(cpNet),              color:'#FF6B2C'},
-    {label:'🔵 해주세요',    value:fmtW(hjNet),              color:'#3B82F6'},
-    {label:'🟢 잡수익',     value:fmtW(periodExtraNet),     color:'#10B981'},
-    {label:'총 수수료',      value:fmtW(st.deduct),          color:'#EF4444'},
-    {label:'총 충전비',      value:fmtW(st.charge),          color:'#EF4444'},
-    {label:'총 주행거리',    value:fmtKm(st.distance),       color:'#60A5FA'},
-    {label:'세션 수',        value:st.sessions + '건',       color:'#8B5CF6'},
+    {label:'전체 합계 (세전)',  value:fmtW(st.gross),          color:'#9CA3AF', big:true},
+    {label:'순수익 (세후)',     value:fmtW(grandTotal),        color:'#FF6B2C', big:true},
+    {label:'시간당 순수익',     value:fmtW(perHour),           color:'#F59E0B', big:true},
+    {label:'🟠 쿠팡이츠',      value:fmtW(cpNet),             color:'#FF6B2C'},
+    {label:'🔵 해주세요',       value:fmtW(hjNet),             color:'#3B82F6'},
+    {label:'🟢 잡수익',        value:fmtW(periodExtraNet),    color:'#10B981'},
+    {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#EF4444'},
+    {label:'총 충전비',         value:fmtW(st.charge),         color:'#EF4444'},
+    {label:'총 주행거리',       value:fmtKm(st.distance),      color:'#60A5FA'},
+    {label:'세션 수',           value:st.sessions + '건',      color:'#8B5CF6'},
   ].map(c => '<div class="report-card" style="border-top:3px solid ' + c.color + '">'
     + '<div class="report-value" style="color:' + c.color + ';font-size:' + (c.big?22:17) + 'px">' + c.value + '</div>'
     + '<div class="report-label">' + c.label + '</div></div>').join('');
@@ -836,6 +876,7 @@ function renderDailyChart() {
   const now = new Date();
   const labels = [], stackData = [], totals = [];
 
+  const perHours = [];
   for (let i = chartDays - 1; i >= 0; i--) {
     const d = new Date(now); d.setDate(d.getDate() - i);
     const ds = toDateStr(d);
@@ -846,8 +887,11 @@ function renderDailyChart() {
     const ho = dayRecs.filter(r=>r.platform==='haejuseyo_other').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
     const ex = extras.filter(e=>e.date===ds).reduce((s,e)=>s+e.amount,0);
     const total = cp+hd+ho+ex;
+    const dayMins = dayRecs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
+    const ph = dayMins > 0 ? total/dayMins*60 : 0;
     stackData.push({coupang:cp, haejuseyo_delivery:hd, haejuseyo_other:ho, extra:ex, total});
     totals.push(total);
+    perHours.push(ph);
   }
 
   const avgs = totals.map((_,i) => {
@@ -863,21 +907,28 @@ function renderDailyChart() {
   ctx.clearRect(0,0,W,H);
 
   const maxVal = Math.max(...totals, 1);
-  const padL=44, padR=10, padT=22, padB=28;
+  const maxPH  = Math.max(...perHours.filter(v=>v>0), 1);
+  const padL=44, padR=44, padT=22, padB=28;
   const chartW=W-padL-padR, chartH=H-padT-padB;
   const step=chartW/labels.length;
 
-  // 단위 표기
-  ctx.fillStyle='#9CA3AF'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right';
-  ctx.fillText('단위: 만원', W-padR, padT-8);
+  // 좌측 단위
+  ctx.fillStyle='#9CA3AF'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('만원', 0, padT-8);
+  // 우측 단위
+  ctx.fillStyle='#34D399'; ctx.textAlign='right';
+  ctx.fillText('시간당', W, padT-8);
 
-  // 격자
+  // 격자 + 좌측 축
   ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1;
   [0.25,0.5,0.75,1].forEach(r => {
     const y=padT+chartH*(1-r);
     ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
     ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='right';
     ctx.fillText((maxVal*r/10000).toFixed(1), padL-3, y+3);
+    // 우측 축
+    ctx.fillStyle='#34D399'; ctx.textAlign='left';
+    ctx.fillText(Math.round(maxPH*r/1000)+'k', W-padR+3, y+3);
   });
 
   // 누적 막대
@@ -893,7 +944,6 @@ function renderDailyChart() {
       const y = yBase - segH;
       ctx.fillStyle = CHART_COLORS[key];
       ctx.beginPath();
-      // 맨 위 세그먼트만 상단 둥글게
       const isTop = layers.slice(ki+1).every(k => d[k] <= 0);
       if (isTop && ctx.roundRect) { ctx.roundRect(x,y,barW,segH,[3,3,0,0]); }
       else { ctx.rect(x,y,barW,segH); }
@@ -923,6 +973,26 @@ function renderDailyChart() {
     ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
     ctx.fillStyle='#FCD34D'; ctx.fill();
   });
+
+  // 꺾은선 (시간당 수익) - 우측 축 기준
+  const phValid = perHours.some(v=>v>0);
+  if (phValid) {
+    ctx.beginPath(); ctx.strokeStyle='#34D399'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    let started = false;
+    perHours.forEach((v,i) => {
+      if (v <= 0) return;
+      const x=padL+i*step+step/2;
+      const y=padT+chartH-(v/maxPH)*chartH;
+      if (!started) { ctx.moveTo(x,y); started=true; } else ctx.lineTo(x,y);
+    });
+    ctx.stroke(); ctx.setLineDash([]);
+    perHours.forEach((v,i) => {
+      if (v<=0) return;
+      const x=padL+i*step+step/2, y=padT+chartH-(v/maxPH)*chartH;
+      ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
+      ctx.fillStyle='#34D399'; ctx.fill();
+    });
+  }
 
   // x축 레이블
   ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='center';
