@@ -220,6 +220,24 @@ canvas { display:block; }
         <div class="legend-item"><div class="legend-dot" style="background:#34D399;border-radius:50%"></div>시간당 수익 (우측축)</div>
       </div>
     </div>
+    <!-- 쿠팡이츠 전용 그래프 -->
+    <div class="chart-section">
+      <div class="chart-title"><span>🟠 쿠팡이츠 데일리 트래킹</span></div>
+      <div class="chart-period-row">
+        <button class="chart-period-btn active" onclick="setCoupangDays(30,this)">30일</button>
+        <button class="chart-period-btn" onclick="setCoupangDays(60,this)">60일</button>
+        <button class="chart-period-btn" onclick="setCoupangDays(90,this)">90일</button>
+        <button class="chart-period-btn" onclick="setCoupangDays(120,this)">120일</button>
+        <button class="chart-period-btn" onclick="setCoupangDays(180,this)">180일</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="coupang-chart"></canvas></div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>순수익 (막대, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10B981;border-radius:50%"></div>km당 단가 (꺾은선, 원)</div>
+      </div>
+    </div>
+
     <div class="chart-section">
       <div class="chart-title">
         <span>📅 월별 수익 추이</span>
@@ -327,6 +345,7 @@ canvas { display:block; }
       <div class="input-mode-tabs">
         <button class="input-mode-tab active" onclick="switchMode('dist','single',this)">합산값 직접 입력</button>
         <button class="input-mode-tab" onclick="switchMode('dist','multi',this)">낱개 입력 → 자동합산</button>
+        <button class="input-mode-tab" id="dist-accum-tab" onclick="switchMode('dist','accum',this)" style="display:none">누적km 역산</button>
       </div>
       <div class="input-panel active" id="dist-single">
         <input type="number" class="modal-input" id="m-distance" step="0.1" placeholder="예: 20.5" oninput="updatePreview()">
@@ -337,6 +356,24 @@ canvas { display:block; }
         <div class="multi-sum" id="dist-sum" style="display:none">
           <span style="color:#9CA3AF">합산 거리</span>
           <span id="dist-sum-val" style="color:#FF6B2C;font-weight:800"></span>
+        </div>
+      </div>
+      <div class="input-panel" id="dist-accum">
+        <div style="font-size:11px;color:#6B7280;margin-bottom:8px">앱의 누적 주행거리를 입력하면 이전 세션과의 차이를 자동으로 계산해요</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <div style="flex:1">
+            <div style="font-size:10px;color:#9CA3AF;margin-bottom:4px">이전 누적 km</div>
+            <input type="number" class="modal-input" id="m-accum-prev" step="0.1" placeholder="예: 15234.5" oninput="calcAccumDist()">
+          </div>
+          <div style="color:#9CA3AF;font-size:18px;padding-top:18px">→</div>
+          <div style="flex:1">
+            <div style="font-size:10px;color:#9CA3AF;margin-bottom:4px">현재 누적 km</div>
+            <input type="number" class="modal-input" id="m-accum-curr" step="0.1" placeholder="예: 15267.3" oninput="calcAccumDist()">
+          </div>
+        </div>
+        <div class="multi-sum" id="accum-result" style="display:none">
+          <span style="color:#9CA3AF">세션 주행거리</span>
+          <span id="accum-result-val" style="color:#FF6B2C;font-weight:800"></span>
         </div>
       </div>
     </div>
@@ -606,6 +643,25 @@ function switchMode(field, mode, btn) {
   btn.classList.add('active');
   document.getElementById(field + '-single').classList.toggle('active', mode === 'single');
   document.getElementById(field + '-multi').classList.toggle('active', mode === 'multi');
+  if (field === 'dist') {
+    const accumPanel = document.getElementById('dist-accum');
+    if (accumPanel) accumPanel.classList.toggle('active', mode === 'accum');
+  }
+  updatePreview();
+}
+
+function calcAccumDist() {
+  const prev = parseFloat(document.getElementById('m-accum-prev').value) || 0;
+  const curr = parseFloat(document.getElementById('m-accum-curr').value) || 0;
+  const diff = Math.max(0, curr - prev);
+  const el = document.getElementById('accum-result');
+  const val = document.getElementById('accum-result-val');
+  if (prev > 0 && curr > 0 && diff >= 0) {
+    el.style.display = 'flex';
+    val.textContent = diff.toFixed(1) + 'km';
+  } else {
+    el.style.display = 'none';
+  }
   updatePreview();
 }
 function calcSum(field) {
@@ -622,6 +678,11 @@ function calcSum(field) {
 }
 function getDistVal() {
   if (distMode === 'single') return parseFloat(document.getElementById('m-distance').value) || 0;
+  if (distMode === 'accum') {
+    const prev = parseFloat(document.getElementById('m-accum-prev').value) || 0;
+    const curr = parseFloat(document.getElementById('m-accum-curr').value) || 0;
+    return Math.max(0, curr - prev);
+  }
   return document.getElementById('m-dist-multi').value.split('\n').map(l => parseFloat(l.trim())).filter(n => !isNaN(n)).slice(0,50).reduce((a,b)=>a+b,0);
 }
 function getGrossVal() {
@@ -651,9 +712,18 @@ function openModal(id) {
   document.getElementById('m-gross').value    = isEdit ? r.gross    : '';
   document.getElementById('m-dist-multi').value  = '';
   document.getElementById('m-gross-multi').value = '';
+  document.getElementById('m-accum-prev').value  = '';
+  document.getElementById('m-accum-curr').value  = '';
   document.getElementById('m-memo').value = isEdit ? (r.memo||'') : '';
-  document.getElementById('dist-sum').style.display  = 'none';
-  document.getElementById('gross-sum').style.display = 'none';
+  document.getElementById('dist-sum').style.display    = 'none';
+  document.getElementById('gross-sum').style.display   = 'none';
+  document.getElementById('accum-result').style.display = 'none';
+  // 쿠팡이츠 선택 시 누적km 탭 표시
+  const accumTab = document.getElementById('dist-accum-tab');
+  if (accumTab) accumTab.style.display = plat === 'coupang' ? '' : 'none';
+  // accum 패널 초기화
+  const accumPanel = document.getElementById('dist-accum');
+  if (accumPanel) accumPanel.classList.remove('active');
   updateGrossLabel(); updatePreview();
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -665,6 +735,17 @@ function selectPlatform(btn) {
   document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   selectedPlatform = btn.dataset.platform;
+  // 쿠팡이츠 선택 시 누적km 탭 표시
+  const accumTab = document.getElementById('dist-accum-tab');
+  if (accumTab) accumTab.style.display = selectedPlatform === 'coupang' ? '' : 'none';
+  // 쿠팡이 아닌 플랫폼 선택 시 accum 모드면 single로 복귀
+  if (selectedPlatform !== 'coupang' && distMode === 'accum') {
+    distMode = 'single';
+    document.getElementById('dist-single').classList.add('active');
+    document.getElementById('dist-accum').classList.remove('active');
+    if (accumTab) accumTab.classList.remove('active');
+    document.querySelector('#dist-single').closest('.modal-section').querySelectorAll('.input-mode-tab')[0].classList.add('active');
+  }
   updateGrossLabel(); updatePreview();
 }
 function updateGrossLabel() {
@@ -1061,7 +1142,146 @@ function renderMonthlyChart() {
   labels.forEach((l,i)=>{ ctx.fillText(l, padL+i*step+step/2, H-4); });
 }
 
-function renderCharts() { renderDailyChart(); renderMonthlyChart(); }
+
+// ── 쿠팡이츠 데일리 트래킹 차트 ────────────────────────────────
+let coupangChartDays = 30;
+
+function setCoupangDays(days, btn) {
+  coupangChartDays = days;
+  document.querySelectorAll('#tab-chart .chart-period-btn').forEach(b => {
+    // 쿠팡 섹션 버튼만 토글
+    if (b.onclick && b.onclick.toString().includes('setCoupangDays')) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  renderCoupangChart();
+}
+
+function renderCoupangChart() {
+  const canvas = document.getElementById('coupang-chart');
+  if (!canvas) return;
+  const now = new Date();
+
+  const labels = [], netVals = [], distVals = [], unitVals = [];
+
+  for (let i = coupangChartDays - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const ds = toDateStr(d);
+    labels.push(ds.slice(5));
+
+    const dayRecs = records.filter(r => r.date === ds && r.platform === 'coupang');
+    const net  = dayRecs.reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance), 0);
+    const dist = dayRecs.reduce((s,r) => s + r.distance, 0);
+    const unit = dist > 0 ? net / dist : 0; // 원/km
+
+    netVals.push(net);
+    distVals.push(dist);
+    unitVals.push(unit);
+  }
+
+  const W = canvas.parentElement.clientWidth || 340;
+  const barW = Math.max(5, Math.min(18, Math.floor((W - 88) / labels.length) - 2));
+  const H = 240;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const maxNet  = Math.max(...netVals, 1);
+  const maxDist = Math.max(...distVals, 1);
+  const maxUnit = Math.max(...unitVals.filter(v=>v>0), 1);
+
+  const padL = 48, padR = 48, padT = 24, padB = 28;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const step = chartW / labels.length;
+
+  // 축 레이블
+  ctx.font = 'bold 9px sans-serif';
+  ctx.fillStyle = '#FF6B2C'; ctx.textAlign = 'left';
+  ctx.fillText('만원', 0, padT - 8);
+  ctx.fillStyle = '#3B82F6'; ctx.textAlign = 'right';
+  ctx.fillText('km', W, padT - 8);
+
+  // 격자 + 좌측(수익) 축 + 우측(km) 축
+  ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(r => {
+    const y = padT + chartH * (1 - r);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    // 좌 (수익)
+    ctx.fillStyle = '#9CA3AF'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText((maxNet * r / 10000).toFixed(1), padL - 3, y + 3);
+    // 우 (km)
+    ctx.fillStyle = '#3B82F6'; ctx.textAlign = 'left';
+    ctx.fillText((maxDist * r).toFixed(0), W - padR + 3, y + 3);
+  });
+
+  // 막대 (순수익)
+  netVals.forEach((v, i) => {
+    if (v <= 0) return;
+    const x = padL + i * step + step / 2 - barW / 2;
+    const barH = (v / maxNet) * chartH;
+    const y = padT + chartH - barH;
+    ctx.fillStyle = '#FF6B2C';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, barW, barH, [3, 3, 0, 0]);
+    else ctx.rect(x, y, barW, barH);
+    ctx.fill();
+    // 상단 금액 표시
+    if (barW >= 6) {
+      ctx.fillStyle = '#374151'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText((v / 10000).toFixed(1), x + barW / 2, y - 3);
+    }
+  });
+
+  // 꺾은점선 (주행거리) - 우측 축 기준
+  ctx.beginPath(); ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2;
+  ctx.setLineDash([5, 3]);
+  let distStarted = false;
+  distVals.forEach((v, i) => {
+    if (v <= 0) return;
+    const x = padL + i * step + step / 2;
+    const y = padT + chartH - (v / maxDist) * chartH;
+    if (!distStarted) { ctx.moveTo(x, y); distStarted = true; } else ctx.lineTo(x, y);
+  });
+  ctx.stroke(); ctx.setLineDash([]);
+  // 점
+  distVals.forEach((v, i) => {
+    if (v <= 0) return;
+    const x = padL + i * step + step / 2;
+    const y = padT + chartH - (v / maxDist) * chartH;
+    ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#3B82F6'; ctx.fill();
+  });
+
+  // 꺾은선 (km당 단가) - 좌측 축 기준 (수익 스케일에 맞게)
+  // km당 단가는 별도 스케일로 오른쪽에 표기 대신, 단순 추이선으로 표현
+  const unitScale = chartH / maxUnit;
+  ctx.beginPath(); ctx.strokeStyle = '#10B981'; ctx.lineWidth = 2;
+  let unitStarted = false;
+  unitVals.forEach((v, i) => {
+    if (v <= 0) return;
+    const x = padL + i * step + step / 2;
+    const y = padT + chartH - v * unitScale;
+    if (!unitStarted) { ctx.moveTo(x, y); unitStarted = true; } else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  unitVals.forEach((v, i) => {
+    if (v <= 0) return;
+    const x = padL + i * step + step / 2;
+    const y = padT + chartH - v * unitScale;
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#10B981'; ctx.fill();
+  });
+
+  // x축 레이블
+  ctx.fillStyle = '#9CA3AF'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+  const lStep = Math.ceil(labels.length / 8);
+  labels.forEach((l, i) => {
+    if (i % lStep === 0 || i === labels.length - 1)
+      ctx.fillText(l, padL + i * step + step / 2, H - 4);
+  });
+}
+
+function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupangChart(); }
 
 // ── CSV 내보내기/가져오기 ───────────────────────────────────────
 function exportCSV() {
