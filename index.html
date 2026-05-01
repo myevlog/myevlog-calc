@@ -285,6 +285,13 @@ canvas { display:block; }
       <div class="setting-calc" id="charge-calc">km당 충전비: <strong style="color:#FF6B2C">7.2원/km</strong></div>
     </div>
     <div class="settings-card">
+      <div class="settings-title">🚗 차량 이동 비용</div>
+      <div class="setting-row">
+        <div><div class="setting-label">차량 비용 (원/km)</div><div class="setting-hint">감가상각+충전비 합산 기준</div></div>
+        <input class="setting-input" type="number" step="10" id="s-car-cost" value="250">
+      </div>
+    </div>
+    <div class="settings-card">
       <div class="settings-title">💸 수수료율 설정</div>
       <div class="setting-row">
         <div><div class="setting-label">쿠팡이츠 공제율 (%)</div><div class="setting-hint">소득세 3.3% + 산재 1.5%</div></div>
@@ -396,6 +403,19 @@ canvas { display:block; }
       </div>
     </div>
     <div class="modal-section">
+      <div class="field-label">이동 수단</div>
+      <div style="display:flex;gap:8px">
+        <button id="v-bike" class="platform-btn active" onclick="selectVehicle('bike',this)"
+          style="flex:1;text-align:center;padding:10px">
+          🛵 전기바이크<div style="font-size:10px;color:#9CA3AF;margin-top:2px" id="v-bike-hint">기본값</div>
+        </button>
+        <button id="v-car" class="platform-btn" onclick="selectVehicle('car',this)"
+          style="flex:1;text-align:center;padding:10px">
+          🚗 차량<div style="font-size:10px;color:#9CA3AF;margin-top:2px" id="v-car-hint">250원/km</div>
+        </button>
+      </div>
+    </div>
+    <div class="modal-section">
       <div class="field-label">메모 (선택)</div>
       <input type="text" class="modal-input" id="m-memo" placeholder="예: 저녁 피크, 비 오는 날">
     </div>
@@ -403,7 +423,12 @@ canvas { display:block; }
       <div class="preview-title">💰 순수익 계산</div>
       <div id="preview-content"></div>
     </div>
-    <button class="save-btn" id="modal-save-btn" onclick="saveSession()">저장하기</button>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="save-btn" id="modal-save-btn" onclick="saveSession(false)"
+        style="flex:1;background:#FF6B2C;font-size:14px">💾 디바이스 저장</button>
+      <button class="save-btn" id="modal-cloud-btn" onclick="saveSession(true)"
+        style="flex:1;background:#3B82F6;font-size:14px">☁️ 클라우드 동시저장</button>
+    </div>
   </div>
 </div>
 
@@ -454,13 +479,14 @@ let extras  = JSON.parse(localStorage.getItem(EKEY) || '[]');
 let settings = {
   kwh_per_km: 0.04, elec_price: 180,
   coupang_deduct: 4.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
+  car_cost_per_km: 250,
   ...JSON.parse(localStorage.getItem(SKEY) || '{}')
 };
 
 // ── 상태 ───────────────────────────────────────────────────────
 let calYear, calMonth, selectedDate, currentPeriod = 'today';
 let selectedPlatform = 'coupang';
-let distMode = 'single', grossMode = 'single';
+let distMode = 'single', grossMode = 'single', selectedVehicle = 'bike';
 let editingId = null;
 let chartDays = 30, monthChartOffset = 0;
 
@@ -476,8 +502,12 @@ const CHART_COLORS = {
 };
 
 // ── 유틸 ───────────────────────────────────────────────────────
-const toDateStr = d => d.toISOString().split('T')[0];
-const todayStr  = () => toDateStr(new Date());
+// KST(UTC+9) 기준 날짜 문자열 반환
+const toDateStr = d => {
+  const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  return kst.toISOString().split('T')[0];
+};
+const todayStr = () => toDateStr(new Date());
 const fmtW  = n => new Intl.NumberFormat('ko-KR').format(Math.round(n)) + '원';
 const fmtKm = n => parseFloat(n).toFixed(1) + 'km';
 
@@ -488,7 +518,10 @@ function minsBetween(s, e) {
   if (d < 0) d += 1440;
   return d;
 }
-function calcCharge(km) { return km * settings.kwh_per_km * settings.elec_price; }
+function calcCharge(km, vehicle) {
+  if ((vehicle || selectedVehicle) === 'car') return km * settings.car_cost_per_km;
+  return km * settings.kwh_per_km * settings.elec_price;
+}
 function calcNet(platform, gross) {
   const r = platform === 'coupang' ? settings.coupang_deduct
     : platform === 'haejuseyo_delivery' ? settings.haejuseyo_delivery
@@ -504,14 +537,14 @@ function heatColor(net) {
 }
 function dayNet(ds) {
   const sNet = records.filter(r => r.date === ds)
-    .reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance), 0);
+    .reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance, r.vehicle), 0);
   const eNet = extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0);
   return sNet + eNet;
 }
 function dayStats(ds) {
   const recs = records.filter(r => r.date === ds);
   return {
-    net: recs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0)
+    net: recs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance, r.vehicle), 0)
        + extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0),
     distance: recs.reduce((s,r) => s + r.distance, 0),
     mins: recs.reduce((s,r) => s + minsBetween(r.startTime, r.endTime), 0),
@@ -593,7 +626,7 @@ function renderDayDetail() {
     dayRecs.forEach((r, i) => {
       const p = PLATFORMS[r.platform];
       const net = calcNet(r.platform, r.gross);
-      const charge = calcCharge(r.distance);
+      const charge = calcCharge(r.distance, r.vehicle);
       const finalNet = net - charge;
       const mins = minsBetween(r.startTime, r.endTime);
       html += '<div class="session-card" style="border-left:3px solid ' + p.color + '">'
@@ -703,6 +736,10 @@ function openModal(id) {
   document.getElementById('m-start').value = isEdit ? r.startTime : '18:00';
   document.getElementById('m-end').value   = isEdit ? r.endTime   : '22:00';
   distMode = 'single'; grossMode = 'single';
+  // 차량 선택 초기화
+  selectedVehicle = isEdit ? (r.vehicle || 'bike') : 'bike';
+  document.getElementById('v-bike').classList.toggle('active', selectedVehicle === 'bike');
+  document.getElementById('v-car').classList.toggle('active', selectedVehicle === 'car');
   document.getElementById('dist-single').classList.add('active');
   document.getElementById('dist-multi').classList.remove('active');
   document.getElementById('gross-single').classList.add('active');
@@ -752,6 +789,16 @@ function updateGrossLabel() {
   document.getElementById('m-gross-label').textContent =
     selectedPlatform === 'coupang' ? '정산 금액 (수수료 제외 후)' : '세전 수익 (수수료 전)';
 }
+function selectVehicle(v, btn) {
+  selectedVehicle = v;
+  document.getElementById('v-bike').classList.toggle('active', v === 'bike');
+  document.getElementById('v-car').classList.toggle('active', v === 'car');
+  const bikeHint = document.getElementById('v-bike-hint');
+  const carHint  = document.getElementById('v-car-hint');
+  if (bikeHint) bikeHint.textContent = v === 'bike' ? '✓ 선택됨' : '기본값';
+  if (carHint)  carHint.textContent  = v === 'car'  ? '✓ 선택됨' : settings.car_cost_per_km + '원/km';
+  updatePreview();
+}
 function updatePreview() {
   const s = document.getElementById('m-start').value;
   const e = document.getElementById('m-end').value;
@@ -760,44 +807,77 @@ function updatePreview() {
   const gross = getGrossVal(), dist = getDistVal();
   if (!gross || !dist) { document.getElementById('preview-box').style.display = 'none'; return; }
   const net = calcNet(selectedPlatform, gross);
-  const charge = calcCharge(dist);
+  const charge = calcCharge(dist, selectedVehicle);
   const finalNet = net - charge;
   const rate = selectedPlatform==='coupang' ? settings.coupang_deduct
     : selectedPlatform==='haejuseyo_delivery' ? settings.haejuseyo_delivery : settings.haejuseyo_other;
+  const chargeLabel = selectedVehicle === 'car'
+    ? '차량비용 (' + dist.toFixed(1) + 'km × ' + settings.car_cost_per_km + '원)'
+    : '충전비 (' + dist.toFixed(1) + 'km)';
   let html = '<div class="preview-row"><span>' + (selectedPlatform==='coupang'?'정산금액':'세전') + '</span><span>' + fmtW(gross) + '</span></div>'
            + '<div class="preview-row"><span class="neg">' + (selectedPlatform==='coupang'?'소득세+산재':'수수료') + ' (' + rate + '%)</span><span class="neg">-' + fmtW(gross-net) + '</span></div>'
-           + '<div class="preview-row"><span class="neg">충전비 (' + dist.toFixed(1) + 'km)</span><span class="neg">-' + fmtW(charge) + '</span></div>'
+           + '<div class="preview-row"><span class="neg">' + chargeLabel + '</span><span class="neg">-' + fmtW(charge) + '</span></div>'
            + '<div class="preview-row preview-divider"><span style="font-weight:700">순수익</span><span class="accent" style="font-weight:800;font-size:18px">' + fmtW(finalNet) + '</span></div>'
            + (mins > 0 ? '<div class="preview-row"><span style="color:#9CA3AF">시간당</span><span style="color:#9CA3AF">' + fmtW(finalNet/mins*60) + '</span></div>' : '');
   document.getElementById('preview-content').innerHTML = html;
   document.getElementById('preview-box').style.display = 'block';
 }
-function saveSession() {
+async function saveSession(withCloud) {
   const gross = getGrossVal(), dist = getDistVal();
   if (!gross || !dist) { alert('수익과 거리를 입력해주세요'); return; }
   const isEdit = editingId !== null;
   const existDate = isEdit ? records.find(r => r.id === editingId).date : selectedDate;
-  const rec = { id: isEdit ? editingId : Date.now(), date: existDate, platform: selectedPlatform,
-    startTime: document.getElementById('m-start').value, endTime: document.getElementById('m-end').value,
-    distance: dist, gross, memo: document.getElementById('m-memo').value };
+  const rec = {
+    id: isEdit ? editingId : Date.now(),
+    date: existDate, platform: selectedPlatform,
+    startTime: document.getElementById('m-start').value,
+    endTime: document.getElementById('m-end').value,
+    distance: dist, gross, vehicle: selectedVehicle,
+    memo: document.getElementById('m-memo').value
+  };
   if (isEdit) { records = records.map(r => r.id === editingId ? rec : r); }
   else { records.unshift(rec); }
   records.sort((a,b) => b.date.localeCompare(a.date) || a.startTime.localeCompare(b.startTime));
   saveRecords(); renderCalendar();
-  const btn = document.getElementById('modal-save-btn');
-  if (isEdit) {
-    btn.textContent = '✅ 수정 완료!'; btn.classList.add('saved');
-    setTimeout(() => closeModal(), 1000);
-  } else {
-    btn.textContent = '✅ 저장! 계속 입력 가능'; btn.classList.add('saved');
+
+  const localBtn = document.getElementById('modal-save-btn');
+  const cloudBtn = document.getElementById('modal-cloud-btn');
+
+  if (withCloud) {
+    // 클라우드 동시저장
+    localBtn.disabled = true; cloudBtn.disabled = true;
+    cloudBtn.textContent = '☁️ 저장 중...';
+    try {
+      await gistSave(true); // silent=true
+      cloudBtn.textContent = '✅ 클라우드 저장 완료!';
+    } catch(e) {
+      cloudBtn.textContent = '⚠️ 클라우드 실패';
+    }
     setTimeout(() => {
-      btn.textContent = '저장하기'; btn.classList.remove('saved');
-      ['m-distance','m-gross','m-memo'].forEach(id => document.getElementById(id).value = '');
-      ['m-dist-multi','m-gross-multi'].forEach(id => document.getElementById(id).value = '');
-      ['dist-sum','gross-sum'].forEach(id => document.getElementById(id).style.display = 'none');
-      document.getElementById('preview-box').style.display = 'none';
-    }, 1200);
+      cloudBtn.textContent = '☁️ 클라우드 동시저장';
+      localBtn.disabled = false; cloudBtn.disabled = false;
+      if (isEdit) { closeModal(); }
+      else { resetModalForm(); }
+    }, 1500);
+  } else {
+    if (isEdit) {
+      localBtn.textContent = '✅ 수정 완료!'; localBtn.classList.add('saved');
+      setTimeout(() => closeModal(), 1000);
+    } else {
+      localBtn.textContent = '✅ 저장!'; localBtn.classList.add('saved');
+      setTimeout(() => {
+        localBtn.textContent = '💾 디바이스 저장'; localBtn.classList.remove('saved');
+        resetModalForm();
+      }, 1200);
+    }
   }
+}
+function resetModalForm() {
+  ['m-distance','m-gross','m-memo'].forEach(id => document.getElementById(id).value = '');
+  ['m-dist-multi','m-gross-multi'].forEach(id => document.getElementById(id).value = '');
+  ['m-accum-prev','m-accum-curr'].forEach(id => document.getElementById(id).value = '');
+  ['dist-sum','gross-sum','accum-result'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('preview-box').style.display = 'none';
 }
 
 // ── 잡수익 모달 ─────────────────────────────────────────────────
@@ -868,7 +948,7 @@ function getPeriodRange(p) {
 }
 function calcPeriodStats(start, end) {
   return records.filter(r => r.date >= start && r.date <= end).reduce((a,r) => {
-    const net=calcNet(r.platform,r.gross), charge=calcCharge(r.distance), fin=net-charge, mins=minsBetween(r.startTime,r.endTime);
+    const net=calcNet(r.platform,r.gross), charge=calcCharge(r.distance,r.vehicle), fin=net-charge, mins=minsBetween(r.startTime,r.endTime);
     a.gross+=r.gross; a.deduct+=(r.gross-net); a.charge+=charge; a.finalNet+=fin; a.mins+=mins; a.distance+=r.distance; a.sessions+=1;
     if (!a.byP[r.platform]) a.byP[r.platform]={gross:0,net:0,sessions:0};
     a.byP[r.platform].gross+=r.gross; a.byP[r.platform].net+=fin; a.byP[r.platform].sessions+=1;
@@ -1383,10 +1463,14 @@ function saveGistSettings() {
   return { token, id };
 }
 
-async function gistSave() {
+async function gistSave(silent) {
   const { token, id } = saveGistSettings();
-  if (!token) { gistSetStatus('❌ GitHub Token을 입력해주세요', '#EF4444'); return; }
-  gistSetStatus('⏳ 저장 중...', '#6B7280');
+  if (!token) {
+    if (!silent) gistSetStatus('❌ GitHub Token을 입력해주세요', '#EF4444');
+    else { alert('⚙️ 설정 탭에서 GitHub Token을 먼저 입력해주세요'); }
+    return;
+  }
+  if (!silent) gistSetStatus('⏳ 저장 중...', '#6B7280');
   const payload = {
     records: JSON.parse(localStorage.getItem(RKEY) || '[]'),
     extras:  JSON.parse(localStorage.getItem(EKEY) || '[]'),
@@ -1454,6 +1538,7 @@ function saveSettings() {
     coupang_deduct:parseFloat(document.getElementById('s-coupang').value)||4.8,
     haejuseyo_delivery:parseFloat(document.getElementById('s-hj-delivery').value)||15,
     haejuseyo_other:parseFloat(document.getElementById('s-hj-other').value)||15,
+    car_cost_per_km:parseFloat(document.getElementById('s-car-cost').value)||250,
   };
   localStorage.setItem(SKEY,JSON.stringify(settings));
   const btn=document.getElementById('save-settings-btn');
@@ -1466,6 +1551,8 @@ function loadSettings() {
   document.getElementById('s-coupang').value=settings.coupang_deduct;
   document.getElementById('s-hj-delivery').value=settings.haejuseyo_delivery;
   document.getElementById('s-hj-other').value=settings.haejuseyo_other;
+  const carEl = document.getElementById('s-car-cost');
+  if (carEl) carEl.value = settings.car_cost_per_km || 250;
   updateCalc();
 }
 
