@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>🛵 라이더 수익 장부</title>
+<title>🛵 이력 기록 및 수익장부</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:#F3F4F6; color:#1F2937; min-height:100vh; max-width:1100px; margin:0 auto; padding-bottom:40px; }
@@ -13,8 +13,10 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 .brand-name { font-size:16px; font-weight:800; letter-spacing:-0.5px; color:#1F2937; }
 .brand-sub { font-size:9px; color:#9CA3AF; letter-spacing:1px; }
 .nav { display:flex; gap:6px; }
-.nav-btn { background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; padding:7px 14px; font-size:14px; cursor:pointer; color:#6B7280; font-weight:600; transition:all 0.15s; }
+.nav-btn { background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; padding:5px 10px; font-size:11px; cursor:pointer; color:#6B7280; font-weight:600; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:2px; min-width:60px; }
 .nav-btn.active { background:#FFF0E9; border-color:#FF6B2C; color:#FF6B2C; }
+.nav-btn .nav-icon { font-size:16px; }
+.nav-btn .nav-label { font-size:9px; line-height:1; }
 .main { padding:20px 24px; }
 .tab { display:none; }
 .tab.active { display:block; }
@@ -140,15 +142,23 @@ canvas { display:block; }
   <div class="brand">
     <span class="brand-icon">🛵</span>
     <div>
-      <div class="brand-name">라이더 수익 장부</div>
+      <div class="brand-name">이력 기록 및 수익장부</div>
       <div class="brand-sub">RIDER INCOME TRACKER</div>
     </div>
   </div>
   <nav class="nav">
-    <button class="nav-btn active" onclick="showTab('calendar')" id="btn-calendar">📅</button>
-    <button class="nav-btn" onclick="showTab('report')" id="btn-report">📊</button>
-    <button class="nav-btn" onclick="showTab('chart')" id="btn-chart">📈</button>
-    <button class="nav-btn" onclick="showTab('settings')" id="btn-settings">⚙️</button>
+    <button class="nav-btn active" onclick="showTab('calendar')" id="btn-calendar">
+      <span class="nav-icon">📅</span><span class="nav-label">세션 입력</span>
+    </button>
+    <button class="nav-btn" onclick="showTab('report')" id="btn-report">
+      <span class="nav-icon">📊</span><span class="nav-label">플랫폼별 수익</span>
+    </button>
+    <button class="nav-btn" onclick="showTab('chart')" id="btn-chart">
+      <span class="nav-icon">📈</span><span class="nav-label">누적 통계</span>
+    </button>
+    <button class="nav-btn" onclick="showTab('settings')" id="btn-settings">
+      <span class="nav-icon">⚙️</span><span class="nav-label">설정</span>
+    </button>
   </nav>
 </div>
 
@@ -194,6 +204,7 @@ canvas { display:block; }
     </div>
     <div class="report-grid" id="report-cards"></div>
     <div class="section-title">📈 비교 통계 (오늘 기준)</div>
+    <div id="baemin-compare-card" style="margin-bottom:10px"></div>
     <div id="compare-section"></div>
     <div class="section-title" style="margin-top:16px">플랫폼별 수익</div>
     <div id="platform-breakdown"></div>
@@ -1051,6 +1062,7 @@ function renderReport() {
     {label:'순수익 (세후)',     value:fmtW(grandTotal),        color:'#FF6B2C', big:true},
     {label:'시간당 순수익',     value:fmtW(perHour),           color:'#F59E0B', big:true},
     {label:'🟠 쿠팡이츠',      value:fmtW(cpNet),             color:'#FF6B2C'},
+    {label:'🟢 부릉',          value:fmtW(baeminNet),         color:'#00C471'},
     {label:'🔵 해주세요',       value:fmtW(hjNet),             color:'#3B82F6'},
     {label:'🟢 잡수익',        value:fmtW(periodExtraNet),    color:'#10B981'},
     {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#EF4444'},
@@ -1066,6 +1078,44 @@ function renderReport() {
   const lw = new Date(now); lw.setDate(lw.getDate()-7);
   const tSt = dayStats(todayStr()), ySt = dayStats(toDateStr(yd)), lSt = dayStats(toDateStr(lw));
   const dow = ['일','월','화','수','목','금','토'][now.getDay()];
+
+  // 부릉 비교 카드
+  const todayBmSt = (()=>{
+    const recs=records.filter(r=>r.date===todayStr()&&r.platform==='baemin');
+    const net=recs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const dist=recs.reduce((s,r)=>s+r.distance,0);
+    const mins=recs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
+    return {net,dist,mins,sessions:recs.length};
+  })();
+  const ydBmSt = (()=>{
+    const yd=new Date(); yd.setDate(yd.getDate()-1); const yds=toDateStr(yd);
+    const recs=records.filter(r=>r.date===yds&&r.platform==='baemin');
+    const net=recs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const dist=recs.reduce((s,r)=>s+r.distance,0);
+    const mins=recs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
+    return {net,dist,mins};
+  })();
+  const lwBmSt = (()=>{
+    const lw=new Date(); lw.setDate(lw.getDate()-7); const lws=toDateStr(lw);
+    const recs=records.filter(r=>r.date===lws&&r.platform==='baemin');
+    const net=recs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const dist=recs.reduce((s,r)=>s+r.distance,0);
+    const mins=recs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
+    return {net,dist,mins};
+  })();
+  const bmEl=document.getElementById('baemin-compare-card');
+  if(bmEl){
+    if(todayBmSt.sessions>0||ydBmSt.net>0||lwBmSt.net>0){
+      bmEl.innerHTML=`<div class="compare-card" style="border-left:4px solid #00C471">
+        <div class="compare-title">🟢 부릉 오늘 현황</div>
+        <div class="compare-row"><span class="compare-label">오늘 순수익</span><div class="compare-vals"><span style="color:#00C471;font-weight:800">${fmtW(todayBmSt.net)}</span><span style="color:#6B7280;font-size:11px">${todayBmSt.sessions}건</span></div></div>
+        <div class="compare-row"><span class="compare-label">오늘 주행</span><div class="compare-vals"><span style="font-weight:700">${fmtKm(todayBmSt.dist)}</span></div></div>
+        <div class="compare-row"><span class="compare-label">시간당</span><div class="compare-vals"><span style="font-weight:700">${todayBmSt.mins>0?fmtW(todayBmSt.net/todayBmSt.mins*60):'-'}</span>${diffBadge(todayBmSt.net/Math.max(todayBmSt.mins,1)*60, ydBmSt.net/Math.max(ydBmSt.mins,1)*60)}</div></div>
+        <div class="compare-row"><span class="compare-label">전일 대비</span><div class="compare-vals"><span style="color:#6B7280">${fmtW(ydBmSt.net)}</span><span>→</span><span style="font-weight:700">${fmtW(todayBmSt.net)}</span>${diffBadge(todayBmSt.net,ydBmSt.net)}</div></div>
+        <div class="compare-row"><span class="compare-label">지난주 동요일 대비</span><div class="compare-vals"><span style="color:#6B7280">${fmtW(lwBmSt.net)}</span><span>→</span><span style="font-weight:700">${fmtW(todayBmSt.net)}</span>${diffBadge(todayBmSt.net,lwBmSt.net)}</div></div>
+      </div>`;
+    } else { bmEl.innerHTML=''; }
+  }
 
   document.getElementById('compare-section').innerHTML =
     '<div class="compare-card"><div class="compare-title">📅 전일 대비 (어제 ' + toDateStr(yd) + ')</div>'
@@ -1113,14 +1163,15 @@ function renderDailyChart() {
     const ds = toDateStr(d);
     labels.push(ds.slice(5));
     const dayRecs = records.filter(r => r.date === ds);
-    const cp = dayRecs.filter(r=>r.platform==='coupang').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
-    const hd = dayRecs.filter(r=>r.platform==='haejuseyo_delivery').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
-    const ho = dayRecs.filter(r=>r.platform==='haejuseyo_other').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    const cp = dayRecs.filter(r=>r.platform==='coupang').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const bm = dayRecs.filter(r=>r.platform==='baemin').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const hd = dayRecs.filter(r=>r.platform==='haejuseyo_delivery').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const ho = dayRecs.filter(r=>r.platform==='haejuseyo_other').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
     const ex = extras.filter(e=>e.date===ds).reduce((s,e)=>s+e.amount,0);
-    const total = cp+hd+ho+ex;
+    const total = cp+bm+hd+ho+ex;
     const dayMins = dayRecs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
     const ph = dayMins > 0 ? total/dayMins*60 : 0;
-    stackData.push({coupang:cp, haejuseyo_delivery:hd, haejuseyo_other:ho, extra:ex, total});
+    stackData.push({coupang:cp, baemin:bm, haejuseyo_delivery:hd, haejuseyo_other:ho, extra:ex, total});
     totals.push(total);
     perHours.push(ph);
   }
@@ -1163,7 +1214,7 @@ function renderDailyChart() {
   });
 
   // 누적 막대
-  const layers = ['coupang','haejuseyo_delivery','haejuseyo_other','extra'];
+  const layers = ['coupang','baemin','haejuseyo_delivery','haejuseyo_other','extra'];
   stackData.forEach((d,i) => {
     if (d.total <= 0) return;
     const x = padL + i*step + step/2 - barW/2;
