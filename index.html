@@ -354,8 +354,8 @@ canvas { display:block; }
         <input class="setting-input" type="number" step="0.1" id="s-coupang" value="4.8">
       </div>
       <div class="setting-row">
-        <div><div class="setting-label">부릉 공제율 (%)</div><div class="setting-hint">소득세 3.3%</div></div>
-        <input class="setting-input" type="number" step="0.1" id="s-baemin" value="3.3">
+        <div><div class="setting-label">부릉 공제율 (%)</div><div class="setting-hint">출금수수료 1.2% 수준</div></div>
+        <input class="setting-input" type="number" step="0.1" id="s-baemin" value="1.2">
       </div>
       <div class="setting-row">
         <div><div class="setting-label">해주세요 배달 (%)</div><div class="setting-hint">평균 15%</div></div>
@@ -540,7 +540,7 @@ let extras  = JSON.parse(localStorage.getItem(EKEY) || '[]');
 let settings = {
   kwh_per_km: 0.04, elec_price: 180,
   coupang_deduct: 5.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
-  baemin_deduct: 3.3,
+  baemin_deduct: 1.2,
   car_cost_per_km: 250,
   ...JSON.parse(localStorage.getItem(SKEY) || '{}')
 };
@@ -851,7 +851,7 @@ function selectPlatform(btn) {
 }
 function updateGrossLabel() {
   const label = selectedPlatform === 'coupang' ? '정산 금액 (수수료 제외 후)'
-    : selectedPlatform === 'baemin' ? '세전 수익 (소득세 3.3% 공제 전)'
+    : selectedPlatform === 'baemin' ? '세전 수익 (1.2% 공제 전)'
     : '세전 수익 (수수료 전)';
   document.getElementById('m-gross-label').textContent = label;
 }
@@ -1772,7 +1772,7 @@ function saveSettings() {
     kwh_per_km:parseFloat(document.getElementById('s-kwh').value)||0.04,
     elec_price:parseFloat(document.getElementById('s-elec').value)||180,
     coupang_deduct:parseFloat(document.getElementById('s-coupang').value)||5.8,
-    baemin_deduct:parseFloat(document.getElementById('s-baemin').value)||3.3,
+    baemin_deduct:parseFloat(document.getElementById('s-baemin').value)||1.2,
     haejuseyo_delivery:parseFloat(document.getElementById('s-hj-delivery').value)||15,
     haejuseyo_other:parseFloat(document.getElementById('s-hj-other').value)||15,
     car_cost_per_km:parseFloat(document.getElementById('s-car-cost').value)||250,
