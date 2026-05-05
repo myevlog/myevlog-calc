@@ -224,17 +224,73 @@ canvas { display:block; }
     <div class="chart-section">
       <div class="chart-title"><span>🟠 쿠팡이츠 데일리 트래킹</span></div>
       <div class="chart-period-row">
+        <button class="chart-period-btn" onclick="setCoupangDays(7,this)">7일</button>
+        <button class="chart-period-btn" onclick="setCoupangDays(15,this)">15일</button>
         <button class="chart-period-btn active" onclick="setCoupangDays(30,this)">30일</button>
         <button class="chart-period-btn" onclick="setCoupangDays(60,this)">60일</button>
         <button class="chart-period-btn" onclick="setCoupangDays(90,this)">90일</button>
-        <button class="chart-period-btn" onclick="setCoupangDays(120,this)">120일</button>
-        <button class="chart-period-btn" onclick="setCoupangDays(180,this)">180일</button>
+        <button class="chart-period-btn" id="coupang-custom-btn" onclick="openCoupangCustomDate()">날짜 선택</button>
       </div>
       <div class="chart-canvas-wrap"><canvas id="coupang-chart"></canvas></div>
       <div class="chart-legend">
         <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>순수익 (막대, 만원)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#10B981;border-radius:50%"></div>km당 단가 (꺾은선, 원)</div>
+      </div>
+    </div>
+
+    <!-- 부릉 데일리 트래킹 -->
+    <div class="chart-section">
+      <div class="chart-title"><span>🟢 부릉 데일리 트래킹</span></div>
+      <div class="chart-period-row">
+        <button class="chart-period-btn" onclick="setBaeminDays(7,this)">7일</button>
+        <button class="chart-period-btn" onclick="setBaeminDays(15,this)">15일</button>
+        <button class="chart-period-btn active" onclick="setBaeminDays(30,this)">30일</button>
+        <button class="chart-period-btn" onclick="setBaeminDays(60,this)">60일</button>
+        <button class="chart-period-btn" onclick="setBaeminDays(90,this)">90일</button>
+        <button class="chart-period-btn" onclick="openBaeminCustomDate()">날짜 선택</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="baemin-chart"></canvas></div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00C471"></div>순수익 (막대, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F59E0B;border-radius:50%"></div>7일 평균</div>
+      </div>
+    </div>
+
+    <!-- 쿠팡 vs 부릉 비교 그래프 -->
+    <div class="chart-section">
+      <div class="chart-title"><span>📊 쿠팡이츠 vs 부릉 비교</span></div>
+      <div class="chart-period-row">
+        <button class="chart-period-btn" onclick="setCompareDays(7,this)">7일</button>
+        <button class="chart-period-btn" onclick="setCompareDays(15,this)">15일</button>
+        <button class="chart-period-btn active" onclick="setCompareDays(30,this)">30일</button>
+        <button class="chart-period-btn" onclick="setCompareDays(60,this)">60일</button>
+        <button class="chart-period-btn" onclick="setCompareDays(90,this)">90일</button>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="compare-chart"></canvas></div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>쿠팡이츠</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00C471"></div>부릉</div>
+      </div>
+    </div>
+
+    <!-- 날짜 선택 모달 (쿠팡/부릉 공용) -->
+    <div id="custom-date-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center">
+      <div style="background:#fff;border-radius:16px;padding:24px;width:320px;max-width:90vw">
+        <div style="font-size:16px;font-weight:800;margin-bottom:16px" id="custom-date-title">기간 선택</div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:#6B7280;margin-bottom:4px">시작일</div>
+          <input type="date" id="custom-start-date" class="modal-input">
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:#6B7280;margin-bottom:4px">종료일</div>
+          <input type="date" id="custom-end-date" class="modal-input">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="applyCustomDate()" style="flex:1;background:#FF6B2C;border:none;border-radius:10px;color:#fff;padding:12px;font-size:14px;font-weight:700;cursor:pointer">적용</button>
+          <button onclick="closeCustomDate()" style="flex:1;background:#F3F4F6;border:none;border-radius:10px;color:#6B7280;padding:12px;font-size:14px;cursor:pointer">취소</button>
+        </div>
       </div>
     </div>
 
@@ -298,6 +354,10 @@ canvas { display:block; }
         <input class="setting-input" type="number" step="0.1" id="s-coupang" value="4.8">
       </div>
       <div class="setting-row">
+        <div><div class="setting-label">부릉 공제율 (%)</div><div class="setting-hint">소득세 3.3%</div></div>
+        <input class="setting-input" type="number" step="0.1" id="s-baemin" value="3.3">
+      </div>
+      <div class="setting-row">
         <div><div class="setting-label">해주세요 배달 (%)</div><div class="setting-hint">평균 15%</div></div>
         <input class="setting-input" type="number" step="0.1" id="s-hj-delivery" value="15">
       </div>
@@ -334,6 +394,7 @@ canvas { display:block; }
       <div class="field-label">플랫폼</div>
       <div class="platform-btns">
         <button class="platform-btn active" data-platform="coupang" onclick="selectPlatform(this)">🟠 쿠팡이츠</button>
+        <button class="platform-btn" data-platform="baemin" onclick="selectPlatform(this)">🟢 부릉</button>
         <button class="platform-btn" data-platform="haejuseyo_delivery" onclick="selectPlatform(this)">🔵 해주세요 배달</button>
         <button class="platform-btn" data-platform="haejuseyo_other" onclick="selectPlatform(this)">🟣 해주세요 기타</button>
       </div>
@@ -478,7 +539,8 @@ let records = JSON.parse(localStorage.getItem(RKEY) || '[]');
 let extras  = JSON.parse(localStorage.getItem(EKEY) || '[]');
 let settings = {
   kwh_per_km: 0.04, elec_price: 180,
-  coupang_deduct: 4.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
+  coupang_deduct: 5.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
+  baemin_deduct: 3.3,
   car_cost_per_km: 250,
   ...JSON.parse(localStorage.getItem(SKEY) || '{}')
 };
@@ -493,11 +555,12 @@ let chartDays = 30, monthChartOffset = 0;
 // ── 플랫폼 정의 ────────────────────────────────────────────────
 const PLATFORMS = {
   coupang:             { label:'쿠팡이츠',      emoji:'🟠', color:'#FF6B2C' },
+  baemin:              { label:'부릉',           emoji:'🟢', color:'#00C471' },
   haejuseyo_delivery:  { label:'해주세요 배달', emoji:'🔵', color:'#3B82F6' },
   haejuseyo_other:     { label:'해주세요 기타', emoji:'🟣', color:'#8B5CF6' },
 };
 const CHART_COLORS = {
-  coupang: '#FF6B2C', haejuseyo_delivery: '#3B82F6',
+  coupang: '#FF6B2C', baemin: '#00C471', haejuseyo_delivery: '#3B82F6',
   haejuseyo_other: '#8B5CF6', extra: '#10B981'
 };
 
@@ -524,6 +587,7 @@ function calcCharge(km, vehicle) {
 }
 function calcNet(platform, gross) {
   const r = platform === 'coupang' ? settings.coupang_deduct
+    : platform === 'baemin' ? settings.baemin_deduct
     : platform === 'haejuseyo_delivery' ? settings.haejuseyo_delivery
     : settings.haejuseyo_other;
   return gross * (1 - r / 100);
@@ -786,8 +850,10 @@ function selectPlatform(btn) {
   updateGrossLabel(); updatePreview();
 }
 function updateGrossLabel() {
-  document.getElementById('m-gross-label').textContent =
-    selectedPlatform === 'coupang' ? '정산 금액 (수수료 제외 후)' : '세전 수익 (수수료 전)';
+  const label = selectedPlatform === 'coupang' ? '정산 금액 (수수료 제외 후)'
+    : selectedPlatform === 'baemin' ? '세전 수익 (소득세 3.3% 공제 전)'
+    : '세전 수익 (수수료 전)';
+  document.getElementById('m-gross-label').textContent = label;
 }
 function selectVehicle(v, btn) {
   selectedVehicle = v;
@@ -974,6 +1040,8 @@ function renderReport() {
   // 플랫폼별 순수익 계산
   const cpNet = records.filter(r=>r.date>=start&&r.date<=end&&r.platform==='coupang')
     .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+  const baeminNet = records.filter(r=>r.date>=start&&r.date<=end&&r.platform==='baemin')
+    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
   const hjNet = records.filter(r=>r.date>=start&&r.date<=end&&(r.platform==='haejuseyo_delivery'||r.platform==='haejuseyo_other'))
     .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
 
@@ -1117,8 +1185,8 @@ function renderDailyChart() {
     if (barW >= 6) {
       const topY = padT+chartH-(d.total/maxVal)*chartH;
       const manwon = (d.total/10000).toFixed(1);
-      ctx.fillStyle='#EF4444'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
-      ctx.fillText(manwon, x+barW/2, topY-3);
+      ctx.fillStyle='#1F2937'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(manwon, x+barW/2, topY-5);
     }
   });
 
@@ -1361,7 +1429,175 @@ function renderCoupangChart() {
   });
 }
 
-function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupangChart(); }
+// ── 부릉 + 비교 차트 ──────────────────────────────────────────────
+let baeminChartDays = 30, compareDays = 30;
+let customDateTarget = null;
+let coupangCustomStart = null, coupangCustomEnd = null;
+let baeminCustomStart = null, baeminCustomEnd = null;
+
+function setBaeminDays(days, btn) {
+  baeminChartDays = days; baeminCustomStart = null; baeminCustomEnd = null;
+  btn.closest('.chart-period-row').querySelectorAll('.chart-period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderBaeminChart();
+}
+function setCompareDays(days, btn) {
+  compareDays = days;
+  btn.closest('.chart-period-row').querySelectorAll('.chart-period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderCompareChart();
+}
+function openCoupangCustomDate() {
+  customDateTarget='coupang';
+  document.getElementById('custom-date-title').textContent='쿠팡이츠 기간 선택';
+  const now=new Date();
+  document.getElementById('custom-end-date').value=toDateStr(now);
+  const s=new Date(now); s.setDate(s.getDate()-29);
+  document.getElementById('custom-start-date').value=toDateStr(s);
+  document.getElementById('custom-date-overlay').style.display='flex';
+}
+function openBaeminCustomDate() {
+  customDateTarget='baemin';
+  document.getElementById('custom-date-title').textContent='부릉 기간 선택';
+  const now=new Date();
+  document.getElementById('custom-end-date').value=toDateStr(now);
+  const s=new Date(now); s.setDate(s.getDate()-29);
+  document.getElementById('custom-start-date').value=toDateStr(s);
+  document.getElementById('custom-date-overlay').style.display='flex';
+}
+function applyCustomDate() {
+  const s=document.getElementById('custom-start-date').value;
+  const e=document.getElementById('custom-end-date').value;
+  if(!s||!e) return;
+  document.getElementById('custom-date-overlay').style.display='none';
+  if(customDateTarget==='coupang'){
+    coupangCustomStart=s; coupangCustomEnd=e;
+    document.getElementById('coupang-custom-btn').classList.add('active');
+    renderCoupangChart();
+  } else {
+    baeminCustomStart=s; baeminCustomEnd=e; renderBaeminChart();
+  }
+}
+function closeCustomDate() { document.getElementById('custom-date-overlay').style.display='none'; }
+
+function renderBaeminChart() {
+  const canvas=document.getElementById('baemin-chart'); if(!canvas) return;
+  const now=new Date();
+  const labels=[],netVals=[],distVals=[],totals=[];
+  let dateList=[];
+  if(baeminCustomStart&&baeminCustomEnd){
+    let d=new Date(baeminCustomStart);
+    while(toDateStr(d)<=baeminCustomEnd){dateList.push(toDateStr(d));d.setDate(d.getDate()+1);}
+  } else {
+    for(let i=baeminChartDays-1;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);dateList.push(toDateStr(d));}
+  }
+  dateList.forEach(ds=>{
+    labels.push(ds.slice(5));
+    const r=records.filter(r=>r.date===ds&&r.platform==='baemin');
+    const net=r.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const dist=r.reduce((s,r)=>s+r.distance,0);
+    netVals.push(net); distVals.push(dist); totals.push(net);
+  });
+  const avgs=totals.map((_,i)=>{
+    const sl=totals.slice(Math.max(0,i-6),i+1);
+    return Math.round(sl.reduce((a,b)=>a+b,0)/sl.length);
+  });
+  const W=canvas.parentElement.clientWidth||340;
+  const barW=Math.max(5,Math.min(18,Math.floor((W-88)/labels.length)-2));
+  const H=240; canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  const maxNet=Math.max(...netVals,1),maxDist=Math.max(...distVals,1);
+  const padL=48,padR=48,padT=24,padB=28,chartW=W-padL-padR,chartH=H-padT-padB,step=chartW/labels.length;
+  ctx.fillStyle='#9CA3AF'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left'; ctx.fillText('만원',0,padT-8);
+  ctx.fillStyle='#3B82F6'; ctx.textAlign='right'; ctx.fillText('km',W,padT-8);
+  ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1;
+  [0.25,0.5,0.75,1].forEach(r=>{
+    const y=padT+chartH*(1-r);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='right';
+    ctx.fillText((maxNet*r/10000).toFixed(1),padL-3,y+3);
+    ctx.fillStyle='#3B82F6'; ctx.textAlign='left';
+    ctx.fillText((maxDist*r).toFixed(0),W-padR+3,y+3);
+  });
+  netVals.forEach((v,i)=>{
+    if(v<=0) return;
+    const x=padL+i*step+step/2-barW/2,bH=(v/maxNet)*chartH,y=padT+chartH-bH;
+    ctx.fillStyle='#00C471';
+    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,barW,bH,[3,3,0,0]); else ctx.rect(x,y,barW,bH);
+    ctx.fill();
+    if(barW>=6){ctx.fillStyle='#1F2937'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText((v/10000).toFixed(1),x+barW/2,y-4);}
+  });
+  ctx.beginPath(); ctx.strokeStyle='#3B82F6'; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+  let ds2=false;
+  distVals.forEach((v,i)=>{
+    if(v<=0) return;
+    const x=padL+i*step+step/2,y=padT+chartH-(v/maxDist)*chartH;
+    if(!ds2){ctx.moveTo(x,y);ds2=true;}else ctx.lineTo(x,y);
+  });
+  ctx.stroke(); ctx.setLineDash([]);
+  distVals.forEach((v,i)=>{
+    if(v<=0) return;
+    const x=padL+i*step+step/2,y=padT+chartH-(v/maxDist)*chartH;
+    ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fillStyle='#3B82F6'; ctx.fill();
+  });
+  ctx.beginPath(); ctx.strokeStyle='#F59E0B'; ctx.lineWidth=2;
+  avgs.forEach((v,i)=>{
+    const x=padL+i*step+step/2,y=padT+chartH-(Math.max(v,0)/maxNet)*chartH;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  const lStep=Math.ceil(labels.length/8);
+  labels.forEach((l,i)=>{if(i%lStep===0||i===labels.length-1) ctx.fillText(l,padL+i*step+step/2,H-4);});
+}
+
+function renderCompareChart() {
+  const canvas=document.getElementById('compare-chart'); if(!canvas) return;
+  const now=new Date();
+  const labels=[],cpVals=[],bmVals=[];
+  for(let i=compareDays-1;i>=0;i--){
+    const d=new Date(now); d.setDate(d.getDate()-i); const ds=toDateStr(d);
+    labels.push(ds.slice(5));
+    cpVals.push(records.filter(r=>r.date===ds&&r.platform==='coupang').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0));
+    bmVals.push(records.filter(r=>r.date===ds&&r.platform==='baemin').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0));
+  }
+  const W=canvas.parentElement.clientWidth||340;
+  const groupW=Math.max(10,Math.floor((W-52)/labels.length)-2);
+  const bW=Math.max(4,Math.floor(groupW/2)-1);
+  const H=220; canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  const maxVal=Math.max(...cpVals,...bmVals,1);
+  const padL=44,padR=8,padT=24,padB=28,chartW=W-padL-padR,chartH=H-padT-padB,step=chartW/labels.length;
+  ctx.fillStyle='#6B7280'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right';
+  ctx.fillText('단위: 만원',W-padR,padT-8);
+  ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1;
+  [0.25,0.5,0.75,1].forEach(r=>{
+    const y=padT+chartH*(1-r);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='right';
+    ctx.fillText((maxVal*r/10000).toFixed(1),padL-3,y+3);
+  });
+  labels.forEach((_,i)=>{
+    const cx=padL+i*step+step/2;
+    if(cpVals[i]>0){
+      const bH=(cpVals[i]/maxVal)*chartH,x=cx-bW-1,y=padT+chartH-bH;
+      ctx.fillStyle='#FF6B2C';
+      ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,bW,bH,[3,3,0,0]); else ctx.rect(x,y,bW,bH);
+      ctx.fill();
+      if(bW>=5){ctx.fillStyle='#1F2937'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillText((cpVals[i]/10000).toFixed(1),x+bW/2,y-3);}
+    }
+    if(bmVals[i]>0){
+      const bH=(bmVals[i]/maxVal)*chartH,x=cx+1,y=padT+chartH-bH;
+      ctx.fillStyle='#00C471';
+      ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,bW,bH,[3,3,0,0]); else ctx.rect(x,y,bW,bH);
+      ctx.fill();
+      if(bW>=5){ctx.fillStyle='#1F2937'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillText((bmVals[i]/10000).toFixed(1),x+bW/2,y-3);}
+    }
+  });
+  ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  const lStep=Math.ceil(labels.length/8);
+  labels.forEach((l,i)=>{if(i%lStep===0||i===labels.length-1) ctx.fillText(l,padL+i*step+step/2,H-4);});
+}
+
+function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupangChart(); renderBaeminChart(); renderCompareChart(); }
 
 // ── CSV 내보내기/가져오기 ───────────────────────────────────────
 function exportCSV() {
@@ -1535,7 +1771,8 @@ function saveSettings() {
   settings={
     kwh_per_km:parseFloat(document.getElementById('s-kwh').value)||0.04,
     elec_price:parseFloat(document.getElementById('s-elec').value)||180,
-    coupang_deduct:parseFloat(document.getElementById('s-coupang').value)||4.8,
+    coupang_deduct:parseFloat(document.getElementById('s-coupang').value)||5.8,
+    baemin_deduct:parseFloat(document.getElementById('s-baemin').value)||3.3,
     haejuseyo_delivery:parseFloat(document.getElementById('s-hj-delivery').value)||15,
     haejuseyo_other:parseFloat(document.getElementById('s-hj-other').value)||15,
     car_cost_per_km:parseFloat(document.getElementById('s-car-cost').value)||250,
@@ -1549,6 +1786,7 @@ function loadSettings() {
   document.getElementById('s-kwh').value=settings.kwh_per_km;
   document.getElementById('s-elec').value=settings.elec_price;
   document.getElementById('s-coupang').value=settings.coupang_deduct;
+  const baeminEl=document.getElementById('s-baemin'); if(baeminEl) baeminEl.value=settings.baemin_deduct||3.3;
   document.getElementById('s-hj-delivery').value=settings.haejuseyo_delivery;
   document.getElementById('s-hj-other').value=settings.haejuseyo_other;
   const carEl = document.getElementById('s-car-cost');
