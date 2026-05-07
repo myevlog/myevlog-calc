@@ -592,7 +592,8 @@ function minsBetween(s, e) {
   return d;
 }
 function calcCharge(km, vehicle) {
-  if ((vehicle || selectedVehicle) === 'car') return km * settings.car_cost_per_km;
+  const v = vehicle || 'bike'; // undefined면 항상 bike (selectedVehicle 무관)
+  if (v === 'car') return km * settings.car_cost_per_km;
   return km * settings.kwh_per_km * settings.elec_price;
 }
 function calcNet(platform, gross) {
@@ -682,7 +683,7 @@ function renderDayDetail() {
   if (!dayRecs.length && !dayEx.length) {
     html = '<div class="empty-day">이 날의 기록이 없어요</div>';
   } else {
-    const total     = dayRecs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance), 0);
+    const total     = dayRecs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance, r.vehicle), 0);
     const exTotal   = dayEx.reduce((s,e) => s + e.amount, 0);
     const grandTotal = total + exTotal;
     const totalMins  = dayRecs.reduce((s,r) => s + minsBetween(r.startTime,r.endTime), 0);
@@ -1049,11 +1050,11 @@ function renderReport() {
 
   // 플랫폼별 순수익 계산
   const cpNet = records.filter(r=>r.date>=start&&r.date<=end&&r.platform==='coupang')
-    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance, r.vehicle),0);
   const baeminNet = records.filter(r=>r.date>=start&&r.date<=end&&r.platform==='baemin')
-    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance, r.vehicle),0);
   const hjNet = records.filter(r=>r.date>=start&&r.date<=end&&(r.platform==='haejuseyo_delivery'||r.platform==='haejuseyo_other'))
-    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0);
+    .reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance, r.vehicle),0);
 
   const deductPct = grandGross > 0 ? ((grandGross - grandTotal) / grandGross * 100).toFixed(1) : '0.0';
   document.getElementById('report-cards').innerHTML = [
@@ -1323,7 +1324,7 @@ function renderMonthlyChart() {
     const y=d.getFullYear(), m=d.getMonth();
     const start=y+'-'+String(m+1).padStart(2,'0')+'-01';
     const end=toDateStr(new Date(y,m+1,0));
-    const net=records.filter(r=>r.date>=start&&r.date<=end).reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance),0)
+    const net=records.filter(r=>r.date>=start&&r.date<=end).reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance, r.vehicle),0)
              +extras.filter(e=>e.date>=start&&e.date<=end).reduce((s,e)=>s+e.amount,0);
     labels.push(String(m+1)+'월');
     values.push(net);
@@ -1396,7 +1397,7 @@ function renderCoupangChart() {
     labels.push(ds.slice(5));
 
     const dayRecs = records.filter(r => r.date === ds && r.platform === 'coupang');
-    const net  = dayRecs.reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance), 0);
+    const net  = dayRecs.reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance, r.vehicle), 0);
     const dist = dayRecs.reduce((s,r) => s + r.distance, 0);
     const unit = dist > 0 ? net / dist : 0; // 원/km
 
@@ -1685,9 +1686,9 @@ function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupan
 function exportCSV() {
   if (!records.length && !extras.length) { alert('저장된 기록이 없어요'); return; }
   const headers=['날짜','플랫폼','시작시간','종료시간','작업시간(분)','주행거리(km)','세전수익(원)','수수료(원)','충전비(원)','순수익(원)','시간당순수익(원)','메모'];
-  const pName={coupang:'쿠팡이츠',haejuseyo_delivery:'해주세요 배달',haejuseyo_other:'해주세요 기타'};
+  const pName={coupang:'쿠팡이츠',baemin:'부릉',haejuseyo_delivery:'해주세요 배달',haejuseyo_other:'해주세요 기타'};
   const rows=[...records].sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime)).map(r=>{
-    const net=calcNet(r.platform,r.gross),charge=calcCharge(r.distance),fin=net-charge,mins=minsBetween(r.startTime,r.endTime);
+    const net=calcNet(r.platform,r.gross),charge=calcCharge(r.distance,r.vehicle),fin=net-charge,mins=minsBetween(r.startTime,r.endTime);
     return [r.date,pName[r.platform]||r.platform,r.startTime,r.endTime,mins,r.distance,
       Math.round(r.gross),Math.round(r.gross-net),Math.round(charge),Math.round(fin),
       mins>0?Math.round(fin/mins*60):0,r.memo||''];
@@ -1737,7 +1738,7 @@ function importCSV(event) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)){ skipped++; continue; }
         const isDup=records.some(r=>r.date===date&&r.platform===platform&&r.startTime===startTime&&r.gross===gross);
         if (isDup){ skipped++; continue; }
-        newRecs.push({id:Date.now()+i+Math.random(),date,platform,startTime,endTime,distance,gross,memo});
+        newRecs.push({id:Date.now()+i+Math.random(),date,platform,startTime,endTime,distance,gross,vehicle:'bike',memo});
         added++;
       }
       if (added>0){
