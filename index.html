@@ -184,6 +184,7 @@ canvas { display:block; }
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="add-btn" style="background:#6B7280;font-size:12px" onclick="openExtraModal()">+ 잡수익</button>
           <button class="add-btn" style="background:#06B6D4;font-size:12px" onclick="openSoomgoModal()">+ 숨고발송</button>
+          <button class="add-btn" style="background:#03C75A;font-size:12px" onclick="openAdpostModal()">+ AdPost</button>
           <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
         </div>
       </div>
@@ -229,6 +230,7 @@ canvas { display:block; }
         <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>기타부수입</div>
         <div class="legend-item"><div class="legend-dot" style="background:#06B6D4"></div>숨고</div>
         <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>잡수익</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#03C75A"></div>AdPost</div>
         <div class="legend-item"><div class="legend-dot" style="background:#FCD34D;border-radius:50%"></div>7일 평균</div>
         <div class="legend-item"><div class="legend-dot" style="background:#34D399;border-radius:50%"></div>시간당 수익 (우측축)</div>
       </div>
@@ -586,17 +588,47 @@ canvas { display:block; }
   </div>
 </div>
 
+<!-- AdPost 모달 -->
+<div class="overlay" id="adpost-overlay" onclick="if(event.target===this)closeAdpostModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🟢 AdPost 입금 입력</span>
+      <button class="close-btn" onclick="closeAdpostModal()">✕</button>
+    </div>
+    <div class="modal-section">
+      <div class="field-label">날짜</div>
+      <div style="color:#9CA3AF;font-size:14px;padding:4px 0" id="adpost-date-label"></div>
+    </div>
+    <div class="modal-section">
+      <div class="field-label">입금액 (원)</div>
+      <input type="number" class="modal-input" id="adpost-amount" step="100" placeholder="예: 91342" oninput="updateAdpostPreview()">
+      <div style="font-size:10px;color:#9CA3AF;margin-top:4px">통장에 실제로 찍힌 금액 그대로 입력해 (원천징수 있었으면 이미 뗀 후 금액)</div>
+    </div>
+    <div class="modal-section">
+      <div class="field-label">메모 (선택)</div>
+      <input type="text" class="modal-input" id="adpost-memo" placeholder="예: 8월분 애드포스트 입금">
+    </div>
+    <div class="preview" id="adpost-preview-box" style="display:none">
+      <div class="preview-title">🟢 입금 내역</div>
+      <div id="adpost-preview-content"></div>
+    </div>
+    <button class="save-btn" id="adpost-save-btn" onclick="saveAdpostIncome()" style="background:#03C75A">저장하기</button>
+  </div>
+</div>
+
 <script>
 // ── 스토리지 키 ────────────────────────────────────────────────
 const RKEY = 'rider_v2_records';
 const SKEY = 'rider_v2_settings';
 const EKEY = 'rider_v2_extras';
 const SGKEY = 'rider_v2_soomgo_sends';
+const AKEY = 'rider_v2_adpost';
 
 // ── 데이터 로드 ────────────────────────────────────────────────
 let records = JSON.parse(localStorage.getItem(RKEY) || '[]');
 let extras  = JSON.parse(localStorage.getItem(EKEY) || '[]');
 let soomgoSends = JSON.parse(localStorage.getItem(SGKEY) || '[]');
+let adpostIncomes = JSON.parse(localStorage.getItem(AKEY) || '[]');
 let settings = {
   kwh_per_km: 0.04, elec_price: 180,
   coupang_deduct: 5.8, haejuseyo_delivery: 15, haejuseyo_other: 15,
@@ -623,7 +655,7 @@ const PLATFORMS = {
 };
 const CHART_COLORS = {
   coupang: '#FF6B2C', baemin: '#00C471', haejuseyo_delivery: '#3B82F6',
-  haejuseyo_other: '#8B5CF6', soomgo: '#06B6D4', extra: '#10B981'
+  haejuseyo_other: '#8B5CF6', soomgo: '#06B6D4', extra: '#10B981', adpost: '#03C75A'
 };
 
 // ── 유틸 ───────────────────────────────────────────────────────
@@ -666,18 +698,21 @@ function heatColor(net) {
 function daySoomgoFee(ds) {
   return soomgoSends.filter(g => g.date === ds).reduce((s,g) => s + g.totalFee, 0);
 }
+function dayAdpost(ds) {
+  return adpostIncomes.filter(a => a.date === ds).reduce((s,a) => s + a.amount, 0);
+}
 function dayNet(ds) {
   const sNet = records.filter(r => r.date === ds)
     .reduce((s,r) => s + calcNet(r.platform, r.gross) - calcCharge(r.distance, r.vehicle), 0);
   const eNet = extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0);
-  return sNet + eNet - daySoomgoFee(ds);
+  return sNet + eNet - daySoomgoFee(ds) + dayAdpost(ds);
 }
 function dayStats(ds) {
   const recs = records.filter(r => r.date === ds);
   return {
     net: recs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance, r.vehicle), 0)
        + extras.filter(e => e.date === ds).reduce((s,e) => s + e.amount, 0)
-       - daySoomgoFee(ds),
+       - daySoomgoFee(ds) + dayAdpost(ds),
     distance: recs.reduce((s,r) => s + r.distance, 0),
     mins: recs.reduce((s,r) => s + minsBetween(r.startTime, r.endTime), 0),
   };
@@ -685,6 +720,7 @@ function dayStats(ds) {
 function saveRecords() { localStorage.setItem(RKEY, JSON.stringify(records)); }
 function saveExtras()  { localStorage.setItem(EKEY, JSON.stringify(extras)); }
 function saveSoomgoSends() { localStorage.setItem(SGKEY, JSON.stringify(soomgoSends)); }
+function saveAdpostIncomes() { localStorage.setItem(AKEY, JSON.stringify(adpostIncomes)); }
 
 // ── 탭 ─────────────────────────────────────────────────────────
 function showTab(name) {
@@ -739,14 +775,16 @@ function renderDayDetail() {
   let html = '';
 
   const daySg = soomgoSends.filter(g => g.date === selectedDate);
+  const dayAp = adpostIncomes.filter(a => a.date === selectedDate);
 
-  if (!dayRecs.length && !dayEx.length && !daySg.length) {
+  if (!dayRecs.length && !dayEx.length && !daySg.length && !dayAp.length) {
     html = '<div class="empty-day">이 날의 기록이 없어요</div>';
   } else {
     const total     = dayRecs.reduce((s,r) => s + calcNet(r.platform,r.gross) - calcCharge(r.distance, r.vehicle), 0);
     const exTotal   = dayEx.reduce((s,e) => s + e.amount, 0);
     const sgFeeTotal = daySg.reduce((s,g) => s + g.totalFee, 0);
-    const grandTotal = total + exTotal - sgFeeTotal;
+    const apTotal   = dayAp.reduce((s,a) => s + a.amount, 0);
+    const grandTotal = total + exTotal - sgFeeTotal + apTotal;
     const totalMins  = dayRecs.reduce((s,r) => s + minsBetween(r.startTime,r.endTime), 0);
     const totalDist  = dayRecs.reduce((s,r) => s + r.distance, 0);
 
@@ -755,6 +793,7 @@ function renderDayDetail() {
           + '<div class="day-summary-row"><span>총 주행</span><span>' + fmtKm(totalDist) + '</span></div>'
           + '<div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">' + fmtW(total) + '</span></div>'
           + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#10B981;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
+          + (apTotal > 0 ? '<div class="day-summary-row"><span>AdPost</span><span style="color:#03C75A;font-weight:700">+' + fmtW(apTotal) + '</span></div>' : '')
           + (sgFeeTotal > 0 ? '<div class="day-summary-row"><span>숨고 발송비</span><span class="neg" style="font-weight:700">-' + fmtW(sgFeeTotal) + '</span></div>' : '')
           + '<div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#FF6B2C;font-weight:800;font-size:15px">' + fmtW(grandTotal) + '</span></div>'
           + '<div class="day-summary-row"><span>시간당</span><span style="font-weight:700">' + (totalMins > 0 ? fmtW(total/totalMins*60) : '-') + '</span></div>'
@@ -803,6 +842,17 @@ function renderDayDetail() {
               + '</div>';
       });
     }
+
+    if (dayAp.length > 0) {
+      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">🟢 AdPost</div>';
+      dayAp.forEach(a => {
+        html += '<div class="session-card" style="border-left:3px solid #03C75A">'
+              + '<div class="session-actions"><button class="delete-btn" onclick="deleteAdpostIncome(' + a.id + ')">🗑 삭제</button></div>'
+              + '<div class="session-top"><span class="session-platform">🟢 AdPost 입금</span><span class="session-net" style="color:#03C75A">+' + fmtW(a.amount) + '</span></div>'
+              + (a.memo ? '<div class="session-memo">📝 ' + a.memo + '</div>' : '')
+              + '</div>';
+      });
+    }
   }
   document.getElementById('day-sessions').innerHTML = html;
 }
@@ -821,6 +871,11 @@ function deleteSoomgoSend(id) {
   if (!confirm('숨고 발송비 기록을 삭제할까요?')) return;
   soomgoSends = soomgoSends.filter(g => g.id !== id);
   saveSoomgoSends(); renderCalendar();
+}
+function deleteAdpostIncome(id) {
+  if (!confirm('AdPost 기록을 삭제할까요?')) return;
+  adpostIncomes = adpostIncomes.filter(a => a.id !== id);
+  saveAdpostIncomes(); renderCalendar();
 }
 
 // ── 입력 모드 ───────────────────────────────────────────────────
@@ -962,7 +1017,7 @@ function updatePreview() {
   const mins = s && e ? minsBetween(s, e) : 0;
   document.getElementById('m-duration').textContent = Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
   const gross = getGrossVal(), dist = getDistVal();
-  if (!gross || !dist) { document.getElementById('preview-box').style.display = 'none'; return; }
+  if (!gross) { document.getElementById('preview-box').style.display = 'none'; return; }
   const net = calcNet(selectedPlatform, gross);
   const charge = calcCharge(dist, selectedVehicle);
   const finalNet = net - charge;
@@ -984,7 +1039,8 @@ function updatePreview() {
 }
 async function saveSession(withCloud) {
   const gross = getGrossVal(), dist = getDistVal();
-  if (!gross || !dist) { alert('수익과 거리를 입력해주세요'); return; }
+  if (!gross) { alert('수익을 입력해주세요'); return; }
+  if (!dist) { alert('이동거리가 0km로 저장돼요. 그대로 진행할게요.'); }
   const isEdit = editingId !== null;
   const existDate = isEdit ? records.find(r => r.id === editingId).date : selectedDate;
   const rec = {
@@ -1130,6 +1186,41 @@ function saveSoomgoSend() {
   }, 1000);
 }
 
+// ── AdPost 모달 ─────────────────────────────────────────────────
+function openAdpostModal() {
+  document.getElementById('adpost-date-label').textContent = selectedDate;
+  document.getElementById('adpost-amount').value = '';
+  document.getElementById('adpost-memo').value = '';
+  document.getElementById('adpost-preview-box').style.display = 'none';
+  document.getElementById('adpost-save-btn').textContent = '저장하기';
+  document.getElementById('adpost-save-btn').classList.remove('saved');
+  document.getElementById('adpost-overlay').classList.add('open');
+}
+function closeAdpostModal() { document.getElementById('adpost-overlay').classList.remove('open'); }
+function updateAdpostPreview() {
+  const amountInput = document.getElementById('adpost-amount').value;
+  const amount = amountInput === '' ? NaN : parseFloat(amountInput);
+  if (isNaN(amount) || amount === 0) { document.getElementById('adpost-preview-box').style.display = 'none'; return; }
+  let html = '<div class="preview-row preview-divider"><span style="font-weight:700">순수익</span><span class="accent" style="font-weight:800;font-size:18px">' + fmtW(amount) + '</span></div>';
+  document.getElementById('adpost-preview-content').innerHTML = html;
+  document.getElementById('adpost-preview-box').style.display = 'block';
+}
+function saveAdpostIncome() {
+  const amount = parseFloat(document.getElementById('adpost-amount').value);
+  if (!amount) { alert('입금액을 입력해주세요'); return; }
+  adpostIncomes.unshift({ id: Date.now(), date: selectedDate, amount, memo: document.getElementById('adpost-memo').value });
+  adpostIncomes.sort((a,b) => b.date.localeCompare(a.date));
+  saveAdpostIncomes(); renderCalendar();
+  const btn = document.getElementById('adpost-save-btn');
+  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = '저장하기'; btn.classList.remove('saved');
+    document.getElementById('adpost-amount').value = '';
+    document.getElementById('adpost-memo').value = '';
+    document.getElementById('adpost-preview-box').style.display = 'none';
+  }, 1000);
+}
+
 // ── 리포트 ─────────────────────────────────────────────────────
 function setPeriod(p, btn) {
   currentPeriod = p;
@@ -1171,8 +1262,9 @@ function renderReport() {
   const periodExtraNet   = extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+e.amount, 0);
   const periodExtraGross = extras.filter(e => e.date >= start && e.date <= end).reduce((s,e) => s+(e.gross||e.amount), 0);
   const periodSoomgoFee  = soomgoSends.filter(g => g.date >= start && g.date <= end).reduce((s,g) => s+g.totalFee, 0);
-  const grandTotal = st.finalNet + periodExtraNet - periodSoomgoFee;
-  const grandGross = st.gross + periodExtraGross;
+  const periodAdpostNet  = adpostIncomes.filter(a => a.date >= start && a.date <= end).reduce((s,a) => s+a.amount, 0);
+  const grandTotal = st.finalNet + periodExtraNet - periodSoomgoFee + periodAdpostNet;
+  const grandGross = st.gross + periodExtraGross + periodAdpostNet;
 
   // 플랫폼별 순수익 계산
   const cpNet = records.filter(r=>r.date>=start&&r.date<=end&&r.platform==='coupang')
@@ -1192,6 +1284,7 @@ function renderReport() {
     {label:'🔵 해주세요',       value:fmtW(hjNet),             color:'#3B82F6'},
     {label:'🔷 숨고',          value:fmtW(st.byP.soomgo ? st.byP.soomgo.net : 0), color:'#06B6D4'},
     {label:'🟢 잡수익',        value:fmtW(periodExtraNet),    color:'#10B981'},
+    {label:'🟢 AdPost',       value:fmtW(periodAdpostNet),   color:'#03C75A'},
     {label:'🔷 숨고 발송비',    value:'-'+fmtW(periodSoomgoFee), color:'#DC2626'},
     {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#EF4444'},
     {label:'총 충전비',         value:fmtW(st.charge),         color:'#EF4444'},
@@ -1322,10 +1415,11 @@ function renderDailyChart() {
     const ho = dayRecs.filter(r=>r.platform==='haejuseyo_other').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
     const sg = dayRecs.filter(r=>r.platform==='soomgo').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
     const ex = extras.filter(e=>e.date===ds).reduce((s,e)=>s+e.amount,0);
-    const total = cp+bm+hd+ho+sg+ex;
+    const ap = adpostIncomes.filter(a=>a.date===ds).reduce((s,a)=>s+a.amount,0);
+    const total = cp+bm+hd+ho+sg+ex+ap;
     const dayMins = dayRecs.reduce((s,r)=>s+minsBetween(r.startTime,r.endTime),0);
     const ph = dayMins > 0 ? total/dayMins*60 : 0;
-    stackData.push({coupang:cp, baemin:bm, haejuseyo_delivery:hd, haejuseyo_other:ho, soomgo:sg, extra:ex, total});
+    stackData.push({coupang:cp, baemin:bm, haejuseyo_delivery:hd, haejuseyo_other:ho, soomgo:sg, extra:ex, adpost:ap, total});
     totals.push(total);
     perHours.push(ph);
   }
@@ -1368,7 +1462,7 @@ function renderDailyChart() {
   });
 
   // 누적 막대
-  const layers = ['coupang','baemin','haejuseyo_delivery','haejuseyo_other','soomgo','extra'];
+  const layers = ['coupang','baemin','haejuseyo_delivery','haejuseyo_other','soomgo','extra','adpost'];
   stackData.forEach((d,i) => {
     if (d.total <= 0) return;
     const x = padL + i*step + step/2 - barW/2;
@@ -1455,7 +1549,8 @@ function renderMonthlyChart() {
     const end=toDateStr(new Date(y,m+1,0));
     const net=records.filter(r=>r.date>=start&&r.date<=end).reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance, r.vehicle),0)
              +extras.filter(e=>e.date>=start&&e.date<=end).reduce((s,e)=>s+e.amount,0)
-             -soomgoSends.filter(g=>g.date>=start&&g.date<=end).reduce((s,g)=>s+g.totalFee,0);
+             -soomgoSends.filter(g=>g.date>=start&&g.date<=end).reduce((s,g)=>s+g.totalFee,0)
+             +adpostIncomes.filter(a=>a.date>=start&&a.date<=end).reduce((s,a)=>s+a.amount,0);
     labels.push(String(m+1)+'월');
     values.push(net);
   }
@@ -1814,7 +1909,7 @@ function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupan
 
 // ── CSV 내보내기/가져오기 ───────────────────────────────────────
 function exportCSV() {
-  if (!records.length && !extras.length && !soomgoSends.length) { alert('저장된 기록이 없어요'); return; }
+  if (!records.length && !extras.length && !soomgoSends.length && !adpostIncomes.length) { alert('저장된 기록이 없어요'); return; }
   const headers=['날짜','플랫폼','시작시간','종료시간','작업시간(분)','주행거리(km)','세전수익(원)','수수료(원)','충전비(원)','순수익(원)','시간당순수익(원)','메모'];
   const pName={coupang:'쿠팡이츠',baemin:'부릉',haejuseyo_delivery:'해주세요 배달',haejuseyo_other:'기타부수입',soomgo:'숨고'};
   const rows=[...records].sort((a,b)=>a.date.localeCompare(b.date)||a.startTime.localeCompare(b.startTime)).map(r=>{
@@ -1833,6 +1928,11 @@ function exportCSV() {
     const gH=['날짜','발송건수','건당수수료(원)','총지출(원)','메모'];
     const gR=[...soomgoSends].sort((a,b)=>a.date.localeCompare(b.date)).map(g=>[g.date,g.count,Math.round(g.feePerSend),Math.round(g.totalFee),g.memo||'']);
     csv+='\n\n[숨고 발송비 기록]\n'+[gH,...gR].map(r=>r.join(',')).join('\n');
+  }
+  if (adpostIncomes.length>0) {
+    const aH=['날짜','입금액(원)','메모'];
+    const aR=[...adpostIncomes].sort((a,b)=>a.date.localeCompare(b.date)).map(a=>[a.date,Math.round(a.amount),a.memo||'']);
+    csv+='\n\n[AdPost 기록]\n'+[aH,...aR].map(r=>r.join(',')).join('\n');
   }
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
@@ -1931,6 +2031,7 @@ async function gistSave(silent) {
     records: JSON.parse(localStorage.getItem(RKEY) || '[]'),
     extras:  JSON.parse(localStorage.getItem(EKEY) || '[]'),
     soomgoSends: JSON.parse(localStorage.getItem(SGKEY) || '[]'),
+    adpostIncomes: JSON.parse(localStorage.getItem(AKEY) || '[]'),
     settings: JSON.parse(localStorage.getItem(SKEY) || '{}'),
     savedAt: new Date().toISOString()
   };
@@ -1975,6 +2076,7 @@ async function gistLoad() {
     if (payload.records) { records = payload.records; localStorage.setItem(RKEY, JSON.stringify(records)); }
     if (payload.extras)  { extras  = payload.extras;  localStorage.setItem(EKEY, JSON.stringify(extras)); }
     if (payload.soomgoSends) { soomgoSends = payload.soomgoSends; localStorage.setItem(SGKEY, JSON.stringify(soomgoSends)); }
+    if (payload.adpostIncomes) { adpostIncomes = payload.adpostIncomes; localStorage.setItem(AKEY, JSON.stringify(adpostIncomes)); }
     if (payload.settings){ settings = { ...settings, ...payload.settings }; localStorage.setItem(SKEY, JSON.stringify(settings)); loadSettings(); }
     renderCalendar();
     gistSetStatus('✅ 불러오기 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#10B981');
