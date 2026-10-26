@@ -272,7 +272,8 @@ body { max-width:none; }
 .report-card { border-top:1px solid var(--hair-soft) !important; }
 .report-value { color:var(--ink) !important; font-weight:800; letter-spacing:-0.8px; }
 .report-value.is-neg { color:var(--sale) !important; }
-.session-card, .compare-card, .platform-row { border-left:1px solid var(--hair-soft) !important; }
+.compare-card, .platform-row { border-left:1px solid var(--hair-soft) !important; }
+.session-card { border-left-width:4px !important; }
 /* 캘린더: 흰 칸 + 하단 막대로 수익 크기 표시 */
 .day-cell { position:relative; border:2px solid transparent; }
 .day-cell.heat-dark .day-num, .day-cell.heat-dark .day-income { color:#fff !important; }
@@ -339,8 +340,8 @@ body { max-width:none; }
         <span class="day-detail-title" id="selected-date-label"></span>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="add-btn" style="background:#6B7280;font-size:12px" onclick="openExtraModal()">+ 잡수익</button>
-          <button class="add-btn" style="background:#1151FF;font-size:12px" onclick="openSoomgoModal()">+ 숨고충전</button>
-          <button class="add-btn" style="background:#1EAA52;font-size:12px" onclick="openAdpostModal()">+ AdPost</button>
+          <button class="add-btn" style="background:#7B4DFF;font-size:12px" onclick="openSoomgoModal()">+ 숨고충전</button>
+          <button class="add-btn" style="background:#03C75A;font-size:12px" onclick="openAdpostModal()">+ AdPost</button>
           <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
         </div>
       </div>
@@ -380,15 +381,15 @@ body { max-width:none; }
       </div>
       <div class="chart-canvas-wrap"><canvas id="daily-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#111111"></div>쿠팡이츠</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>쿠팡이츠</div>
         <div class="legend-item"><div class="legend-dot" style="background:#9E9EA0"></div>부릉</div>
         <div class="legend-item"><div class="legend-dot" style="background:#707072"></div>해주세요 배달</div>
         <div class="legend-item"><div class="legend-dot" style="background:#4B4B4D"></div>기타부수입</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>숨고</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#007D48"></div>잡수익</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#1EAA52"></div>AdPost</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7B4DFF"></div>숨고</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#CFCFD1"></div>잡수익</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#03C75A"></div>AdPost</div>
         <div class="legend-item"><div class="legend-dot" style="background:#D30005;border-radius:50%"></div>7일 평균</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#1EAA52;border-radius:50%"></div>시간당 수익 (우측축)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#0A7281;border-radius:50%"></div>시간당 수익 (우측축)</div>
       </div>
     </div>
     <!-- 쿠팡이츠 전용 그래프 -->
@@ -404,7 +405,7 @@ body { max-width:none; }
       </div>
       <div class="chart-canvas-wrap"><canvas id="coupang-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#111111"></div>순수익 (막대, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>순수익 (막대, 만원)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#707072;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#007D48;border-radius:50%"></div>km당 단가 (꺾은선, 원)</div>
       </div>
@@ -424,7 +425,7 @@ body { max-width:none; }
       <div class="report-grid" id="soomgo-kpis" style="margin-bottom:14px"></div>
       <div class="chart-canvas-wrap"><canvas id="soomgo-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>숨고 입금 (막대 ↑, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7B4DFF"></div>숨고 입금 (막대 ↑, 만원)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#D30005"></div>충전비 (막대 ↓, 만원)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#4B4B4D;border-radius:50%"></div>누적 순이익 (꺾은선, 우측축)</div>
       </div>
@@ -754,7 +755,7 @@ body { max-width:none; }
       <div class="preview-title">입금 내역</div>
       <div id="adpost-preview-content"></div>
     </div>
-    <button class="save-btn" id="adpost-save-btn" onclick="saveAdpostIncome()" style="background:#1EAA52">저장하기</button>
+    <button class="save-btn" id="adpost-save-btn" onclick="saveAdpostIncome()" style="background:#03C75A">저장하기</button>
   </div>
 </div>
 
@@ -789,15 +790,15 @@ let chartDays = 30, monthChartOffset = 0;
 
 // ── 플랫폼 정의 ────────────────────────────────────────────────
 const PLATFORMS = {
-  coupang:             { label:'쿠팡이츠',      emoji:'', color:'#111111' },
+  coupang:             { label:'쿠팡이츠',      emoji:'', color:'#1151FF' },
   baemin:              { label:'부릉',           emoji:'', color:'#9E9EA0' },
   haejuseyo_delivery:  { label:'해주세요 배달', emoji:'', color:'#707072' },
   haejuseyo_other:     { label:'기타부수입', emoji:'', color:'#4B4B4D' },
-  soomgo:              { label:'숨고',           emoji:'', color:'#1151FF' },
+  soomgo:              { label:'숨고',           emoji:'', color:'#7B4DFF' },
 };
 const CHART_COLORS = {
-  coupang: '#111111', baemin: '#9E9EA0', haejuseyo_delivery: '#707072',
-  haejuseyo_other: '#4B4B4D', soomgo: '#1151FF', extra: '#007D48', adpost: '#1EAA52'
+  coupang: '#1151FF', baemin: '#9E9EA0', haejuseyo_delivery: '#707072',
+  haejuseyo_other: '#4B4B4D', soomgo: '#7B4DFF', extra: '#CFCFD1', adpost: '#03C75A'
 };
 
 // ── 유틸 ───────────────────────────────────────────────────────
@@ -935,8 +936,8 @@ function renderDayDetail() {
           + '<div class="day-summary-row"><span>세션 수</span><span>' + dayRecs.length + '건</span></div>'
           + '<div class="day-summary-row"><span>총 주행</span><span>' + fmtKm(totalDist) + '</span></div>'
           + '<div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">' + fmtW(total) + '</span></div>'
-          + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#007D48;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
-          + (apTotal > 0 ? '<div class="day-summary-row"><span>AdPost</span><span style="color:#1EAA52;font-weight:700">+' + fmtW(apTotal) + '</span></div>' : '')
+          + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#707072;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
+          + (apTotal > 0 ? '<div class="day-summary-row"><span>AdPost</span><span style="color:#03C75A;font-weight:700">+' + fmtW(apTotal) + '</span></div>' : '')
           + (sgFeeTotal > 0 ? '<div class="day-summary-row"><span>숨고 충전비</span><span class="neg" style="font-weight:700">-' + fmtW(sgFeeTotal) + '</span></div>' : '')
           + '<div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#111111;font-weight:800;font-size:15px">' + fmtW(grandTotal) + '</span></div>'
           + '<div class="day-summary-row"><span>시간당</span><span style="font-weight:700">' + (totalMins > 0 ? fmtW(total/totalMins*60) : '-') + '</span></div>'
@@ -953,7 +954,7 @@ function renderDayDetail() {
             + '<button class="edit-btn" onclick="openModal(' + r.id + ')">수정</button>'
             + '<button class="delete-btn" onclick="deleteRecord(' + r.id + ')">삭제</button>'
             + '</div>'
-            + '<div class="session-top"><span class="session-platform">' + p.emoji + ' ' + p.label + ' <span style="color:#4B5563;font-weight:400">#' + (i+1) + '</span></span>'
+            + '<div class="session-top"><span class="session-platform"><span style="color:' + p.color + '">' + p.label + '</span> <span style="color:#4B5563;font-weight:400">#' + (i+1) + '</span></span>'
             + '<span class="session-net">' + fmtW(finalNet) + '</span></div>'
             + '<div class="session-meta"><span>' + r.startTime + '~' + r.endTime + ' (' + Math.floor(mins/60) + 'h ' + (mins%60) + 'm)</span><span>' + fmtKm(r.distance) + '</span></div>'
             + '<div class="session-breakdown"><span>세전 ' + fmtW(r.gross) + '</span><span class="neg">수수료 -' + fmtW(r.gross-net) + '</span><span class="neg">충전비 -' + fmtW(charge) + '</span></div>'
@@ -965,9 +966,9 @@ function renderDayDetail() {
       html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">잡수익</div>';
       dayEx.forEach(e => {
         const ph = e.mins > 0 ? e.amount / e.mins * 60 : 0;
-        html += '<div class="session-card" style="border-left:3px solid #007D48">'
+        html += '<div class="session-card" style="border-left:3px solid #CFCFD1">'
               + '<div class="session-actions"><button class="delete-btn" onclick="deleteExtra(' + e.id + ')">삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">잡수익</span><span class="session-net" style="color:#007D48">' + fmtW(e.amount) + '</span></div>'
+              + '<div class="session-top"><span class="session-platform" style="color:#707072">잡수익</span><span class="session-net" style="color:#707072">' + fmtW(e.amount) + '</span></div>'
               + (e.gross ? '<div class="session-breakdown"><span>세전 ' + fmtW(e.gross) + '</span>' + (e.cost > 0 ? '<span class="neg">투자비용 -' + fmtW(e.cost) + '</span>' : '') + (e.mins > 0 ? '<span style="color:#707072">시간당 ' + fmtW(ph) + '</span>' : '') + '</div>' : '')
               + (e.memo ? '<div class="session-memo">' + e.memo + '</div>' : '')
               + '</div>';
@@ -977,9 +978,9 @@ function renderDayDetail() {
     if (daySg.length > 0) {
       html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">숨고 충전비</div>';
       daySg.forEach(g => {
-        html += '<div class="session-card" style="border-left:3px solid #1151FF">'
+        html += '<div class="session-card" style="border-left:3px solid #7B4DFF">'
               + '<div class="session-actions"><button class="delete-btn" onclick="deleteSoomgoSend(' + g.id + ')">삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">' + (g.type === 'charge' ? '숨고 캐시 충전' : '견적서 발송 ' + g.count + '건') + '</span><span class="session-net neg">-' + fmtW(g.totalFee) + '</span></div>'
+              + '<div class="session-top"><span class="session-platform" style="color:#7B4DFF">' + (g.type === 'charge' ? '숨고 캐시 충전' : '견적서 발송 ' + g.count + '건') + '</span><span class="session-net neg">-' + fmtW(g.totalFee) + '</span></div>'
               + (g.type === 'charge' ? '' : '<div class="session-breakdown"><span>건당 ' + fmtW(g.feePerSend) + '</span></div>')
               + (g.memo ? '<div class="session-memo">' + g.memo + '</div>' : '')
               + '</div>';
@@ -989,9 +990,9 @@ function renderDayDetail() {
     if (dayAp.length > 0) {
       html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">AdPost</div>';
       dayAp.forEach(a => {
-        html += '<div class="session-card" style="border-left:3px solid #1EAA52">'
+        html += '<div class="session-card" style="border-left:3px solid #03C75A">'
               + '<div class="session-actions"><button class="delete-btn" onclick="deleteAdpostIncome(' + a.id + ')">삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">AdPost 입금</span><span class="session-net" style="color:#1EAA52">+' + fmtW(a.amount) + '</span></div>'
+              + '<div class="session-top"><span class="session-platform" style="color:#03C75A">네이버 애드포스트</span><span class="session-net" style="color:#03C75A">+' + fmtW(a.amount) + '</span></div>'
               + (a.memo ? '<div class="session-memo">' + a.memo + '</div>' : '')
               + '</div>';
       });
@@ -1417,12 +1418,12 @@ function renderReport() {
     {label:'전체 합계 (세전)',  value:fmtW(grandGross),        color:'#707072', big:true},
     {label:'순수익 (세후)',     value:fmtW(grandTotal),        color:'#111111', big:true},
     {label:'시간당 순수익',     value:fmtW(perHour),           color:'#707072', big:true},
-    {label:'쿠팡이츠',      value:fmtW(cpNet),             color:'#111111'},
+    {label:'쿠팡이츠',      value:fmtW(cpNet),             color:'#1151FF'},
     {label:'부릉',          value:fmtW(baeminNet),         color:'#9E9EA0'},
     {label:'해주세요',       value:fmtW(hjNet),             color:'#707072'},
-    {label:'숨고',          value:fmtW(st.byP.soomgo ? st.byP.soomgo.net : 0), color:'#1151FF'},
-    {label:'잡수익',        value:fmtW(periodExtraNet),    color:'#007D48'},
-    {label:'AdPost',       value:fmtW(periodAdpostNet),   color:'#1EAA52'},
+    {label:'숨고',          value:fmtW(st.byP.soomgo ? st.byP.soomgo.net : 0), color:'#7B4DFF'},
+    {label:'잡수익',        value:fmtW(periodExtraNet),    color:'#CFCFD1'},
+    {label:'AdPost',       value:fmtW(periodAdpostNet),   color:'#03C75A'},
     {label:'숨고 충전비',    value:'-'+fmtW(periodSoomgoFee), color:'#D30005'},
     {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#D30005'},
     {label:'총 충전비',         value:fmtW(st.charge),         color:'#D30005'},
@@ -1507,7 +1508,7 @@ function renderReport() {
   const pcEl = document.getElementById('platform-compare-cards');
   if (pcEl) {
     pcEl.innerHTML =
-      mkCard('','쿠팡이츠','#111111', todayCp, ydCp, lwCp) +
+      mkCard('','쿠팡이츠','#1151FF', todayCp, ydCp, lwCp) +
       mkCard('','부릉','#9E9EA0', todayBm, ydBm, lwBm);
   }
 
@@ -1584,7 +1585,7 @@ function renderDailyChart() {
   ctx.fillStyle='#707072'; ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='left';
   ctx.fillText('만원', 0, padT-8);
   // 우측 단위
-  ctx.fillStyle='#1EAA52'; ctx.textAlign='right';
+  ctx.fillStyle='#0A7281'; ctx.textAlign='right';
   ctx.fillText('시간당', W, padT-8);
 
   // 격자 + 좌측 축
@@ -1595,7 +1596,7 @@ function renderDailyChart() {
     ctx.fillStyle='#707072'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='right';
     ctx.fillText((maxVal*r/10000).toFixed(1), padL-3, y+3);
     // 우측 축
-    ctx.fillStyle='#1EAA52'; ctx.textAlign='left';
+    ctx.fillStyle='#0A7281'; ctx.textAlign='left';
     ctx.fillText(Math.round(maxPH*r/1000)+'k', W-padR+3, y+3);
   });
 
@@ -1645,7 +1646,7 @@ function renderDailyChart() {
   // 꺾은선 (시간당 수익) - 우측 축 기준
   const phValid = perHours.some(v=>v>0);
   if (phValid) {
-    ctx.beginPath(); ctx.strokeStyle='#1EAA52'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.strokeStyle='#0A7281'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
     let started = false;
     perHours.forEach((v,i) => {
       if (v <= 0) return;
@@ -1658,7 +1659,7 @@ function renderDailyChart() {
       if (v<=0) return;
       const x=padL+i*step+step/2, y=padT+chartH-(v/maxPH)*chartH;
       ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
-      ctx.fillStyle='#1EAA52'; ctx.fill();
+      ctx.fillStyle='#0A7281'; ctx.fill();
     });
   }
 
@@ -1790,7 +1791,7 @@ function renderCoupangChart() {
 
   // 축 레이블
   ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif';
-  ctx.fillStyle = '#111111'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#1151FF'; ctx.textAlign = 'left';
   ctx.fillText('만원', 0, padT - 8);
   ctx.fillStyle = '#707072'; ctx.textAlign = 'right';
   ctx.fillText('km', W, padT - 8);
@@ -1814,7 +1815,7 @@ function renderCoupangChart() {
     const x = padL + i * step + step / 2 - barW / 2;
     const barH = (v / maxNet) * chartH;
     const y = padT + chartH - barH;
-    ctx.fillStyle = '#111111';
+    ctx.fillStyle = '#1151FF';
     ctx.beginPath();
     if (ctx.roundRect) ctx.roundRect(x, y, barW, barH, [3, 3, 0, 0]);
     else ctx.rect(x, y, barW, barH);
@@ -1957,7 +1958,7 @@ function renderSoomgoChart() {
   const incTotal=incVals.reduce((a,b)=>a+b,0), feeTotal=feeVals.reduce((a,b)=>a+b,0), net=incTotal-feeTotal;
   const roi=feeTotal>0 ? (incTotal/feeTotal).toFixed(1)+'배' : '-';
   document.getElementById('soomgo-kpis').innerHTML=[
-    {label:'숨고 입금',        value:fmtW(incTotal),                 color:'#1151FF', big:true},
+    {label:'숨고 입금',        value:fmtW(incTotal),                 color:'#7B4DFF', big:true},
     {label:'충전비',           value:'-'+fmtW(feeTotal),             color:'#D30005', big:true},
     {label:'순이익 (입금−충전비)', value:(net<0?'-':'')+fmtW(Math.abs(net)), color:net<0?'#D30005':'#4B4B4D', big:true},
     {label:'충전 횟수',        value:sendCount+'회',                  color:'#6B7280'},
@@ -2008,7 +2009,7 @@ function renderSoomgoChart() {
     const x=padL+i*step+step/2-barW/2;
     if(incVals[i]>0){
       const y=yOf(incVals[i]);
-      bar(x,y,barW,zeroY-y,'#1151FF',[3,3,0,0]);
+      bar(x,y,barW,zeroY-y,'#7B4DFF',[3,3,0,0]);
       if(barW>=6){ctx.fillStyle='#1F2937'; ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='center'; ctx.fillText((incVals[i]/10000).toFixed(1),x+barW/2,y-3);}
     }
     if(feeVals[i]>0){
