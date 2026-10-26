@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>🛵 이력 기록 및 수익장부</title>
+<title>이력 기록 및 수익장부</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -15,7 +15,7 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 .brand-sub { font-size:9px; color:#707072; letter-spacing:1px; }
 .nav { display:flex; gap:6px; }
 .nav-btn { background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; padding:5px 10px; font-size:11px; cursor:pointer; color:#6B7280; font-weight:600; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:2px; min-width:60px; }
-.nav-btn.active { background:#FFF0E9; border-color:#FF6B2C; color:#FF6B2C; }
+.nav-btn.active { background:#FFF0E9; border-color:#111111; color:#111111; }
 .nav-btn .nav-icon { font-size:16px; }
 .nav-btn .nav-label { font-size:9px; line-height:1; }
 .main { padding:20px 24px; }
@@ -27,40 +27,40 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 .month-label { font-size:17px; font-weight:700; color:#1F2937; }
 .day-headers { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:4px; }
 .day-header { text-align:center; font-size:11px; font-weight:600; padding:4px 0; color:#6B7280; }
-.day-header.sun { color:#EF4444; }
-.day-header.sat { color:#3B82F6; }
+.day-header.sun { color:#D30005; }
+.day-header.sat { color:#707072; }
 .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
 .day-cell { aspect-ratio:1; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; border:2px solid transparent; background:#fff; color:#1F2937; transition:all 0.15s; padding:0; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
-.day-cell.selected { border-color:#FF6B2C !important; background:#FFF0E9; }
-.day-cell.today { border-color:#FF6B2C; background:#FFF7F4; }
-.day-cell.sun .day-num { color:#EF4444; }
-.day-cell.sat .day-num { color:#3B82F6; }
+.day-cell.selected { border-color:#111111 !important; background:#FFF0E9; }
+.day-cell.today { border-color:#111111; background:#FFF7F4; }
+.day-cell.sun .day-num { color:#D30005; }
+.day-cell.sat .day-num { color:#707072; }
 .day-num { font-size:13px; font-weight:600; }
-.day-income { font-size:8px; color:#FF6B2C; font-weight:700; }
+.day-income { font-size:8px; color:#111111; font-weight:700; }
 /* PC 2컬럼 레이아웃 */
 .calendar-layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
 @media (max-width:700px) { .calendar-layout { grid-template-columns:1fr; } }
 .day-detail { background:#fff; border-radius:14px; padding:16px; border:1px solid #E5E7EB; box-shadow:0 1px 4px rgba(0,0,0,0.05); }
 .day-detail-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .day-detail-title { font-size:14px; font-weight:700; color:#6B7280; }
-.add-btn { background:#FF6B2C; border:none; border-radius:8px; color:#fff; padding:7px 14px; font-size:13px; font-weight:700; cursor:pointer; }
+.add-btn { background:#111111; border:none; border-radius:8px; color:#fff; padding:7px 14px; font-size:13px; font-weight:700; cursor:pointer; }
 .empty-day { text-align:center; color:#707072; padding:24px 0; font-size:13px; }
 .day-summary { background:#FFF7F4; border:1px solid #FFE4D6; border-radius:8px; padding:10px 12px; margin-bottom:12px; }
 .day-summary-row { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; color:#374151; }
 .session-card { background:#F9FAFB; border-radius:10px; padding:14px; margin-bottom:10px; position:relative; border:1px solid #E5E7EB; }
 .session-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; padding-right:100px; }
 .session-platform { font-size:13px; font-weight:700; color:#1F2937; }
-.session-net { font-size:16px; font-weight:800; color:#FF6B2C; white-space:nowrap; }
+.session-net { font-size:16px; font-weight:800; color:#111111; white-space:nowrap; }
 .session-meta { display:flex; gap:12px; font-size:11px; color:#6B7280; margin-bottom:4px; flex-wrap:wrap; }
 .session-breakdown { display:flex; gap:10px; font-size:11px; color:#707072; flex-wrap:wrap; }
 .session-memo { font-size:11px; color:#6B7280; margin-top:4px; }
 .session-actions { display:flex; gap:4px; position:absolute; top:10px; right:10px; }
-.edit-btn { background:#EFF6FF; border:1px solid #BFDBFE; border-radius:4px; color:#3B82F6; font-size:10px; cursor:pointer; padding:3px 8px; font-weight:600; }
-.delete-btn { background:#FEF2F2; border:1px solid #FECACA; border-radius:4px; color:#EF4444; font-size:10px; cursor:pointer; padding:3px 8px; font-weight:600; }
+.edit-btn { background:#EFF6FF; border:1px solid #BFDBFE; border-radius:4px; color:#707072; font-size:10px; cursor:pointer; padding:3px 8px; font-weight:600; }
+.delete-btn { background:#FEF2F2; border:1px solid #FECACA; border-radius:4px; color:#D30005; font-size:10px; cursor:pointer; padding:3px 8px; font-weight:600; }
 /* Report */
 .period-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
 .period-btn { background:#fff; border:1px solid #E5E7EB; border-radius:20px; color:#6B7280; padding:6px 14px; font-size:12px; cursor:pointer; white-space:nowrap; font-weight:500; }
-.period-btn.active { background:#FFF0E9; border-color:#FF6B2C; color:#FF6B2C; font-weight:700; }
+.period-btn.active { background:#FFF0E9; border-color:#111111; color:#111111; font-weight:700; }
 .report-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
 @media (max-width:700px) { .report-grid { grid-template-columns:1fr 1fr; } }
 .report-card { background:#fff; border-radius:12px; padding:14px 12px; border:1px solid #E5E7EB; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
@@ -75,7 +75,7 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 .compare-vals { display:flex; align-items:center; gap:6px; font-size:12px; flex-wrap:wrap; justify-content:flex-end; }
 .badge { font-size:11px; font-weight:700; padding:2px 7px; border-radius:20px; }
 .badge-up { background:#D1FAE5; color:#059669; }
-.badge-down { background:#FEE2E2; color:#DC2626; }
+.badge-down { background:#FEE2E2; color:#D30005; }
 .badge-same { background:#F3F4F6; color:#6B7280; }
 .platform-row { background:#fff; border-radius:10px; padding:12px 14px; margin-bottom:8px; border:1px solid #E5E7EB; }
 .platform-name { font-size:13px; font-weight:700; margin-bottom:6px; color:#1F2937; }
@@ -85,7 +85,7 @@ body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background:
 .chart-title { font-size:13px; color:#374151; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
 .chart-period-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
 .chart-period-btn { background:#F9FAFB; border:1px solid #E5E7EB; border-radius:20px; color:#6B7280; padding:5px 12px; font-size:12px; cursor:pointer; font-weight:500; }
-.chart-period-btn.active { background:#FFF0E9; border-color:#FF6B2C; color:#FF6B2C; font-weight:700; }
+.chart-period-btn.active { background:#FFF0E9; border-color:#111111; color:#111111; font-weight:700; }
 .chart-canvas-wrap { width:100%; overflow-x:auto; }
 canvas { display:block; }
 .month-nav-chart { display:flex; align-items:center; gap:8px; }
@@ -112,14 +112,14 @@ canvas { display:block; }
 .field-label { font-size:11px; color:#6B7280; margin-bottom:6px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
 .platform-btns { display:flex; gap:6px; flex-wrap:wrap; }
 .platform-btn { background:#F9FAFB; border:1.5px solid #E5E7EB; border-radius:8px; color:#374151; padding:7px 10px; font-size:12px; cursor:pointer; font-weight:500; }
-.platform-btn.active { background:#FFF0E9; border-color:#FF6B2C; color:#FF6B2C; font-weight:700; }
+.platform-btn.active { background:#FFF0E9; border-color:#111111; color:#111111; font-weight:700; }
 .time-row { display:flex; align-items:center; gap:8px; }
 .time-input { flex:1; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; color:#1F2937; padding:9px 10px; font-size:14px; }
-.time-duration { font-size:12px; color:#FF6B2C; font-weight:700; white-space:nowrap; }
+.time-duration { font-size:12px; color:#111111; font-weight:700; white-space:nowrap; }
 .modal-input { width:100%; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; color:#1F2937; padding:10px 12px; font-size:15px; }
 .input-mode-tabs { display:flex; margin-bottom:8px; border-radius:8px; overflow:hidden; border:1px solid #E5E7EB; }
 .input-mode-tab { flex:1; padding:7px; font-size:11px; text-align:center; cursor:pointer; background:#F9FAFB; color:#6B7280; border:none; font-weight:500; }
-.input-mode-tab.active { background:#FFF0E9; color:#FF6B2C; font-weight:700; }
+.input-mode-tab.active { background:#FFF0E9; color:#111111; font-weight:700; }
 .input-panel { display:none; }
 .input-panel.active { display:block; }
 .multi-textarea { width:100%; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; color:#1F2937; padding:10px 12px; font-size:14px; resize:none; height:110px; line-height:1.8; font-family:inherit; }
@@ -129,12 +129,12 @@ canvas { display:block; }
 .preview-title { font-size:12px; color:#707072; margin-bottom:10px; font-weight:600; }
 .preview-row { display:flex; justify-content:space-between; font-size:13px; padding:4px 0; color:#374151; }
 .preview-divider { border-top:1px solid #FFD6C0; margin-top:4px; padding-top:8px; }
-.save-btn { width:100%; background:#FF6B2C; border:none; border-radius:12px; color:#fff; padding:14px; font-size:16px; font-weight:800; cursor:pointer; transition:background 0.3s; margin-top:4px; }
-.save-btn.saved { background:#10B981; }
+.save-btn { width:100%; background:#111111; border:none; border-radius:12px; color:#fff; padding:14px; font-size:16px; font-weight:800; cursor:pointer; transition:background 0.3s; margin-top:4px; }
+.save-btn.saved { background:#007D48; }
 .upload-zone { background:#F9FAFB; border:1.5px dashed #E5E7EB; border-radius:10px; padding:14px; text-align:center; cursor:pointer; margin-top:6px; }
-.upload-zone:hover { border-color:#FF6B2C; background:#FFF7F4; }
-.neg { color:#EF4444; }
-.accent { color:#FF6B2C; }
+.upload-zone:hover { border-color:#111111; background:#FFF7F4; }
+.neg { color:#D30005; }
+.accent { color:#111111; }
 
 /* ══ 테마: Nike 디자인 시스템 기반 가독성 개선 (DESIGN-nike.md) ══════════════
    - 화면 크롬은 흑(#111) · 백(#fff) · 소프트 그레이(#f5f5f5)만. 강조 = 검정 알약 버튼
@@ -257,13 +257,45 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
   .day-cell { aspect-ratio:auto; min-height:54px; }
 }
 
+
+/* ══ 테마 2차: 정돈 (이모지 아이콘 제거 · 상단바 전체 폭 · 모바일 하단 탭바 · 단색 카드) ══ */
+/* 상단 바: 창 전체 폭으로 흰 배경 (내용 폭은 그대로) */
+body { max-width:none; }
+.main { max-width:1100px; margin:0 auto; }
+.header { padding-left:max(24px, calc((100% - 1100px) / 2 + 24px)); padding-right:max(24px, calc((100% - 1100px) / 2 + 24px)); border-bottom:1px solid var(--hair-soft); }
+.brand-icon, .nav-btn .nav-icon { display:none; }
+.brand-name { font-size:20px; font-weight:800; letter-spacing:-0.5px; }
+.brand-sub { font-size:10px; letter-spacing:2px; }
+.nav-btn { height:40px; padding:0 18px; align-items:center; justify-content:center; white-space:nowrap; }
+.nav-btn .nav-label { font-size:14px; font-weight:600; line-height:1; }
+/* 카드: 색 띠 제거, 숫자는 검정(음수만 빨강) */
+.report-card { border-top:1px solid var(--hair-soft) !important; }
+.report-value { color:var(--ink) !important; font-weight:800; letter-spacing:-0.8px; }
+.report-value.is-neg { color:var(--sale) !important; }
+.session-card, .compare-card, .platform-row { border-left:1px solid var(--hair-soft) !important; }
+/* 캘린더: 흰 칸 + 하단 막대로 수익 크기 표시 */
+.day-cell { position:relative; background:#fff !important; border:1px solid transparent; }
+.day-cell .day-bar { position:absolute; left:6px; bottom:5px; height:3px; background:var(--ink); border-radius:2px; }
+.day-cell.today .day-num { text-decoration:underline; text-underline-offset:3px; }
+.day-income { color:var(--charcoal); font-weight:600; }
+/* 모바일: 상단은 제목만, 메뉴는 하단 고정 탭바(4칸 균등) */
+@media (max-width:700px) {
+  .header { flex-direction:row; padding:14px 16px; }
+  .brand-name { font-size:18px; }
+  .nav { position:fixed; left:0; right:0; bottom:0; z-index:40; display:grid; grid-template-columns:repeat(4,1fr); gap:0; overflow:visible;
+         background:#fff; border-top:1px solid var(--hair-soft); padding:8px 8px calc(8px + env(safe-area-inset-bottom)); }
+  .nav-btn { height:44px; padding:0 4px; border-radius:9999px; background:transparent; min-width:0; }
+  .nav-btn .nav-label { font-size:13px; letter-spacing:-0.3px; }
+  .nav-btn.active { background:var(--ink); }
+  body { padding-bottom:84px; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="brand">
-    <span class="brand-icon">🛵</span>
+    <span class="brand-icon"></span>
     <div>
       <div class="brand-name">이력 기록 및 수익장부</div>
       <div class="brand-sub">RIDER INCOME TRACKER</div>
@@ -271,16 +303,16 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
   </div>
   <nav class="nav">
     <button class="nav-btn active" onclick="showTab('calendar')" id="btn-calendar">
-      <span class="nav-icon">📅</span><span class="nav-label">세션 입력</span>
+      <span class="nav-icon"></span><span class="nav-label">세션 입력</span>
     </button>
     <button class="nav-btn" onclick="showTab('report')" id="btn-report">
-      <span class="nav-icon">📊</span><span class="nav-label">플랫폼별 수익</span>
+      <span class="nav-icon"></span><span class="nav-label">플랫폼별 수익</span>
     </button>
     <button class="nav-btn" onclick="showTab('chart')" id="btn-chart">
-      <span class="nav-icon">📈</span><span class="nav-label">누적 통계</span>
+      <span class="nav-icon"></span><span class="nav-label">누적 통계</span>
     </button>
     <button class="nav-btn" onclick="showTab('settings')" id="btn-settings">
-      <span class="nav-icon">⚙️</span><span class="nav-label">설정</span>
+      <span class="nav-icon"></span><span class="nav-label">설정</span>
     </button>
   </nav>
 </div>
@@ -306,8 +338,8 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
         <span class="day-detail-title" id="selected-date-label"></span>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="add-btn" style="background:#6B7280;font-size:12px" onclick="openExtraModal()">+ 잡수익</button>
-          <button class="add-btn" style="background:#06B6D4;font-size:12px" onclick="openSoomgoModal()">+ 숨고발송</button>
-          <button class="add-btn" style="background:#03C75A;font-size:12px" onclick="openAdpostModal()">+ AdPost</button>
+          <button class="add-btn" style="background:#1151FF;font-size:12px" onclick="openSoomgoModal()">+ 숨고발송</button>
+          <button class="add-btn" style="background:#1EAA52;font-size:12px" onclick="openAdpostModal()">+ AdPost</button>
           <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
         </div>
       </div>
@@ -328,7 +360,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <button class="period-btn" onclick="setPeriod('quarter',this)">분기</button>
     </div>
     <div class="report-grid" id="report-cards"></div>
-    <div class="section-title">📈 비교 통계 (오늘 기준)</div>
+    <div class="section-title">비교 통계 (오늘 기준)</div>
     <div id="platform-compare-cards" style="margin-bottom:10px"></div>
     <div class="section-title" style="margin-top:16px">플랫폼별 수익</div>
     <div id="platform-breakdown"></div>
@@ -337,7 +369,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
   <!-- CHART -->
   <div class="tab" id="tab-chart">
     <div class="chart-section">
-      <div class="chart-title"><span>📊 일별 수익 추이</span></div>
+      <div class="chart-title"><span>일별 수익 추이</span></div>
       <div class="chart-period-row">
         <button class="chart-period-btn active" onclick="setChartDays(30,this)">30일</button>
         <button class="chart-period-btn" onclick="setChartDays(60,this)">60일</button>
@@ -347,20 +379,20 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       </div>
       <div class="chart-canvas-wrap"><canvas id="daily-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>쿠팡이츠</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#00C471"></div>부릉</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div>해주세요 배달</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>기타부수입</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#06B6D4"></div>숨고</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>잡수익</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#03C75A"></div>AdPost</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#FCD34D;border-radius:50%"></div>7일 평균</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#34D399;border-radius:50%"></div>시간당 수익 (우측축)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#111111"></div>쿠팡이츠</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9E9EA0"></div>부릉</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#707072"></div>해주세요 배달</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4B4B4D"></div>기타부수입</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>숨고</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#007D48"></div>잡수익</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1EAA52"></div>AdPost</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#D30005;border-radius:50%"></div>7일 평균</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1EAA52;border-radius:50%"></div>시간당 수익 (우측축)</div>
       </div>
     </div>
     <!-- 쿠팡이츠 전용 그래프 -->
     <div class="chart-section">
-      <div class="chart-title"><span>🟠 쿠팡이츠 데일리 트래킹</span></div>
+      <div class="chart-title"><span>쿠팡이츠 데일리 트래킹</span></div>
       <div class="chart-period-row">
         <button class="chart-period-btn" onclick="setCoupangDays(7,this)">7일</button>
         <button class="chart-period-btn" onclick="setCoupangDays(15,this)">15일</button>
@@ -371,15 +403,15 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       </div>
       <div class="chart-canvas-wrap"><canvas id="coupang-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>순수익 (막대, 만원)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#10B981;border-radius:50%"></div>km당 단가 (꺾은선, 원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#111111"></div>순수익 (막대, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#707072;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#007D48;border-radius:50%"></div>km당 단가 (꺾은선, 원)</div>
       </div>
     </div>
 
     <!-- 숨고 대시보드 -->
     <div class="chart-section">
-      <div class="chart-title"><span>🔷 숨고 대시보드</span><span id="soomgo-range-label" style="font-size:11px;color:#707072;font-weight:500"></span></div>
+      <div class="chart-title"><span>숨고 대시보드</span><span id="soomgo-range-label" style="font-size:11px;color:#707072;font-weight:500"></span></div>
       <div class="chart-period-row">
         <button class="chart-period-btn" onclick="setSoomgoDays(7,this)">7일</button>
         <button class="chart-period-btn" onclick="setSoomgoDays(15,this)">15일</button>
@@ -391,9 +423,9 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <div class="report-grid" id="soomgo-kpis" style="margin-bottom:14px"></div>
       <div class="chart-canvas-wrap"><canvas id="soomgo-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#06B6D4"></div>숨고 입금 (막대 ↑, 만원)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#DC2626"></div>발송비 (막대 ↓, 만원)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6;border-radius:50%"></div>누적 순이익 (꺾은선, 우측축)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>숨고 입금 (막대 ↑, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#D30005"></div>발송비 (막대 ↓, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4B4B4D;border-radius:50%"></div>누적 순이익 (꺾은선, 우측축)</div>
       </div>
     </div>
 
@@ -410,7 +442,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
           <input type="date" id="custom-end-date" class="modal-input">
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="applyCustomDate()" style="flex:1;background:#FF6B2C;border:none;border-radius:10px;color:#fff;padding:12px;font-size:14px;font-weight:700;cursor:pointer">적용</button>
+          <button onclick="applyCustomDate()" style="flex:1;background:#111111;border:none;border-radius:10px;color:#fff;padding:12px;font-size:14px;font-weight:700;cursor:pointer">적용</button>
           <button onclick="closeCustomDate()" style="flex:1;background:#F3F4F6;border:none;border-radius:10px;color:#6B7280;padding:12px;font-size:14px;cursor:pointer">취소</button>
         </div>
       </div>
@@ -418,7 +450,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
 
     <div class="chart-section">
       <div class="chart-title">
-        <span>📅 월별 수익 추이</span>
+        <span>월별 수익 추이</span>
         <div class="month-nav-chart">
           <button onclick="moveMonthChart(-1)">‹</button>
           <span id="month-chart-label" style="font-size:11px;color:#E8E8F0;min-width:120px;text-align:center"></span>
@@ -427,7 +459,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       </div>
       <div class="chart-canvas-wrap"><canvas id="monthly-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div>월별 순수익</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4B4B4D"></div>월별 순수익</div>
       </div>
     </div>
   </div>
@@ -435,7 +467,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
   <!-- SETTINGS -->
   <div class="tab" id="tab-settings">
     <div class="settings-card">
-      <div class="settings-title">☁️ Gist 동기화 설정</div>
+      <div class="settings-title">Gist 동기화 설정</div>
       <div class="setting-row">
         <div><div class="setting-label">GitHub Token</div><div class="setting-hint">ghp_ 로 시작하는 토큰</div></div>
         <input class="setting-input" type="password" id="s-gist-token" style="width:140px;font-size:11px" placeholder="ghp_...">
@@ -445,13 +477,13 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
         <input class="setting-input" type="text" id="s-gist-id" style="width:140px;font-size:11px" placeholder="자동 생성">
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button onclick="gistSave()" style="flex:1;background:#24292e;border:none;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-weight:700;cursor:pointer">☁️ 클라우드에 저장</button>
-        <button onclick="gistLoad()" style="flex:1;background:#0969da;border:none;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-weight:700;cursor:pointer">⬇️ 불러오기</button>
+        <button onclick="gistSave()" style="flex:1;background:#24292e;border:none;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-weight:700;cursor:pointer">클라우드에 저장</button>
+        <button onclick="gistLoad()" style="flex:1;background:#0969da;border:none;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-weight:700;cursor:pointer">불러오기</button>
       </div>
       <div id="gist-status" style="font-size:12px;color:#6B7280;margin-top:8px;text-align:center"></div>
     </div>
     <div class="settings-card">
-      <div class="settings-title">⚡ 전기바이크 전비</div>
+      <div class="settings-title">전기바이크 전비</div>
       <div class="setting-row">
         <div><div class="setting-label">kWh/km (전비)</div><div class="setting-hint">기본 0.04 = 25km/kWh</div></div>
         <input class="setting-input" type="number" step="0.001" id="s-kwh" value="0.04" oninput="updateCalc()">
@@ -460,17 +492,17 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
         <div><div class="setting-label">전기요금 (원/kWh)</div><div class="setting-hint">가정용 기본 180원</div></div>
         <input class="setting-input" type="number" step="1" id="s-elec" value="180" oninput="updateCalc()">
       </div>
-      <div class="setting-calc" id="charge-calc">km당 충전비: <strong style="color:#FF6B2C">7.2원/km</strong></div>
+      <div class="setting-calc" id="charge-calc">km당 충전비: <strong style="color:#111111">7.2원/km</strong></div>
     </div>
     <div class="settings-card">
-      <div class="settings-title">🚗 차량 이동 비용</div>
+      <div class="settings-title">차량 이동 비용</div>
       <div class="setting-row">
         <div><div class="setting-label">차량 비용 (원/km)</div><div class="setting-hint">감가상각+충전비 합산 기준</div></div>
         <input class="setting-input" type="number" step="10" id="s-car-cost" value="250">
       </div>
     </div>
     <div class="settings-card">
-      <div class="settings-title">💸 수수료율 설정</div>
+      <div class="settings-title">수수료율 설정</div>
       <div class="setting-row">
         <div><div class="setting-label">쿠팡이츠 공제율 (%)</div><div class="setting-hint">소득세 3.3% + 산재 1.5%</div></div>
         <input class="setting-input" type="number" step="0.1" id="s-coupang" value="4.8">
@@ -493,19 +525,19 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       </div>
     </div>
     <div class="settings-card">
-      <div class="settings-title">🔷 숨고 발송비 설정</div>
+      <div class="settings-title">숨고 발송비 설정</div>
       <div class="setting-row">
         <div><div class="setting-label">견적서 발송 수수료 (건당, 원)</div><div class="setting-hint">수주 여부와 무관하게 발송할 때마다 정액 차감</div></div>
         <input class="setting-input" type="number" step="100" id="s-soomgo-fee" value="1000">
       </div>
     </div>
     <button class="save-btn" id="save-settings-btn" onclick="saveSettings()">설정 저장</button>
-    <button class="save-btn" onclick="exportCSV()" style="background:#10B981;margin-top:10px">📥 전체 데이터 CSV 다운로드</button>
-    <button class="save-btn" onclick="downloadTemplate()" style="background:#3B82F6;margin-top:10px">📋 업로드 양식 다운로드</button>
+    <button class="save-btn" onclick="exportCSV()" style="background:#007D48;margin-top:10px">전체 데이터 CSV 다운로드</button>
+    <button class="save-btn" onclick="downloadTemplate()" style="background:#707072;margin-top:10px">업로드 양식 다운로드</button>
     <div style="margin-top:12px">
-      <div style="font-size:12px;color:#707072;margin-bottom:6px;font-weight:600">📂 CSV로 과거 데이터 업로드</div>
+      <div style="font-size:12px;color:#707072;margin-bottom:6px;font-weight:600">CSV로 과거 데이터 업로드</div>
       <div class="upload-zone" onclick="document.getElementById('csv-upload').click()">
-        <div style="font-size:20px;margin-bottom:4px">⬆️</div>
+        <div style="font-size:20px;margin-bottom:4px"></div>
         <div style="font-size:13px;color:#6B7280">CSV 파일을 선택하세요</div>
         <div style="font-size:10px;color:#374151;margin-top:4px">다운로드한 양식에 맞는 CSV만 가능</div>
       </div>
@@ -526,11 +558,11 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
     <div class="modal-section">
       <div class="field-label">플랫폼</div>
       <div class="platform-btns">
-        <button class="platform-btn active" data-platform="coupang" onclick="selectPlatform(this)">🟠 쿠팡이츠</button>
-        <button class="platform-btn" data-platform="baemin" onclick="selectPlatform(this)">🟢 부릉</button>
-        <button class="platform-btn" data-platform="haejuseyo_delivery" onclick="selectPlatform(this)">🔵 해주세요 배달</button>
-        <button class="platform-btn" data-platform="haejuseyo_other" onclick="selectPlatform(this)">🟣 기타부수입</button>
-        <button class="platform-btn" data-platform="soomgo" onclick="selectPlatform(this)">🔷 숨고</button>
+        <button class="platform-btn active" data-platform="coupang" onclick="selectPlatform(this)">쿠팡이츠</button>
+        <button class="platform-btn" data-platform="baemin" onclick="selectPlatform(this)">부릉</button>
+        <button class="platform-btn" data-platform="haejuseyo_delivery" onclick="selectPlatform(this)">해주세요 배달</button>
+        <button class="platform-btn" data-platform="haejuseyo_other" onclick="selectPlatform(this)">기타부수입</button>
+        <button class="platform-btn" data-platform="soomgo" onclick="selectPlatform(this)">숨고</button>
       </div>
     </div>
     <div class="modal-section">
@@ -554,10 +586,10 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       </div>
       <div class="input-panel" id="dist-multi">
         <textarea class="multi-textarea" id="m-dist-multi" placeholder="한 줄에 하나씩 입력&#10;예)&#10;3.2&#10;5.1&#10;2.8" oninput="calcSum('dist')"></textarea>
-        <div class="multi-hint">📌 숫자만 한 줄씩 입력 (최대 50개)</div>
+        <div class="multi-hint">숫자만 한 줄씩 입력 (최대 50개)</div>
         <div class="multi-sum" id="dist-sum" style="display:none">
           <span style="color:#707072">합산 거리</span>
-          <span id="dist-sum-val" style="color:#FF6B2C;font-weight:800"></span>
+          <span id="dist-sum-val" style="color:#111111;font-weight:800"></span>
         </div>
       </div>
       <div class="input-panel" id="dist-accum">
@@ -575,7 +607,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
         </div>
         <div class="multi-sum" id="accum-result" style="display:none">
           <span style="color:#707072">세션 주행거리</span>
-          <span id="accum-result-val" style="color:#FF6B2C;font-weight:800"></span>
+          <span id="accum-result-val" style="color:#111111;font-weight:800"></span>
         </div>
       </div>
     </div>
@@ -590,10 +622,10 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       </div>
       <div class="input-panel" id="gross-multi">
         <textarea class="multi-textarea" id="m-gross-multi" placeholder="한 줄에 하나씩 입력&#10;예)&#10;3200&#10;4500&#10;2800" oninput="calcSum('gross')"></textarea>
-        <div class="multi-hint">📌 숫자만 한 줄씩 입력 (최대 50개)</div>
+        <div class="multi-hint">숫자만 한 줄씩 입력 (최대 50개)</div>
         <div class="multi-sum" id="gross-sum" style="display:none">
           <span style="color:#707072">합산 수익</span>
-          <span id="gross-sum-val" style="color:#FF6B2C;font-weight:800"></span>
+          <span id="gross-sum-val" style="color:#111111;font-weight:800"></span>
         </div>
       </div>
     </div>
@@ -602,11 +634,11 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <div style="display:flex;gap:8px">
         <button id="v-bike" class="platform-btn active" onclick="selectVehicle('bike',this)"
           style="flex:1;text-align:center;padding:10px">
-          🛵 전기바이크<div style="font-size:10px;color:#707072;margin-top:2px" id="v-bike-hint">기본값</div>
+          전기바이크<div style="font-size:10px;color:#707072;margin-top:2px" id="v-bike-hint">기본값</div>
         </button>
         <button id="v-car" class="platform-btn" onclick="selectVehicle('car',this)"
           style="flex:1;text-align:center;padding:10px">
-          🚗 차량<div style="font-size:10px;color:#707072;margin-top:2px" id="v-car-hint">250원/km</div>
+          차량<div style="font-size:10px;color:#707072;margin-top:2px" id="v-car-hint">250원/km</div>
         </button>
       </div>
     </div>
@@ -615,14 +647,14 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <input type="text" class="modal-input" id="m-memo" placeholder="예: 저녁 피크, 비 오는 날">
     </div>
     <div class="preview" id="preview-box" style="display:none">
-      <div class="preview-title">💰 순수익 계산</div>
+      <div class="preview-title">순수익 계산</div>
       <div id="preview-content"></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="save-btn" id="modal-save-btn" onclick="saveSession(false)"
-        style="flex:1;background:#FF6B2C;font-size:14px">💾 디바이스 저장</button>
+        style="flex:1;background:#111111;font-size:14px">디바이스 저장</button>
       <button class="save-btn" id="modal-cloud-btn" onclick="saveSession(true)"
-        style="flex:1;background:#3B82F6;font-size:14px">☁️ 클라우드 동시저장</button>
+        style="flex:1;background:#707072;font-size:14px">클라우드 동시저장</button>
     </div>
   </div>
 </div>
@@ -631,7 +663,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
 <div class="overlay" id="extra-overlay" onclick="if(event.target===this)closeExtraModal()">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">💰 잡수익 입력</span>
+      <span class="modal-title">잡수익 입력</span>
       <button class="close-btn" onclick="closeExtraModal()">✕</button>
     </div>
     <div class="modal-section">
@@ -655,7 +687,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <input type="text" class="modal-input" id="extra-memo" placeholder="예: 쿠팡 광고 수익, 중고 판매 등">
     </div>
     <div class="preview" id="extra-preview-box" style="display:none">
-      <div class="preview-title">💰 잡수익 계산</div>
+      <div class="preview-title">잡수익 계산</div>
       <div id="extra-preview-content"></div>
     </div>
     <button class="save-btn" id="extra-save-btn" onclick="saveExtra()">저장하기</button>
@@ -666,7 +698,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
 <div class="overlay" id="soomgo-overlay" onclick="if(event.target===this)closeSoomgoModal()">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">🔷 숨고 발송비 입력</span>
+      <span class="modal-title">숨고 발송비 입력</span>
       <button class="close-btn" onclick="closeSoomgoModal()">✕</button>
     </div>
     <div class="modal-section">
@@ -688,10 +720,10 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <input type="text" class="modal-input" id="soomgo-memo" placeholder="예: 마케팅팀장 상담 5건 발송">
     </div>
     <div class="preview" id="soomgo-preview-box" style="display:none">
-      <div class="preview-title">💸 발송비 계산</div>
+      <div class="preview-title">발송비 계산</div>
       <div id="soomgo-preview-content"></div>
     </div>
-    <button class="save-btn" id="soomgo-save-btn" onclick="saveSoomgoSend()" style="background:#06B6D4">저장하기</button>
+    <button class="save-btn" id="soomgo-save-btn" onclick="saveSoomgoSend()" style="background:#1151FF">저장하기</button>
   </div>
 </div>
 
@@ -699,7 +731,7 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
 <div class="overlay" id="adpost-overlay" onclick="if(event.target===this)closeAdpostModal()">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">🟢 AdPost 입금 입력</span>
+      <span class="modal-title">AdPost 입금 입력</span>
       <button class="close-btn" onclick="closeAdpostModal()">✕</button>
     </div>
     <div class="modal-section">
@@ -716,10 +748,10 @@ body { font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Goth
       <input type="text" class="modal-input" id="adpost-memo" placeholder="예: 8월분 애드포스트 입금">
     </div>
     <div class="preview" id="adpost-preview-box" style="display:none">
-      <div class="preview-title">🟢 입금 내역</div>
+      <div class="preview-title">입금 내역</div>
       <div id="adpost-preview-content"></div>
     </div>
-    <button class="save-btn" id="adpost-save-btn" onclick="saveAdpostIncome()" style="background:#03C75A">저장하기</button>
+    <button class="save-btn" id="adpost-save-btn" onclick="saveAdpostIncome()" style="background:#1EAA52">저장하기</button>
   </div>
 </div>
 
@@ -754,15 +786,15 @@ let chartDays = 30, monthChartOffset = 0;
 
 // ── 플랫폼 정의 ────────────────────────────────────────────────
 const PLATFORMS = {
-  coupang:             { label:'쿠팡이츠',      emoji:'🟠', color:'#FF6B2C' },
-  baemin:              { label:'부릉',           emoji:'🟢', color:'#00C471' },
-  haejuseyo_delivery:  { label:'해주세요 배달', emoji:'🔵', color:'#3B82F6' },
-  haejuseyo_other:     { label:'기타부수입', emoji:'🟣', color:'#8B5CF6' },
-  soomgo:              { label:'숨고',           emoji:'🔷', color:'#06B6D4' },
+  coupang:             { label:'쿠팡이츠',      emoji:'', color:'#111111' },
+  baemin:              { label:'부릉',           emoji:'', color:'#9E9EA0' },
+  haejuseyo_delivery:  { label:'해주세요 배달', emoji:'', color:'#707072' },
+  haejuseyo_other:     { label:'기타부수입', emoji:'', color:'#4B4B4D' },
+  soomgo:              { label:'숨고',           emoji:'', color:'#1151FF' },
 };
 const CHART_COLORS = {
-  coupang: '#FF6B2C', baemin: '#00C471', haejuseyo_delivery: '#3B82F6',
-  haejuseyo_other: '#8B5CF6', soomgo: '#06B6D4', extra: '#10B981', adpost: '#03C75A'
+  coupang: '#111111', baemin: '#9E9EA0', haejuseyo_delivery: '#707072',
+  haejuseyo_other: '#4B4B4D', soomgo: '#1151FF', extra: '#007D48', adpost: '#1EAA52'
 };
 
 // ── 유틸 ───────────────────────────────────────────────────────
@@ -860,15 +892,17 @@ function renderCalendar() {
   const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
   const today = todayStr();
   let html = '';
+  let monthMax = 0;
+  for (let d = 1; d <= daysInMonth; d++) { const v = dayNet(calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0')); if (v > monthMax) monthMax = v; }
   for (let i = 0; i < firstDay; i++) html += '<div></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     const net = dayNet(ds);
     const col = (firstDay + d - 1) % 7;
-    const cls = ['day-cell', col===0?'sun':col===6?'sat':'', ds===selectedDate?'selected':'', ds===today?'today':'', net>=60000?'heat-top':''].join(' ');
+    const cls = ['day-cell', col===0?'sun':col===6?'sat':'', ds===selectedDate?'selected':'', ds===today?'today':''].join(' ');
     html += '<button class="' + cls + '" style="background:' + heatColor(net) + '" onclick="selectDate(\'' + ds + '\')">'
           + '<span class="day-num">' + d + '</span>'
-          + (net > 0 ? '<span class="day-income">' + Math.round(net/1000) + 'k</span>' : '')
+          + (net > 0 ? '<span class="day-income">' + Math.round(net/1000) + 'k</span><span class="day-bar" style="width:calc((100% - 12px) * ' + (net/monthMax).toFixed(3) + ')"></span>' : '')
           + '</button>';
   }
   document.getElementById('cal-grid').innerHTML = html;
@@ -900,10 +934,10 @@ function renderDayDetail() {
           + '<div class="day-summary-row"><span>세션 수</span><span>' + dayRecs.length + '건</span></div>'
           + '<div class="day-summary-row"><span>총 주행</span><span>' + fmtKm(totalDist) + '</span></div>'
           + '<div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">' + fmtW(total) + '</span></div>'
-          + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#10B981;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
-          + (apTotal > 0 ? '<div class="day-summary-row"><span>AdPost</span><span style="color:#03C75A;font-weight:700">+' + fmtW(apTotal) + '</span></div>' : '')
+          + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#007D48;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
+          + (apTotal > 0 ? '<div class="day-summary-row"><span>AdPost</span><span style="color:#1EAA52;font-weight:700">+' + fmtW(apTotal) + '</span></div>' : '')
           + (sgFeeTotal > 0 ? '<div class="day-summary-row"><span>숨고 발송비</span><span class="neg" style="font-weight:700">-' + fmtW(sgFeeTotal) + '</span></div>' : '')
-          + '<div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#FF6B2C;font-weight:800;font-size:15px">' + fmtW(grandTotal) + '</span></div>'
+          + '<div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#111111;font-weight:800;font-size:15px">' + fmtW(grandTotal) + '</span></div>'
           + '<div class="day-summary-row"><span>시간당</span><span style="font-weight:700">' + (totalMins > 0 ? fmtW(total/totalMins*60) : '-') + '</span></div>'
           + '</div>';
 
@@ -915,49 +949,49 @@ function renderDayDetail() {
       const mins = minsBetween(r.startTime, r.endTime);
       html += '<div class="session-card" style="border-left:3px solid ' + p.color + '">'
             + '<div class="session-actions">'
-            + '<button class="edit-btn" onclick="openModal(' + r.id + ')">✏️ 수정</button>'
-            + '<button class="delete-btn" onclick="deleteRecord(' + r.id + ')">🗑 삭제</button>'
+            + '<button class="edit-btn" onclick="openModal(' + r.id + ')">수정</button>'
+            + '<button class="delete-btn" onclick="deleteRecord(' + r.id + ')">삭제</button>'
             + '</div>'
             + '<div class="session-top"><span class="session-platform">' + p.emoji + ' ' + p.label + ' <span style="color:#4B5563;font-weight:400">#' + (i+1) + '</span></span>'
             + '<span class="session-net">' + fmtW(finalNet) + '</span></div>'
-            + '<div class="session-meta"><span>⏱ ' + r.startTime + '~' + r.endTime + ' (' + Math.floor(mins/60) + 'h ' + (mins%60) + 'm)</span><span>📍 ' + fmtKm(r.distance) + '</span></div>'
+            + '<div class="session-meta"><span>' + r.startTime + '~' + r.endTime + ' (' + Math.floor(mins/60) + 'h ' + (mins%60) + 'm)</span><span>' + fmtKm(r.distance) + '</span></div>'
             + '<div class="session-breakdown"><span>세전 ' + fmtW(r.gross) + '</span><span class="neg">수수료 -' + fmtW(r.gross-net) + '</span><span class="neg">충전비 -' + fmtW(charge) + '</span></div>'
-            + (r.memo ? '<div class="session-memo">📝 ' + r.memo + '</div>' : '')
+            + (r.memo ? '<div class="session-memo">' + r.memo + '</div>' : '')
             + '</div>';
     });
 
     if (dayEx.length > 0) {
-      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">💰 잡수익</div>';
+      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">잡수익</div>';
       dayEx.forEach(e => {
         const ph = e.mins > 0 ? e.amount / e.mins * 60 : 0;
-        html += '<div class="session-card" style="border-left:3px solid #10B981">'
-              + '<div class="session-actions"><button class="delete-btn" onclick="deleteExtra(' + e.id + ')">🗑 삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">💰 잡수익</span><span class="session-net" style="color:#10B981">' + fmtW(e.amount) + '</span></div>'
+        html += '<div class="session-card" style="border-left:3px solid #007D48">'
+              + '<div class="session-actions"><button class="delete-btn" onclick="deleteExtra(' + e.id + ')">삭제</button></div>'
+              + '<div class="session-top"><span class="session-platform">잡수익</span><span class="session-net" style="color:#007D48">' + fmtW(e.amount) + '</span></div>'
               + (e.gross ? '<div class="session-breakdown"><span>세전 ' + fmtW(e.gross) + '</span>' + (e.cost > 0 ? '<span class="neg">투자비용 -' + fmtW(e.cost) + '</span>' : '') + (e.mins > 0 ? '<span style="color:#707072">시간당 ' + fmtW(ph) + '</span>' : '') + '</div>' : '')
-              + (e.memo ? '<div class="session-memo">📝 ' + e.memo + '</div>' : '')
+              + (e.memo ? '<div class="session-memo">' + e.memo + '</div>' : '')
               + '</div>';
       });
     }
 
     if (daySg.length > 0) {
-      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">🔷 숨고 발송비</div>';
+      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">숨고 발송비</div>';
       daySg.forEach(g => {
-        html += '<div class="session-card" style="border-left:3px solid #06B6D4">'
-              + '<div class="session-actions"><button class="delete-btn" onclick="deleteSoomgoSend(' + g.id + ')">🗑 삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">🔷 견적서 발송 ' + g.count + '건</span><span class="session-net neg">-' + fmtW(g.totalFee) + '</span></div>'
+        html += '<div class="session-card" style="border-left:3px solid #1151FF">'
+              + '<div class="session-actions"><button class="delete-btn" onclick="deleteSoomgoSend(' + g.id + ')">삭제</button></div>'
+              + '<div class="session-top"><span class="session-platform">견적서 발송 ' + g.count + '건</span><span class="session-net neg">-' + fmtW(g.totalFee) + '</span></div>'
               + '<div class="session-breakdown"><span>건당 ' + fmtW(g.feePerSend) + '</span></div>'
-              + (g.memo ? '<div class="session-memo">📝 ' + g.memo + '</div>' : '')
+              + (g.memo ? '<div class="session-memo">' + g.memo + '</div>' : '')
               + '</div>';
       });
     }
 
     if (dayAp.length > 0) {
-      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">🟢 AdPost</div>';
+      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">AdPost</div>';
       dayAp.forEach(a => {
-        html += '<div class="session-card" style="border-left:3px solid #03C75A">'
-              + '<div class="session-actions"><button class="delete-btn" onclick="deleteAdpostIncome(' + a.id + ')">🗑 삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">🟢 AdPost 입금</span><span class="session-net" style="color:#03C75A">+' + fmtW(a.amount) + '</span></div>'
-              + (a.memo ? '<div class="session-memo">📝 ' + a.memo + '</div>' : '')
+        html += '<div class="session-card" style="border-left:3px solid #1EAA52">'
+              + '<div class="session-actions"><button class="delete-btn" onclick="deleteAdpostIncome(' + a.id + ')">삭제</button></div>'
+              + '<div class="session-top"><span class="session-platform">AdPost 입금</span><span class="session-net" style="color:#1EAA52">+' + fmtW(a.amount) + '</span></div>'
+              + (a.memo ? '<div class="session-memo">' + a.memo + '</div>' : '')
               + '</div>';
       });
     }
@@ -1170,27 +1204,27 @@ async function saveSession(withCloud) {
   if (withCloud) {
     // 클라우드 동시저장
     localBtn.disabled = true; cloudBtn.disabled = true;
-    cloudBtn.textContent = '☁️ 저장 중...';
+    cloudBtn.textContent = '저장 중...';
     try {
       await gistSave(true); // silent=true
-      cloudBtn.textContent = '✅ 클라우드 저장 완료!';
+      cloudBtn.textContent = '클라우드 저장 완료!';
     } catch(e) {
-      cloudBtn.textContent = '⚠️ 클라우드 실패';
+      cloudBtn.textContent = '클라우드 실패';
     }
     setTimeout(() => {
-      cloudBtn.textContent = '☁️ 클라우드 동시저장';
+      cloudBtn.textContent = '클라우드 동시저장';
       localBtn.disabled = false; cloudBtn.disabled = false;
       if (isEdit) { closeModal(); }
       else { resetModalForm(); }
     }, 1500);
   } else {
     if (isEdit) {
-      localBtn.textContent = '✅ 수정 완료!'; localBtn.classList.add('saved');
+      localBtn.textContent = '수정 완료!'; localBtn.classList.add('saved');
       setTimeout(() => closeModal(), 1000);
     } else {
-      localBtn.textContent = '✅ 저장!'; localBtn.classList.add('saved');
+      localBtn.textContent = '저장!'; localBtn.classList.add('saved');
       setTimeout(() => {
-        localBtn.textContent = '💾 디바이스 저장'; localBtn.classList.remove('saved');
+        localBtn.textContent = '디바이스 저장'; localBtn.classList.remove('saved');
         resetModalForm();
       }, 1200);
     }
@@ -1241,7 +1275,7 @@ function saveExtra() {
   extras.sort((a,b) => b.date.localeCompare(a.date));
   saveExtras(); renderCalendar();
   const btn = document.getElementById('extra-save-btn');
-  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
+  btn.textContent = '저장 완료!'; btn.classList.add('saved');
   setTimeout(() => {
     btn.textContent = '저장하기'; btn.classList.remove('saved');
     document.getElementById('extra-amount').value = '';
@@ -1285,7 +1319,7 @@ function saveSoomgoSend() {
   soomgoSends.sort((a,b) => b.date.localeCompare(a.date));
   saveSoomgoSends(); renderCalendar();
   const btn = document.getElementById('soomgo-save-btn');
-  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
+  btn.textContent = '저장 완료!'; btn.classList.add('saved');
   setTimeout(() => {
     btn.textContent = '저장하기'; btn.classList.remove('saved');
     document.getElementById('soomgo-count').value = '';
@@ -1320,7 +1354,7 @@ function saveAdpostIncome() {
   adpostIncomes.sort((a,b) => b.date.localeCompare(a.date));
   saveAdpostIncomes(); renderCalendar();
   const btn = document.getElementById('adpost-save-btn');
-  btn.textContent = '✅ 저장 완료!'; btn.classList.add('saved');
+  btn.textContent = '저장 완료!'; btn.classList.add('saved');
   setTimeout(() => {
     btn.textContent = '저장하기'; btn.classList.remove('saved');
     document.getElementById('adpost-amount').value = '';
@@ -1385,21 +1419,21 @@ function renderReport() {
   const deductPct = grandGross > 0 ? ((grandGross - grandTotal) / grandGross * 100).toFixed(1) : '0.0';
   document.getElementById('report-cards').innerHTML = [
     {label:'전체 합계 (세전)',  value:fmtW(grandGross),        color:'#707072', big:true},
-    {label:'순수익 (세후)',     value:fmtW(grandTotal),        color:'#FF6B2C', big:true},
-    {label:'시간당 순수익',     value:fmtW(perHour),           color:'#F59E0B', big:true},
-    {label:'🟠 쿠팡이츠',      value:fmtW(cpNet),             color:'#FF6B2C'},
-    {label:'🟢 부릉',          value:fmtW(baeminNet),         color:'#00C471'},
-    {label:'🔵 해주세요',       value:fmtW(hjNet),             color:'#3B82F6'},
-    {label:'🔷 숨고',          value:fmtW(st.byP.soomgo ? st.byP.soomgo.net : 0), color:'#06B6D4'},
-    {label:'🟢 잡수익',        value:fmtW(periodExtraNet),    color:'#10B981'},
-    {label:'🟢 AdPost',       value:fmtW(periodAdpostNet),   color:'#03C75A'},
-    {label:'🔷 숨고 발송비',    value:'-'+fmtW(periodSoomgoFee), color:'#DC2626'},
-    {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#EF4444'},
-    {label:'총 충전비',         value:fmtW(st.charge),         color:'#EF4444'},
-    {label:'총 주행거리',       value:fmtKm(st.distance),      color:'#60A5FA'},
-    {label:'세션 수',           value:st.sessions + '건',      color:'#8B5CF6'},
+    {label:'순수익 (세후)',     value:fmtW(grandTotal),        color:'#111111', big:true},
+    {label:'시간당 순수익',     value:fmtW(perHour),           color:'#707072', big:true},
+    {label:'쿠팡이츠',      value:fmtW(cpNet),             color:'#111111'},
+    {label:'부릉',          value:fmtW(baeminNet),         color:'#9E9EA0'},
+    {label:'해주세요',       value:fmtW(hjNet),             color:'#707072'},
+    {label:'숨고',          value:fmtW(st.byP.soomgo ? st.byP.soomgo.net : 0), color:'#1151FF'},
+    {label:'잡수익',        value:fmtW(periodExtraNet),    color:'#007D48'},
+    {label:'AdPost',       value:fmtW(periodAdpostNet),   color:'#1EAA52'},
+    {label:'숨고 발송비',    value:'-'+fmtW(periodSoomgoFee), color:'#D30005'},
+    {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#D30005'},
+    {label:'총 충전비',         value:fmtW(st.charge),         color:'#D30005'},
+    {label:'총 주행거리',       value:fmtKm(st.distance),      color:'#9E9EA0'},
+    {label:'세션 수',           value:st.sessions + '건',      color:'#4B4B4D'},
   ].map(c => '<div class="report-card" style="border-top:3px solid ' + c.color + '">'
-    + '<div class="report-value" style="color:' + c.color + ';font-size:' + (c.big?22:17) + 'px">' + c.value + '</div>'
+    + '<div class="report-value' + (String(c.value).trim().startsWith('-') ? ' is-neg' : '') + '" style="font-size:' + (c.big?22:17) + 'px">' + c.value + '</div>'
     + '<div class="report-label">' + c.label + '</div></div>').join('');
 
   const now = new Date();
@@ -1477,8 +1511,8 @@ function renderReport() {
   const pcEl = document.getElementById('platform-compare-cards');
   if (pcEl) {
     pcEl.innerHTML =
-      mkCard('🟠','쿠팡이츠','#FF6B2C', todayCp, ydCp, lwCp) +
-      mkCard('🟢','부릉','#00C471', todayBm, ydBm, lwBm);
+      mkCard('','쿠팡이츠','#111111', todayCp, ydCp, lwCp) +
+      mkCard('','부릉','#9E9EA0', todayBm, ydBm, lwBm);
   }
 
   document.getElementById('platform-breakdown').innerHTML =
@@ -1554,7 +1588,7 @@ function renderDailyChart() {
   ctx.fillStyle='#707072'; ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='left';
   ctx.fillText('만원', 0, padT-8);
   // 우측 단위
-  ctx.fillStyle='#34D399'; ctx.textAlign='right';
+  ctx.fillStyle='#1EAA52'; ctx.textAlign='right';
   ctx.fillText('시간당', W, padT-8);
 
   // 격자 + 좌측 축
@@ -1565,7 +1599,7 @@ function renderDailyChart() {
     ctx.fillStyle='#707072'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='right';
     ctx.fillText((maxVal*r/10000).toFixed(1), padL-3, y+3);
     // 우측 축
-    ctx.fillStyle='#34D399'; ctx.textAlign='left';
+    ctx.fillStyle='#1EAA52'; ctx.textAlign='left';
     ctx.fillText(Math.round(maxPH*r/1000)+'k', W-padR+3, y+3);
   });
 
@@ -1598,7 +1632,7 @@ function renderDailyChart() {
   });
 
   // 꺾은선 (7일 평균)
-  ctx.beginPath(); ctx.strokeStyle='#FCD34D'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.strokeStyle='#D30005'; ctx.lineWidth=2;
   avgs.forEach((v,i) => {
     const x=padL+i*step+step/2;
     const y=padT+chartH-(Math.max(v,0)/maxVal)*chartH;
@@ -1609,13 +1643,13 @@ function renderDailyChart() {
     if (v<=0) return;
     const x=padL+i*step+step/2, y=padT+chartH-(v/maxVal)*chartH;
     ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
-    ctx.fillStyle='#FCD34D'; ctx.fill();
+    ctx.fillStyle='#D30005'; ctx.fill();
   });
 
   // 꺾은선 (시간당 수익) - 우측 축 기준
   const phValid = perHours.some(v=>v>0);
   if (phValid) {
-    ctx.beginPath(); ctx.strokeStyle='#34D399'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.strokeStyle='#1EAA52'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
     let started = false;
     perHours.forEach((v,i) => {
       if (v <= 0) return;
@@ -1628,13 +1662,14 @@ function renderDailyChart() {
       if (v<=0) return;
       const x=padL+i*step+step/2, y=padT+chartH-(v/maxPH)*chartH;
       ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
-      ctx.fillStyle='#34D399'; ctx.fill();
+      ctx.fillStyle='#1EAA52'; ctx.fill();
     });
   }
 
   // x축 레이블
   ctx.fillStyle='#707072'; ctx.font='10px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='center';
   labels.forEach((l,i) => {
+    if (i % Math.max(1, Math.ceil(22 / step)) && i !== labels.length - 1) return; 
     const x = padL+i*step+step/2;
     ctx.save();
     ctx.translate(x, H-4);
@@ -1759,9 +1794,9 @@ function renderCoupangChart() {
 
   // 축 레이블
   ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif';
-  ctx.fillStyle = '#FF6B2C'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#111111'; ctx.textAlign = 'left';
   ctx.fillText('만원', 0, padT - 8);
-  ctx.fillStyle = '#3B82F6'; ctx.textAlign = 'right';
+  ctx.fillStyle = '#707072'; ctx.textAlign = 'right';
   ctx.fillText('km', W, padT - 8);
 
   // 격자 + 좌측(수익) 축 + 우측(km) 축
@@ -1773,7 +1808,7 @@ function renderCoupangChart() {
     ctx.fillStyle = '#707072'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign = 'right';
     ctx.fillText((maxNet * r / 10000).toFixed(1), padL - 3, y + 3);
     // 우 (km)
-    ctx.fillStyle = '#3B82F6'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#707072'; ctx.textAlign = 'left';
     ctx.fillText((maxDist * r).toFixed(0), W - padR + 3, y + 3);
   });
 
@@ -1783,7 +1818,7 @@ function renderCoupangChart() {
     const x = padL + i * step + step / 2 - barW / 2;
     const barH = (v / maxNet) * chartH;
     const y = padT + chartH - barH;
-    ctx.fillStyle = '#FF6B2C';
+    ctx.fillStyle = '#111111';
     ctx.beginPath();
     if (ctx.roundRect) ctx.roundRect(x, y, barW, barH, [3, 3, 0, 0]);
     else ctx.rect(x, y, barW, barH);
@@ -1796,7 +1831,7 @@ function renderCoupangChart() {
   });
 
   // 꺾은점선 (주행거리) - 우측 축 기준
-  ctx.beginPath(); ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.strokeStyle = '#707072'; ctx.lineWidth = 2;
   ctx.setLineDash([5, 3]);
   let distStarted = false;
   distVals.forEach((v, i) => {
@@ -1812,13 +1847,13 @@ function renderCoupangChart() {
     const x = padL + i * step + step / 2;
     const y = padT + chartH - (v / maxDist) * chartH;
     ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#3B82F6'; ctx.fill();
+    ctx.fillStyle = '#707072'; ctx.fill();
   });
 
   // 꺾은선 (km당 단가) - 좌측 축 기준 (수익 스케일에 맞게)
   // km당 단가는 별도 스케일로 오른쪽에 표기 대신, 단순 추이선으로 표현
   const unitScale = chartH / maxUnit;
-  ctx.beginPath(); ctx.strokeStyle = '#10B981'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.strokeStyle = '#007D48'; ctx.lineWidth = 2;
   let unitStarted = false;
   unitVals.forEach((v, i) => {
     if (v <= 0) return;
@@ -1832,12 +1867,13 @@ function renderCoupangChart() {
     const x = padL + i * step + step / 2;
     const y = padT + chartH - v * unitScale;
     ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2);
-    ctx.fillStyle = '#10B981'; ctx.fill();
+    ctx.fillStyle = '#007D48'; ctx.fill();
   });
 
   // x축 레이블
   ctx.fillStyle = '#707072'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign = 'center';
   labels.forEach((l, i) => {
+    if (i % Math.max(1, Math.ceil(22 / step)) && i !== labels.length - 1) return; 
     const x = padL + i * step + step / 2;
     ctx.save(); ctx.translate(x, H-4); ctx.rotate(-Math.PI/4); ctx.fillText(l, 0, 0); ctx.restore();
   });
@@ -1925,14 +1961,14 @@ function renderSoomgoChart() {
   const incTotal=incVals.reduce((a,b)=>a+b,0), feeTotal=feeVals.reduce((a,b)=>a+b,0), net=incTotal-feeTotal;
   const roi=feeTotal>0 ? (incTotal/feeTotal).toFixed(1)+'배' : '-';
   document.getElementById('soomgo-kpis').innerHTML=[
-    {label:'숨고 입금',        value:fmtW(incTotal),                 color:'#06B6D4', big:true},
-    {label:'발송비',           value:'-'+fmtW(feeTotal),             color:'#DC2626', big:true},
-    {label:'순이익 (입금−발송비)', value:(net<0?'-':'')+fmtW(Math.abs(net)), color:net<0?'#DC2626':'#8B5CF6', big:true},
+    {label:'숨고 입금',        value:fmtW(incTotal),                 color:'#1151FF', big:true},
+    {label:'발송비',           value:'-'+fmtW(feeTotal),             color:'#D30005', big:true},
+    {label:'순이익 (입금−발송비)', value:(net<0?'-':'')+fmtW(Math.abs(net)), color:net<0?'#D30005':'#4B4B4D', big:true},
     {label:'발송 건수',        value:sendCount+'건',                  color:'#6B7280'},
     {label:'입금 건수',        value:incCount+'건',                   color:'#6B7280'},
-    {label:'발송비 대비 입금',  value:roi,                            color:'#F59E0B'},
+    {label:'발송비 대비 입금',  value:roi,                            color:'#707072'},
   ].map(c => '<div class="report-card" style="border-top:3px solid ' + c.color + '">'
-    + '<div class="report-value" style="color:' + c.color + ';font-size:' + (c.big?20:16) + 'px">' + c.value + '</div>'
+    + '<div class="report-value' + (String(c.value).trim().startsWith('-') ? ' is-neg' : '') + '" style="font-size:' + (c.big?20:16) + 'px">' + c.value + '</div>'
     + '<div class="report-label">' + c.label + '</div></div>').join('');
 
   // 차트: 0 기준선 위 = 입금, 아래 = 발송비, 꺾은선 = 누적 순이익(우측축)
@@ -1953,7 +1989,7 @@ function renderSoomgoChart() {
   const yCum=v=>padT+chartH*(1-(v-cMin)/cSpan);  // 누적 순이익 스케일
 
   ctx.fillStyle='#707072'; ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='left'; ctx.fillText('만원',0,padT-8);
-  ctx.fillStyle='#8B5CF6'; ctx.textAlign='right'; ctx.fillText('누적 만원',W,padT-8);
+  ctx.fillStyle='#4B4B4D'; ctx.textAlign='right'; ctx.fillText('누적 만원',W,padT-8);
   // 격자: 위 끝, 0선, 아래 끝
   ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1;
   [[padT,maxUp],[zeroY,0],[padT+chartH,-maxDown]].forEach(([y,v],k)=>{
@@ -1963,7 +1999,7 @@ function renderSoomgoChart() {
     ctx.fillStyle='#707072'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='right';
     ctx.fillText((v/10000).toFixed(1),padL-3,y+3);
   });
-  ctx.fillStyle='#8B5CF6'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='left';
+  ctx.fillStyle='#4B4B4D'; ctx.font='11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='left';
   ctx.fillText((cMax/10000).toFixed(1),W-padR+3,padT+3);
   ctx.fillText((cMin/10000).toFixed(1),W-padR+3,padT+chartH+3);
 
@@ -1976,20 +2012,21 @@ function renderSoomgoChart() {
     const x=padL+i*step+step/2-barW/2;
     if(incVals[i]>0){
       const y=yOf(incVals[i]);
-      bar(x,y,barW,zeroY-y,'#06B6D4',[3,3,0,0]);
+      bar(x,y,barW,zeroY-y,'#1151FF',[3,3,0,0]);
       if(barW>=6){ctx.fillStyle='#1F2937'; ctx.font='bold 11px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='center'; ctx.fillText((incVals[i]/10000).toFixed(1),x+barW/2,y-3);}
     }
     if(feeVals[i]>0){
       const y2=yOf(-feeVals[i]);
-      bar(x,zeroY,barW,y2-zeroY,'#DC2626',[0,0,3,3]);
+      bar(x,zeroY,barW,y2-zeroY,'#D30005',[0,0,3,3]);
     }
   });
   // 누적 순이익 꺾은선
-  ctx.beginPath(); ctx.strokeStyle='#8B5CF6'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.strokeStyle='#4B4B4D'; ctx.lineWidth=2;
   cumVals.forEach((v,i)=>{ const x=padL+i*step+step/2,y=yCum(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
   ctx.stroke();
   ctx.fillStyle='#707072'; ctx.font='10px Pretendard, "Malgun Gothic", sans-serif'; ctx.textAlign='center';
   labels.forEach((l,i)=>{
+    if (i % Math.max(1, Math.ceil(22 / step)) && i !== labels.length - 1) return; 
     const x=padL+i*step+step/2;
     ctx.save(); ctx.translate(x,H-4); ctx.rotate(-Math.PI/4); ctx.fillText(l,0,0); ctx.restore();
   });
@@ -2052,7 +2089,7 @@ function importCSV(event) {
     try {
       const text=e.target.result.replace(/^\uFEFF/,'');
       const lines=text.split(/\r?\n/).filter(l=>l.trim()&&!l.startsWith('※')&&!l.startsWith('['));
-      if (lines.length<2){ showImportResult('❌ 데이터가 없어요','#EF4444'); return; }
+      if (lines.length<2){ showImportResult('데이터가 없어요','#D30005'); return; }
       const pMap={'쿠팡이츠':'coupang','부릉':'baemin','해주세요 배달':'haejuseyo_delivery','기타부수입':'haejuseyo_other','숨고':'soomgo'};
       let added=0, skipped=0;
       const newRecs=[];
@@ -2072,11 +2109,11 @@ function importCSV(event) {
         records=[...records,...newRecs];
         records.sort((a,b)=>b.date.localeCompare(a.date)||a.startTime.localeCompare(b.startTime));
         saveRecords(); renderCalendar();
-        showImportResult('✅ '+added+'건 추가 완료'+(skipped>0?' ('+skipped+'건 스킵)':''),'#10B981');
+        showImportResult(''+added+'건 추가 완료'+(skipped>0?' ('+skipped+'건 스킵)':''),'#007D48');
       } else {
-        showImportResult('⚠️ 추가된 데이터 없음 ('+skipped+'건 중복/오류)','#F59E0B');
+        showImportResult('추가된 데이터 없음 ('+skipped+'건 중복/오류)','#707072');
       }
-    } catch(err){ showImportResult('❌ 오류: '+err.message,'#EF4444'); }
+    } catch(err){ showImportResult('오류: '+err.message,'#D30005'); }
     event.target.value='';
   };
   reader.readAsText(file,'UTF-8');
@@ -2112,11 +2149,11 @@ function saveGistSettings() {
 async function gistSave(silent) {
   const { token, id } = saveGistSettings();
   if (!token) {
-    if (!silent) gistSetStatus('❌ GitHub Token을 입력해주세요', '#EF4444');
-    else { alert('⚙️ 설정 탭에서 GitHub Token을 먼저 입력해주세요'); }
+    if (!silent) gistSetStatus('GitHub Token을 입력해주세요', '#D30005');
+    else { alert('설정 탭에서 GitHub Token을 먼저 입력해주세요'); }
     return;
   }
-  if (!silent) gistSetStatus('⏳ 저장 중...', '#6B7280');
+  if (!silent) gistSetStatus('저장 중...', '#6B7280');
   const payload = {
     records: JSON.parse(localStorage.getItem(RKEY) || '[]'),
     extras:  JSON.parse(localStorage.getItem(EKEY) || '[]'),
@@ -2143,17 +2180,17 @@ async function gistSave(silent) {
     const data = await res.json();
     localStorage.setItem(GIST_ID_KEY, data.id);
     document.getElementById('s-gist-id').value = data.id;
-    gistSetStatus('✅ 저장 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#10B981');
+    gistSetStatus('저장 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#007D48');
   } catch(e) {
-    gistSetStatus('❌ 저장 실패: ' + e.message, '#EF4444');
+    gistSetStatus('저장 실패: ' + e.message, '#D30005');
   }
 }
 
 async function gistLoad() {
   const { token, id } = saveGistSettings();
-  if (!token) { gistSetStatus('❌ GitHub Token을 입력해주세요', '#EF4444'); return; }
-  if (!id)    { gistSetStatus('❌ Gist ID가 없어요. 먼저 저장해주세요', '#EF4444'); return; }
-  gistSetStatus('⏳ 불러오는 중...', '#6B7280');
+  if (!token) { gistSetStatus('GitHub Token을 입력해주세요', '#D30005'); return; }
+  if (!id)    { gistSetStatus('Gist ID가 없어요. 먼저 저장해주세요', '#D30005'); return; }
+  gistSetStatus('불러오는 중...', '#6B7280');
   try {
     const res = await fetch('https://api.github.com/gists/' + id, {
       headers: { 'Authorization': 'token ' + token }
@@ -2169,9 +2206,9 @@ async function gistLoad() {
     if (payload.adpostIncomes) { adpostIncomes = payload.adpostIncomes; localStorage.setItem(AKEY, JSON.stringify(adpostIncomes)); }
     if (payload.settings){ settings = { ...settings, ...payload.settings }; localStorage.setItem(SKEY, JSON.stringify(settings)); loadSettings(); }
     renderCalendar();
-    gistSetStatus('✅ 불러오기 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#10B981');
+    gistSetStatus('불러오기 완료! ' + new Date().toLocaleTimeString('ko-KR'), '#007D48');
   } catch(e) {
-    gistSetStatus('❌ 불러오기 실패: ' + e.message, '#EF4444');
+    gistSetStatus('불러오기 실패: ' + e.message, '#D30005');
   }
 }
 
@@ -2179,7 +2216,7 @@ async function gistLoad() {
 function updateCalc() {
   const kwh=parseFloat(document.getElementById('s-kwh').value)||0.04;
   const elec=parseFloat(document.getElementById('s-elec').value)||180;
-  document.getElementById('charge-calc').innerHTML='km당 충전비: <strong style="color:#FF6B2C">'+(kwh*elec).toFixed(1)+'원/km</strong>';
+  document.getElementById('charge-calc').innerHTML='km당 충전비: <strong style="color:#111111">'+(kwh*elec).toFixed(1)+'원/km</strong>';
 }
 function saveSettings() {
   const soomgoFeeVal = parseFloat(document.getElementById('s-soomgo-fee').value);
@@ -2196,7 +2233,7 @@ function saveSettings() {
   };
   localStorage.setItem(SKEY,JSON.stringify(settings));
   const btn=document.getElementById('save-settings-btn');
-  btn.textContent='✅ 저장 완료!'; btn.classList.add('saved');
+  btn.textContent='저장 완료!'; btn.classList.add('saved');
   setTimeout(()=>{ btn.textContent='설정 저장'; btn.classList.remove('saved'); },1500);
 }
 function loadSettings() {
