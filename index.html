@@ -254,43 +254,27 @@ canvas { display:block; }
       </div>
     </div>
 
-    <!-- 부릉 데일리 트래킹 -->
+    <!-- 숨고 대시보드 -->
     <div class="chart-section">
-      <div class="chart-title"><span>🟢 부릉 데일리 트래킹</span></div>
+      <div class="chart-title"><span>🔷 숨고 대시보드</span><span id="soomgo-range-label" style="font-size:11px;color:#9CA3AF;font-weight:500"></span></div>
       <div class="chart-period-row">
-        <button class="chart-period-btn" onclick="setBaeminDays(7,this)">7일</button>
-        <button class="chart-period-btn" onclick="setBaeminDays(15,this)">15일</button>
-        <button class="chart-period-btn active" onclick="setBaeminDays(30,this)">30일</button>
-        <button class="chart-period-btn" onclick="setBaeminDays(60,this)">60일</button>
-        <button class="chart-period-btn" onclick="setBaeminDays(90,this)">90일</button>
-        <button class="chart-period-btn" onclick="openBaeminCustomDate()">날짜 선택</button>
+        <button class="chart-period-btn" onclick="setSoomgoDays(7,this)">7일</button>
+        <button class="chart-period-btn" onclick="setSoomgoDays(15,this)">15일</button>
+        <button class="chart-period-btn active" onclick="setSoomgoDays(30,this)">30일</button>
+        <button class="chart-period-btn" onclick="setSoomgoDays(60,this)">60일</button>
+        <button class="chart-period-btn" onclick="setSoomgoDays(90,this)">90일</button>
+        <button class="chart-period-btn" id="soomgo-custom-btn" onclick="openSoomgoCustomDate()">날짜 선택</button>
       </div>
-      <div class="chart-canvas-wrap"><canvas id="baemin-chart"></canvas></div>
+      <div class="report-grid" id="soomgo-kpis" style="margin-bottom:14px"></div>
+      <div class="chart-canvas-wrap"><canvas id="soomgo-chart"></canvas></div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#00C471"></div>순수익 (막대, 만원)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;border-radius:50%"></div>주행거리 (꺾은점선, km)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#F59E0B;border-radius:50%"></div>7일 평균</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#06B6D4"></div>숨고 입금 (막대 ↑, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#DC2626"></div>발송비 (막대 ↓, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6;border-radius:50%"></div>누적 순이익 (꺾은선, 우측축)</div>
       </div>
     </div>
 
-    <!-- 쿠팡 vs 부릉 비교 그래프 -->
-    <div class="chart-section">
-      <div class="chart-title"><span>📊 쿠팡이츠 vs 부릉 비교</span></div>
-      <div class="chart-period-row">
-        <button class="chart-period-btn" onclick="setCompareDays(7,this)">7일</button>
-        <button class="chart-period-btn" onclick="setCompareDays(15,this)">15일</button>
-        <button class="chart-period-btn active" onclick="setCompareDays(30,this)">30일</button>
-        <button class="chart-period-btn" onclick="setCompareDays(60,this)">60일</button>
-        <button class="chart-period-btn" onclick="setCompareDays(90,this)">90일</button>
-      </div>
-      <div class="chart-canvas-wrap"><canvas id="compare-chart"></canvas></div>
-      <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#FF6B2C"></div>쿠팡이츠</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#00C471"></div>부릉</div>
-      </div>
-    </div>
-
-    <!-- 날짜 선택 모달 (쿠팡/부릉 공용) -->
+    <!-- 날짜 선택 모달 (쿠팡/숨고 공용) -->
     <div id="custom-date-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center">
       <div style="background:#fff;border-radius:16px;padding:24px;width:320px;max-width:90vw">
         <div style="font-size:16px;font-weight:800;margin-bottom:16px" id="custom-date-title">기간 선택</div>
@@ -1733,21 +1717,16 @@ function renderCoupangChart() {
   });
 }
 
-// ── 부릉 + 비교 차트 ──────────────────────────────────────────────
-let baeminChartDays = 30, compareDays = 30;
+// ── 숨고 대시보드 + 기간 선택(쿠팡/숨고 공용) ───────────────────────
+let soomgoChartDays = 30;
 let customDateTarget = null;
 let coupangCustomStart = null, coupangCustomEnd = null;
-let baeminCustomStart = null, baeminCustomEnd = null;
+let soomgoCustomStart = null, soomgoCustomEnd = null;
 
-function setBaeminDays(days, btn) {
-  baeminChartDays = days; baeminCustomStart = null; baeminCustomEnd = null;
+function setSoomgoDays(days, btn) {
+  soomgoChartDays = days; soomgoCustomStart = null; soomgoCustomEnd = null;
   btn.closest('.chart-period-row').querySelectorAll('.chart-period-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); renderBaeminChart();
-}
-function setCompareDays(days, btn) {
-  compareDays = days;
-  btn.closest('.chart-period-row').querySelectorAll('.chart-period-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); renderCompareChart();
+  btn.classList.add('active'); renderSoomgoChart();
 }
 function openCoupangCustomDate() {
   customDateTarget='coupang';
@@ -1758,95 +1737,128 @@ function openCoupangCustomDate() {
   document.getElementById('custom-start-date').value=toDateStr(s);
   document.getElementById('custom-date-overlay').style.display='flex';
 }
-function openBaeminCustomDate() {
-  customDateTarget='baemin';
-  document.getElementById('custom-date-title').textContent='부릉 기간 선택';
+function openSoomgoCustomDate() {
+  customDateTarget='soomgo';
+  document.getElementById('custom-date-title').textContent='숨고 기간 선택';
   const now=new Date();
-  document.getElementById('custom-end-date').value=toDateStr(now);
+  document.getElementById('custom-end-date').value=soomgoCustomEnd||toDateStr(now);
   const s=new Date(now); s.setDate(s.getDate()-29);
-  document.getElementById('custom-start-date').value=toDateStr(s);
+  document.getElementById('custom-start-date').value=soomgoCustomStart||toDateStr(s);
   document.getElementById('custom-date-overlay').style.display='flex';
 }
 function applyCustomDate() {
   const s=document.getElementById('custom-start-date').value;
   const e=document.getElementById('custom-end-date').value;
   if(!s||!e) return;
+  if(s>e){ alert('시작일이 종료일보다 늦어요'); return; }
   document.getElementById('custom-date-overlay').style.display='none';
   if(customDateTarget==='coupang'){
     coupangCustomStart=s; coupangCustomEnd=e;
     document.getElementById('coupang-custom-btn').classList.add('active');
     renderCoupangChart();
-  } else {
-    baeminCustomStart=s; baeminCustomEnd=e; renderBaeminChart();
+  } else if(customDateTarget==='soomgo'){
+    soomgoCustomStart=s; soomgoCustomEnd=e;
+    const btn=document.getElementById('soomgo-custom-btn');
+    btn.closest('.chart-period-row').querySelectorAll('.chart-period-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderSoomgoChart();
   }
 }
 function closeCustomDate() { document.getElementById('custom-date-overlay').style.display='none'; }
 
-function renderBaeminChart() {
-  const canvas=document.getElementById('baemin-chart'); if(!canvas) return;
+function renderSoomgoChart() {
+  const canvas=document.getElementById('soomgo-chart'); if(!canvas) return;
   const now=new Date();
-  const labels=[],netVals=[],distVals=[],totals=[];
   let dateList=[];
-  if(baeminCustomStart&&baeminCustomEnd){
-    let d=new Date(baeminCustomStart);
-    while(toDateStr(d)<=baeminCustomEnd){dateList.push(toDateStr(d));d.setDate(d.getDate()+1);}
+  if(soomgoCustomStart&&soomgoCustomEnd){
+    let d=new Date(soomgoCustomStart);
+    while(toDateStr(d)<=soomgoCustomEnd){dateList.push(toDateStr(d));d.setDate(d.getDate()+1);}
   } else {
-    for(let i=baeminChartDays-1;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);dateList.push(toDateStr(d));}
+    for(let i=soomgoChartDays-1;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);dateList.push(toDateStr(d));}
   }
+  const start=dateList[0], end=dateList[dateList.length-1];
+  document.getElementById('soomgo-range-label').textContent=start+' ~ '+end;
+
+  // 일별: 입금(숨고 기록 순수익), 발송비, 누적 순이익
+  const labels=[],incVals=[],feeVals=[],cumVals=[];
+  let cum=0, incCount=0, sendCount=0;
   dateList.forEach(ds=>{
     labels.push(ds.slice(5));
-    const r=records.filter(r=>r.date===ds&&r.platform==='baemin');
-    const net=r.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
-    const dist=r.reduce((s,r)=>s+r.distance,0);
-    netVals.push(net); distVals.push(dist); totals.push(net);
+    const recs=records.filter(r=>r.date===ds&&r.platform==='soomgo');
+    const inc=recs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
+    const sends=soomgoSends.filter(g=>g.date===ds);
+    const fee=sends.reduce((s,g)=>s+g.totalFee,0);
+    incCount+=recs.length; sendCount+=sends.reduce((s,g)=>s+(g.count||0),0);
+    cum+=inc-fee;
+    incVals.push(inc); feeVals.push(fee); cumVals.push(cum);
   });
-  const avgs=totals.map((_,i)=>{
-    const sl=totals.slice(Math.max(0,i-6),i+1);
-    return Math.round(sl.reduce((a,b)=>a+b,0)/sl.length);
-  });
+
+  // KPI 카드
+  const incTotal=incVals.reduce((a,b)=>a+b,0), feeTotal=feeVals.reduce((a,b)=>a+b,0), net=incTotal-feeTotal;
+  const roi=feeTotal>0 ? (incTotal/feeTotal).toFixed(1)+'배' : '-';
+  document.getElementById('soomgo-kpis').innerHTML=[
+    {label:'숨고 입금',        value:fmtW(incTotal),                 color:'#06B6D4', big:true},
+    {label:'발송비',           value:'-'+fmtW(feeTotal),             color:'#DC2626', big:true},
+    {label:'순이익 (입금−발송비)', value:(net<0?'-':'')+fmtW(Math.abs(net)), color:net<0?'#DC2626':'#8B5CF6', big:true},
+    {label:'발송 건수',        value:sendCount+'건',                  color:'#6B7280'},
+    {label:'입금 건수',        value:incCount+'건',                   color:'#6B7280'},
+    {label:'발송비 대비 입금',  value:roi,                            color:'#F59E0B'},
+  ].map(c => '<div class="report-card" style="border-top:3px solid ' + c.color + '">'
+    + '<div class="report-value" style="color:' + c.color + ';font-size:' + (c.big?20:16) + 'px">' + c.value + '</div>'
+    + '<div class="report-label">' + c.label + '</div></div>').join('');
+
+  // 차트: 0 기준선 위 = 입금, 아래 = 발송비, 꺾은선 = 누적 순이익(우측축)
   const W=canvas.parentElement.clientWidth||340;
-  const barW=Math.max(5,Math.min(18,Math.floor((W-88)/labels.length)-2));
+  const barW=Math.max(4,Math.min(18,Math.floor((W-96)/labels.length)-2));
   const H=260; canvas.width=W; canvas.height=H;
   const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
-  const maxNet=Math.max(...netVals,1),maxDist=Math.max(...distVals,1);
   const padL=48,padR=48,padT=24,padB=44,chartW=W-padL-padR,chartH=H-padT-padB,step=chartW/labels.length;
+  if(!incTotal&&!feeTotal){
+    ctx.fillStyle='#9CA3AF'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('이 기간 숨고 기록이 없어요',W/2,H/2); return;
+  }
+  const maxUp=Math.max(...incVals,1), maxDown=Math.max(...feeVals,0);
+  const span=maxUp+maxDown;
+  const zeroY=padT+chartH*(maxUp/span);
+  const yOf=v=>zeroY-(v/span)*chartH;            // 막대 공용 스케일
+  const cMax=Math.max(...cumVals,0), cMin=Math.min(...cumVals,0), cSpan=(cMax-cMin)||1;
+  const yCum=v=>padT+chartH*(1-(v-cMin)/cSpan);  // 누적 순이익 스케일
+
   ctx.fillStyle='#9CA3AF'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left'; ctx.fillText('만원',0,padT-8);
-  ctx.fillStyle='#3B82F6'; ctx.textAlign='right'; ctx.fillText('km',W,padT-8);
+  ctx.fillStyle='#8B5CF6'; ctx.textAlign='right'; ctx.fillText('누적 만원',W,padT-8);
+  // 격자: 위 끝, 0선, 아래 끝
   ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1;
-  [0.25,0.5,0.75,1].forEach(r=>{
-    const y=padT+chartH*(1-r);
+  [[padT,maxUp],[zeroY,0],[padT+chartH,-maxDown]].forEach(([y,v],k)=>{
+    if(k===2&&maxDown===0) return;
+    ctx.strokeStyle=k===1?'#9CA3AF':'#E5E7EB';
     ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
     ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='right';
-    ctx.fillText((maxNet*r/10000).toFixed(1),padL-3,y+3);
-    ctx.fillStyle='#3B82F6'; ctx.textAlign='left';
-    ctx.fillText((maxDist*r).toFixed(0),W-padR+3,y+3);
+    ctx.fillText((v/10000).toFixed(1),padL-3,y+3);
   });
-  netVals.forEach((v,i)=>{
-    if(v<=0) return;
-    const x=padL+i*step+step/2-barW/2,bH=(v/maxNet)*chartH,y=padT+chartH-bH;
-    ctx.fillStyle='#00C471';
-    ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,barW,bH,[3,3,0,0]); else ctx.rect(x,y,barW,bH);
+  ctx.fillStyle='#8B5CF6'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText((cMax/10000).toFixed(1),W-padR+3,padT+3);
+  ctx.fillText((cMin/10000).toFixed(1),W-padR+3,padT+chartH+3);
+
+  const bar=(x,y,w,h,color,round)=>{
+    ctx.fillStyle=color; ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x,y,w,h,round); else ctx.rect(x,y,w,h);
     ctx.fill();
-    if(barW>=6){ctx.fillStyle='#1F2937'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText((v/10000).toFixed(1),x+barW/2,y-4);}
+  };
+  labels.forEach((_,i)=>{
+    const x=padL+i*step+step/2-barW/2;
+    if(incVals[i]>0){
+      const y=yOf(incVals[i]);
+      bar(x,y,barW,zeroY-y,'#06B6D4',[3,3,0,0]);
+      if(barW>=6){ctx.fillStyle='#1F2937'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillText((incVals[i]/10000).toFixed(1),x+barW/2,y-3);}
+    }
+    if(feeVals[i]>0){
+      const y2=yOf(-feeVals[i]);
+      bar(x,zeroY,barW,y2-zeroY,'#DC2626',[0,0,3,3]);
+    }
   });
-  ctx.beginPath(); ctx.strokeStyle='#3B82F6'; ctx.lineWidth=2; ctx.setLineDash([5,3]);
-  let ds2=false;
-  distVals.forEach((v,i)=>{
-    if(v<=0) return;
-    const x=padL+i*step+step/2,y=padT+chartH-(v/maxDist)*chartH;
-    if(!ds2){ctx.moveTo(x,y);ds2=true;}else ctx.lineTo(x,y);
-  });
-  ctx.stroke(); ctx.setLineDash([]);
-  distVals.forEach((v,i)=>{
-    if(v<=0) return;
-    const x=padL+i*step+step/2,y=padT+chartH-(v/maxDist)*chartH;
-    ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fillStyle='#3B82F6'; ctx.fill();
-  });
-  ctx.beginPath(); ctx.strokeStyle='#F59E0B'; ctx.lineWidth=2;
-  avgs.forEach((v,i)=>{
-    const x=padL+i*step+step/2,y=padT+chartH-(Math.max(v,0)/maxNet)*chartH;
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  });
+  // 누적 순이익 꺾은선
+  ctx.beginPath(); ctx.strokeStyle='#8B5CF6'; ctx.lineWidth=2;
+  cumVals.forEach((v,i)=>{ const x=padL+i*step+step/2,y=yCum(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
   ctx.stroke();
   ctx.fillStyle='#9CA3AF'; ctx.font='8px sans-serif'; ctx.textAlign='center';
   labels.forEach((l,i)=>{
@@ -1855,57 +1867,7 @@ function renderBaeminChart() {
   });
 }
 
-function renderCompareChart() {
-  const canvas=document.getElementById('compare-chart'); if(!canvas) return;
-  const now=new Date();
-  const labels=[],cpVals=[],bmVals=[];
-  for(let i=compareDays-1;i>=0;i--){
-    const d=new Date(now); d.setDate(d.getDate()-i); const ds=toDateStr(d);
-    labels.push(ds.slice(5));
-    cpVals.push(records.filter(r=>r.date===ds&&r.platform==='coupang').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0));
-    bmVals.push(records.filter(r=>r.date===ds&&r.platform==='baemin').reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0));
-  }
-  const W=canvas.parentElement.clientWidth||340;
-  const groupW=Math.max(10,Math.floor((W-52)/labels.length)-2);
-  const bW=Math.max(4,Math.floor(groupW/2)-1);
-  const H=240; canvas.width=W; canvas.height=H;
-  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
-  const maxVal=Math.max(...cpVals,...bmVals,1);
-  const padL=44,padR=8,padT=24,padB=44,chartW=W-padL-padR,chartH=H-padT-padB,step=chartW/labels.length;
-  ctx.fillStyle='#6B7280'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right';
-  ctx.fillText('단위: 만원',W-padR,padT-8);
-  ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1;
-  [0.25,0.5,0.75,1].forEach(r=>{
-    const y=padT+chartH*(1-r);
-    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
-    ctx.fillStyle='#9CA3AF'; ctx.font='9px sans-serif'; ctx.textAlign='right';
-    ctx.fillText((maxVal*r/10000).toFixed(1),padL-3,y+3);
-  });
-  labels.forEach((_,i)=>{
-    const cx=padL+i*step+step/2;
-    if(cpVals[i]>0){
-      const bH=(cpVals[i]/maxVal)*chartH,x=cx-bW-1,y=padT+chartH-bH;
-      ctx.fillStyle='#FF6B2C';
-      ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,bW,bH,[3,3,0,0]); else ctx.rect(x,y,bW,bH);
-      ctx.fill();
-      if(bW>=5){ctx.fillStyle='#1F2937'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillText((cpVals[i]/10000).toFixed(1),x+bW/2,y-3);}
-    }
-    if(bmVals[i]>0){
-      const bH=(bmVals[i]/maxVal)*chartH,x=cx+1,y=padT+chartH-bH;
-      ctx.fillStyle='#00C471';
-      ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,bW,bH,[3,3,0,0]); else ctx.rect(x,y,bW,bH);
-      ctx.fill();
-      if(bW>=5){ctx.fillStyle='#1F2937'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillText((bmVals[i]/10000).toFixed(1),x+bW/2,y-3);}
-    }
-  });
-  ctx.fillStyle='#9CA3AF'; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  labels.forEach((l,i)=>{
-    const x=padL+i*step+step/2;
-    ctx.save(); ctx.translate(x,H-4); ctx.rotate(-Math.PI/4); ctx.fillText(l,0,0); ctx.restore();
-  });
-}
-
-function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupangChart(); renderBaeminChart(); renderCompareChart(); }
+function renderCharts() { renderDailyChart(); renderMonthlyChart(); renderCoupangChart(); renderSoomgoChart(); }
 
 // ── CSV 내보내기/가져오기 ───────────────────────────────────────
 function exportCSV() {
