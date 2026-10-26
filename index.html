@@ -274,8 +274,9 @@ body { max-width:none; }
 .report-value.is-neg { color:var(--sale) !important; }
 .session-card, .compare-card, .platform-row { border-left:1px solid var(--hair-soft) !important; }
 /* 캘린더: 흰 칸 + 하단 막대로 수익 크기 표시 */
-.day-cell { position:relative; background:#fff !important; border:1px solid transparent; }
-.day-cell .day-bar { position:absolute; left:6px; bottom:5px; height:3px; background:var(--ink); border-radius:2px; }
+.day-cell { position:relative; border:2px solid transparent; }
+.day-cell.heat-dark .day-num, .day-cell.heat-dark .day-income { color:#fff !important; }
+.day-cell.selected { border-color:#d30005 !important; }
 .day-cell.today .day-num { text-decoration:underline; text-underline-offset:3px; }
 .day-income { color:var(--charcoal); font-weight:600; }
 /* 모바일: 상단은 제목만, 메뉴는 하단 고정 탭바(4칸 균등) */
@@ -338,7 +339,7 @@ body { max-width:none; }
         <span class="day-detail-title" id="selected-date-label"></span>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="add-btn" style="background:#6B7280;font-size:12px" onclick="openExtraModal()">+ 잡수익</button>
-          <button class="add-btn" style="background:#1151FF;font-size:12px" onclick="openSoomgoModal()">+ 숨고발송</button>
+          <button class="add-btn" style="background:#1151FF;font-size:12px" onclick="openSoomgoModal()">+ 숨고충전</button>
           <button class="add-btn" style="background:#1EAA52;font-size:12px" onclick="openAdpostModal()">+ AdPost</button>
           <button class="add-btn" onclick="openModal(null)">+ 세션 추가</button>
         </div>
@@ -424,7 +425,7 @@ body { max-width:none; }
       <div class="chart-canvas-wrap"><canvas id="soomgo-chart"></canvas></div>
       <div class="chart-legend">
         <div class="legend-item"><div class="legend-dot" style="background:#1151FF"></div>숨고 입금 (막대 ↑, 만원)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#D30005"></div>발송비 (막대 ↓, 만원)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#D30005"></div>충전비 (막대 ↓, 만원)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#4B4B4D;border-radius:50%"></div>누적 순이익 (꺾은선, 우측축)</div>
       </div>
     </div>
@@ -524,8 +525,8 @@ body { max-width:none; }
         <input class="setting-input" type="number" step="0.1" id="s-soomgo" value="0">
       </div>
     </div>
-    <div class="settings-card">
-      <div class="settings-title">숨고 발송비 설정</div>
+    <div class="settings-card" style="display:none">
+      <div class="settings-title">숨고 발송비 설정 (충전 방식으로 바뀌어 사용 안 함)</div>
       <div class="setting-row">
         <div><div class="setting-label">견적서 발송 수수료 (건당, 원)</div><div class="setting-hint">수주 여부와 무관하게 발송할 때마다 정액 차감</div></div>
         <input class="setting-input" type="number" step="100" id="s-soomgo-fee" value="1000">
@@ -694,11 +695,11 @@ body { max-width:none; }
   </div>
 </div>
 
-<!-- 숨고 발송비 모달 -->
+<!-- 숨고 충전 모달 (충전 금액 통째 입력) -->
 <div class="overlay" id="soomgo-overlay" onclick="if(event.target===this)closeSoomgoModal()">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">숨고 발송비 입력</span>
+      <span class="modal-title">숨고 캐시 충전 입력</span>
       <button class="close-btn" onclick="closeSoomgoModal()">✕</button>
     </div>
     <div class="modal-section">
@@ -706,24 +707,26 @@ body { max-width:none; }
       <div style="color:#707072;font-size:14px;padding:4px 0" id="soomgo-date-label"></div>
     </div>
     <div class="modal-section">
-      <div class="field-label">견적서 발송 건수</div>
-      <input type="number" class="modal-input" id="soomgo-count" step="1" placeholder="예: 5" oninput="updateSoomgoPreview()">
-      <div style="font-size:10px;color:#707072;margin-top:4px">수주 여부와 무관하게 발송할 때마다 빠지는 건수를 입력해</div>
-    </div>
-    <div class="modal-section">
-      <div class="field-label">건당 발송 수수료 (원)</div>
-      <input type="number" class="modal-input" id="soomgo-fee" step="100" oninput="updateSoomgoPreview()">
-      <div style="font-size:10px;color:#707072;margin-top:4px">설정 탭의 기본값이 자동으로 채워져. 필요하면 이 건만 수정 가능해</div>
+      <div class="field-label">충전 금액 (원)</div>
+      <input type="number" class="modal-input" id="soomgo-amount" step="1000" placeholder="예: 50000" oninput="updateSoomgoPreview()">
+      <div class="platform-btns" style="margin-top:8px">
+        <button class="platform-btn" onclick="addSoomgoAmount(10000)">+1만</button>
+        <button class="platform-btn" onclick="addSoomgoAmount(30000)">+3만</button>
+        <button class="platform-btn" onclick="addSoomgoAmount(50000)">+5만</button>
+        <button class="platform-btn" onclick="addSoomgoAmount(100000)">+10만</button>
+        <button class="platform-btn" onclick="setSoomgoAmount('')">지우기</button>
+      </div>
+      <div style="font-size:12px;color:#707072;margin-top:6px">충전한 날 비용으로 한 번에 잡혀요 (발송할 때마다 입력하지 않아도 돼요)</div>
     </div>
     <div class="modal-section">
       <div class="field-label">메모 (선택)</div>
-      <input type="text" class="modal-input" id="soomgo-memo" placeholder="예: 마케팅팀장 상담 5건 발송">
+      <input type="text" class="modal-input" id="soomgo-memo" placeholder="예: 캐시 5만원 충전">
     </div>
     <div class="preview" id="soomgo-preview-box" style="display:none">
-      <div class="preview-title">발송비 계산</div>
+      <div class="preview-title">충전비</div>
       <div id="soomgo-preview-content"></div>
     </div>
-    <button class="save-btn" id="soomgo-save-btn" onclick="saveSoomgoSend()" style="background:#1151FF">저장하기</button>
+    <button class="save-btn" id="soomgo-save-btn" onclick="saveSoomgoSend()">저장하기</button>
   </div>
 </div>
 
@@ -829,11 +832,11 @@ function calcNet(platform, gross) {
 }
 function heatColor(net) {
   if (net <= 0) return '#fff';
-  // 무채색 히트맵(Nike 팔레트): 수익이 클수록 진한 회색, 최상단은 차콜 + 흰 글자(.heat-top)
-  if (net < 10000) return '#F3F3F3';
-  if (net < 30000) return '#E2E2E3';
-  if (net < 60000) return '#C8C8CA';
-  return '#39393B';
+  // 칸 전체 색칠: 수익이 클수록 진하게 (기준 1만·3만·6만원). 진한 2단계는 흰 글자(.heat-dark)
+  if (net < 10000) return '#EDEDEE';
+  if (net < 30000) return '#CFCFD1';
+  if (net < 60000) return '#6E6E71';
+  return '#1F1F21';
 }
 function daySoomgoFee(ds) {
   return soomgoSends.filter(g => g.date === ds).reduce((s,g) => s + g.totalFee, 0);
@@ -892,17 +895,15 @@ function renderCalendar() {
   const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
   const today = todayStr();
   let html = '';
-  let monthMax = 0;
-  for (let d = 1; d <= daysInMonth; d++) { const v = dayNet(calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0')); if (v > monthMax) monthMax = v; }
   for (let i = 0; i < firstDay; i++) html += '<div></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     const net = dayNet(ds);
     const col = (firstDay + d - 1) % 7;
-    const cls = ['day-cell', col===0?'sun':col===6?'sat':'', ds===selectedDate?'selected':'', ds===today?'today':''].join(' ');
+    const cls = ['day-cell', col===0?'sun':col===6?'sat':'', ds===selectedDate?'selected':'', ds===today?'today':'', net>=30000?'heat-dark':''].join(' ');
     html += '<button class="' + cls + '" style="background:' + heatColor(net) + '" onclick="selectDate(\'' + ds + '\')">'
           + '<span class="day-num">' + d + '</span>'
-          + (net > 0 ? '<span class="day-income">' + Math.round(net/1000) + 'k</span><span class="day-bar" style="width:calc((100% - 12px) * ' + (net/monthMax).toFixed(3) + ')"></span>' : '')
+          + (net > 0 ? '<span class="day-income">' + Math.round(net/1000) + 'k</span>' : '')
           + '</button>';
   }
   document.getElementById('cal-grid').innerHTML = html;
@@ -936,7 +937,7 @@ function renderDayDetail() {
           + '<div class="day-summary-row"><span>배달 순수익</span><span class="accent" style="font-weight:800">' + fmtW(total) + '</span></div>'
           + (exTotal > 0 ? '<div class="day-summary-row"><span>잡수익</span><span style="color:#007D48;font-weight:700">+' + fmtW(exTotal) + '</span></div>' : '')
           + (apTotal > 0 ? '<div class="day-summary-row"><span>AdPost</span><span style="color:#1EAA52;font-weight:700">+' + fmtW(apTotal) + '</span></div>' : '')
-          + (sgFeeTotal > 0 ? '<div class="day-summary-row"><span>숨고 발송비</span><span class="neg" style="font-weight:700">-' + fmtW(sgFeeTotal) + '</span></div>' : '')
+          + (sgFeeTotal > 0 ? '<div class="day-summary-row"><span>숨고 충전비</span><span class="neg" style="font-weight:700">-' + fmtW(sgFeeTotal) + '</span></div>' : '')
           + '<div class="day-summary-row" style="border-top:1px solid #2A2D3A;margin-top:4px;padding-top:6px"><span style="font-weight:700">일 합계</span><span style="color:#111111;font-weight:800;font-size:15px">' + fmtW(grandTotal) + '</span></div>'
           + '<div class="day-summary-row"><span>시간당</span><span style="font-weight:700">' + (totalMins > 0 ? fmtW(total/totalMins*60) : '-') + '</span></div>'
           + '</div>';
@@ -974,12 +975,12 @@ function renderDayDetail() {
     }
 
     if (daySg.length > 0) {
-      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">숨고 발송비</div>';
+      html += '<div style="font-size:11px;color:#6B7280;margin:8px 0 6px;font-weight:600">숨고 충전비</div>';
       daySg.forEach(g => {
         html += '<div class="session-card" style="border-left:3px solid #1151FF">'
               + '<div class="session-actions"><button class="delete-btn" onclick="deleteSoomgoSend(' + g.id + ')">삭제</button></div>'
-              + '<div class="session-top"><span class="session-platform">견적서 발송 ' + g.count + '건</span><span class="session-net neg">-' + fmtW(g.totalFee) + '</span></div>'
-              + '<div class="session-breakdown"><span>건당 ' + fmtW(g.feePerSend) + '</span></div>'
+              + '<div class="session-top"><span class="session-platform">' + (g.type === 'charge' ? '숨고 캐시 충전' : '견적서 발송 ' + g.count + '건') + '</span><span class="session-net neg">-' + fmtW(g.totalFee) + '</span></div>'
+              + (g.type === 'charge' ? '' : '<div class="session-breakdown"><span>건당 ' + fmtW(g.feePerSend) + '</span></div>')
               + (g.memo ? '<div class="session-memo">' + g.memo + '</div>' : '')
               + '</div>';
       });
@@ -1010,7 +1011,7 @@ function deleteExtra(id) {
   saveExtras(); renderCalendar();
 }
 function deleteSoomgoSend(id) {
-  if (!confirm('숨고 발송비 기록을 삭제할까요?')) return;
+  if (!confirm('숨고 충전비 기록을 삭제할까요?')) return;
   soomgoSends = soomgoSends.filter(g => g.id !== id);
   saveSoomgoSends(); renderCalendar();
 }
@@ -1286,11 +1287,10 @@ function saveExtra() {
   }, 1000);
 }
 
-// ── 숨고 발송비 모달 ────────────────────────────────────────────
+// ── 숨고 충전 모달 (충전 금액 통째 입력) ────────────────────────────
 function openSoomgoModal() {
   document.getElementById('soomgo-date-label').textContent = selectedDate;
-  document.getElementById('soomgo-count').value = '';
-  document.getElementById('soomgo-fee').value = settings.soomgo_send_fee;
+  document.getElementById('soomgo-amount').value = '';
   document.getElementById('soomgo-memo').value = '';
   document.getElementById('soomgo-preview-box').style.display = 'none';
   document.getElementById('soomgo-save-btn').textContent = '저장하기';
@@ -1298,31 +1298,27 @@ function openSoomgoModal() {
   document.getElementById('soomgo-overlay').classList.add('open');
 }
 function closeSoomgoModal() { document.getElementById('soomgo-overlay').classList.remove('open'); }
+function setSoomgoAmount(v) { document.getElementById('soomgo-amount').value = v; updateSoomgoPreview(); }
+function addSoomgoAmount(v) { setSoomgoAmount((parseFloat(document.getElementById('soomgo-amount').value) || 0) + v); }
 function updateSoomgoPreview() {
-  const count = parseFloat(document.getElementById('soomgo-count').value) || 0;
-  const feeInput = document.getElementById('soomgo-fee').value;
-  const fee = feeInput === '' ? NaN : parseFloat(feeInput);
-  if (!count || isNaN(fee)) { document.getElementById('soomgo-preview-box').style.display = 'none'; return; }
-  const total = count * fee;
-  let html = '<div class="preview-row"><span>발송 건수</span><span>' + count + '건</span></div>'
-           + '<div class="preview-row"><span>건당 수수료</span><span>' + fmtW(fee) + '</span></div>'
-           + '<div class="preview-row preview-divider"><span style="font-weight:700">총 지출</span><span class="neg" style="font-weight:800;font-size:18px">-' + fmtW(total) + '</span></div>';
-  document.getElementById('soomgo-preview-content').innerHTML = html;
+  const amount = parseFloat(document.getElementById('soomgo-amount').value) || 0;
+  if (amount <= 0) { document.getElementById('soomgo-preview-box').style.display = 'none'; return; }
+  document.getElementById('soomgo-preview-content').innerHTML =
+    '<div class="preview-row preview-divider"><span style="font-weight:700">총 지출</span><span class="neg" style="font-weight:800;font-size:18px">-' + fmtW(amount) + '</span></div>';
   document.getElementById('soomgo-preview-box').style.display = 'block';
 }
 function saveSoomgoSend() {
-  const count = parseFloat(document.getElementById('soomgo-count').value);
-  if (!count) { alert('발송 건수를 입력해주세요'); return; }
-  const feeInput = document.getElementById('soomgo-fee').value;
-  const fee = feeInput === '' ? settings.soomgo_send_fee : (parseFloat(feeInput) || 0);
-  soomgoSends.unshift({ id: Date.now(), date: selectedDate, count, feePerSend: fee, totalFee: count*fee, memo: document.getElementById('soomgo-memo').value });
+  const amount = parseFloat(document.getElementById('soomgo-amount').value);
+  if (!(amount > 0)) { alert('충전 금액을 입력해주세요'); return; }
+  // type:'charge' = 충전 금액 통째 기록. 예전 발송 기록(count × feePerSend)은 type 없이 그대로 합산된다
+  soomgoSends.unshift({ id: Date.now(), date: selectedDate, type: 'charge', count: 0, feePerSend: 0, totalFee: amount, memo: document.getElementById('soomgo-memo').value });
   soomgoSends.sort((a,b) => b.date.localeCompare(a.date));
   saveSoomgoSends(); renderCalendar();
   const btn = document.getElementById('soomgo-save-btn');
   btn.textContent = '저장 완료!'; btn.classList.add('saved');
   setTimeout(() => {
     btn.textContent = '저장하기'; btn.classList.remove('saved');
-    document.getElementById('soomgo-count').value = '';
+    document.getElementById('soomgo-amount').value = '';
     document.getElementById('soomgo-memo').value = '';
     document.getElementById('soomgo-preview-box').style.display = 'none';
   }, 1000);
@@ -1427,7 +1423,7 @@ function renderReport() {
     {label:'숨고',          value:fmtW(st.byP.soomgo ? st.byP.soomgo.net : 0), color:'#1151FF'},
     {label:'잡수익',        value:fmtW(periodExtraNet),    color:'#007D48'},
     {label:'AdPost',       value:fmtW(periodAdpostNet),   color:'#1EAA52'},
-    {label:'숨고 발송비',    value:'-'+fmtW(periodSoomgoFee), color:'#D30005'},
+    {label:'숨고 충전비',    value:'-'+fmtW(periodSoomgoFee), color:'#D30005'},
     {label:'총 수수료 (세전 대비 ' + deductPct + '%)', value:fmtW(st.deduct), color:'#D30005'},
     {label:'총 충전비',         value:fmtW(st.charge),         color:'#D30005'},
     {label:'총 주행거리',       value:fmtKm(st.distance),      color:'#9E9EA0'},
@@ -1943,7 +1939,7 @@ function renderSoomgoChart() {
   const start=dateList[0], end=dateList[dateList.length-1];
   document.getElementById('soomgo-range-label').textContent=start+' ~ '+end;
 
-  // 일별: 입금(숨고 기록 순수익), 발송비, 누적 순이익
+  // 일별: 입금(숨고 기록 순수익), 충전비(예전 발송비 포함), 누적 순이익
   const labels=[],incVals=[],feeVals=[],cumVals=[];
   let cum=0, incCount=0, sendCount=0;
   dateList.forEach(ds=>{
@@ -1952,7 +1948,7 @@ function renderSoomgoChart() {
     const inc=recs.reduce((s,r)=>s+calcNet(r.platform,r.gross)-calcCharge(r.distance,r.vehicle),0);
     const sends=soomgoSends.filter(g=>g.date===ds);
     const fee=sends.reduce((s,g)=>s+g.totalFee,0);
-    incCount+=recs.length; sendCount+=sends.reduce((s,g)=>s+(g.count||0),0);
+    incCount+=recs.length; sendCount+=sends.length;
     cum+=inc-fee;
     incVals.push(inc); feeVals.push(fee); cumVals.push(cum);
   });
@@ -1962,11 +1958,11 @@ function renderSoomgoChart() {
   const roi=feeTotal>0 ? (incTotal/feeTotal).toFixed(1)+'배' : '-';
   document.getElementById('soomgo-kpis').innerHTML=[
     {label:'숨고 입금',        value:fmtW(incTotal),                 color:'#1151FF', big:true},
-    {label:'발송비',           value:'-'+fmtW(feeTotal),             color:'#D30005', big:true},
-    {label:'순이익 (입금−발송비)', value:(net<0?'-':'')+fmtW(Math.abs(net)), color:net<0?'#D30005':'#4B4B4D', big:true},
-    {label:'발송 건수',        value:sendCount+'건',                  color:'#6B7280'},
+    {label:'충전비',           value:'-'+fmtW(feeTotal),             color:'#D30005', big:true},
+    {label:'순이익 (입금−충전비)', value:(net<0?'-':'')+fmtW(Math.abs(net)), color:net<0?'#D30005':'#4B4B4D', big:true},
+    {label:'충전 횟수',        value:sendCount+'회',                  color:'#6B7280'},
     {label:'입금 건수',        value:incCount+'건',                   color:'#6B7280'},
-    {label:'발송비 대비 입금',  value:roi,                            color:'#707072'},
+    {label:'충전비 대비 입금',  value:roi,                            color:'#707072'},
   ].map(c => '<div class="report-card" style="border-top:3px solid ' + c.color + '">'
     + '<div class="report-value' + (String(c.value).trim().startsWith('-') ? ' is-neg' : '') + '" style="font-size:' + (c.big?20:16) + 'px">' + c.value + '</div>'
     + '<div class="report-label">' + c.label + '</div></div>').join('');
@@ -2052,9 +2048,9 @@ function exportCSV() {
     csv+='\n\n[잡수익 기록]\n'+[eH,...eR].map(r=>r.join(',')).join('\n');
   }
   if (soomgoSends.length>0) {
-    const gH=['날짜','발송건수','건당수수료(원)','총지출(원)','메모'];
-    const gR=[...soomgoSends].sort((a,b)=>a.date.localeCompare(b.date)).map(g=>[g.date,g.count,Math.round(g.feePerSend),Math.round(g.totalFee),g.memo||'']);
-    csv+='\n\n[숨고 발송비 기록]\n'+[gH,...gR].map(r=>r.join(',')).join('\n');
+    const gH=['날짜','구분','발송건수','건당수수료(원)','금액(원)','메모'];
+    const gR=[...soomgoSends].sort((a,b)=>a.date.localeCompare(b.date)).map(g=>[g.date,g.type==='charge'?'충전':'발송',g.count||'',g.type==='charge'?'':Math.round(g.feePerSend),Math.round(g.totalFee),g.memo||'']);
+    csv+='\n\n[숨고 충전비 기록]\n'+[gH,...gR].map(r=>r.join(',')).join('\n');
   }
   if (adpostIncomes.length>0) {
     const aH=['날짜','입금액(원)','메모'];
